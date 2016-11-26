@@ -1,0 +1,198 @@
+Movement
+========
+
+[z ]z          : 現在の折りたたみの先頭/末尾へ移動
+zj zk          : 次/前の折りたたみの先頭/末尾へ移動。feat. submode 連続して j, k 入力で次、前へ移動
+g; g:          : 前の／次の変更位置へ移動
+gt gT          : 前の／次のタブを表示
+<Space><Space> : 対応するカッコなどに移動。% と同じ
+
+
+Edit
+====
+
+&                         : 置換の繰り返し
+F6                        : 日付の入力
+F7                        : バッファ全体をインデント
+<Space>ye                 : バッファ全体をクリップボードへコピー
+~                         : 大文字小文字入れ替え
+<Enter> (v)               : Align の対象を入力させて実行 feat. easy-align
+:ISetting[!] [st][0-9]    : インデントの変更。s2 なら space で幅2 に変更。! 付きなら Retab 実行
+p (v)                     : 選択範囲をレジスタで置換
+:ExpandSerialNumber       : hoge [100-120] fuga などと入力して実行すると、hoge 100 fuga, hoge 101 fuga が各行に展開される。 feat. ExpandSerialNumber
+                          : [0xa-0xf] 入力後に実行すると a-f を各行に展開 feat. ExpandSerialNumber
+:SortLine                 : , 区切りの文字列をソートする（行全体）
+<Leader>a / <Leader>x (v) : 選択範囲をインクリメント / デクリメント
+<C-R> (i)                 : レジスタから貼り付け
+:v/hoge/d                 : ある文字列を含む行のみを残して削除
+:g/hoge/d                 : ある文字列を含む行を削除
+gs                        : 要素の移動を可能にする swap mode に入る feat. swap
+g<C-a>                    : 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
+cwiw                      : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
+X (v)                     : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
+
+
+Easy Align
+==========
+
+<Space>    : Around 1st whitespaces
+2<Space>   : Around 2nd whitespaces
+-<Space>   : Around the last whitespaces
+-2<Space>  : Around the 2nd to last whitespaces
+:          : Around 1st colon (key: value)
+<Right>:   : Around 1st colon (key : value)
+=          : Around 1st operators with =
+3=         : Around 3rd operators with =
+*=         : Around all operators with =
+**=        : Left-right alternating around =
+<Enter>=   : Right alignment around 1st =
+<Enter>**= : Right-left alternating around =
+*C-X[:=]   : C-X で正規表現使用。すべての : と = を対象とする。
+
+
+Suround (feat. sandwich)
+========================
+
+sa{TextObject}" : TextObject を " で括る
+sa" (v)         : 選択範囲を " で括る
+sai"f           : "" 括りを、このあと入力する function と () で括る
+sdd             : 一番内側の括りを外す
+dss             : 一番内側の括りを外す
+2sdd            : 二番目に内側の括りを外す
+sd"             : "" の括りを外す
+sd (v)          : 括りを外す
+sr"(            : "" の括りを () に置き換える
+sc"(            : "" の括りを () に置き換える
+sr( (v)         : 選択した括りを () に置き換える
+srr(            : 一番内側の括りを () に置き換える
+2srr(           : 二番目に内側の括りを () に置き換える
+rss(            : 一番内側の括りを () に置き換える
+scc(            : 一番内側の括りを () に置き換える
+css(            : 一番内側の括りを () に置き換える
+2css(           : 二番目に内側の括りを () に置き換える
+
+
+fold
+====
+
+zc zo : 現在の折りたたみを閉じる/開く
+zC zO : 現在の折りたたみをすべて閉じる/すべて開く
+zM zR : すべての折りたたみを閉じる/開く
+za    : 現在の折りたたみを開閉する
+zv    : カーソル位置の折りたたみをすべて開く
+zf    : 折りたたみを作成する
+
+
+file
+====
+
+gf          : カーソル位置のファイルを開く
+:CD         : バッファファイルのディレクトリへ移動
+:DeleteMe   : カレントファイル削除
+:RenameMe   : カレントファイルのリネーム
+:PrevimOpen : markdown のプレビュー
+
+
+grep
+====
+
+<Space>*                      : カーソルの単語をファイル内から
+:vim {pattern} %              : カレントバッファを
+:vim {pattern} **             : カレントディレクトリの全てのファイル, ディレクトリを対象に
+:vim {pattern} *              : カレントディレクトリの全てのファイルを対象に
+:vim {pattern} `git ls-files` : git の管理対象ファイルに対して
+:grep /G \.vim$ {pattern} .   : カレントディレクトリ配下の *.vim から {pattern} を検索。pt 用
+
+
+Bookmark
+========
+
+mm: ブックマーク追加・削除
+mi: 注釈の編集
+mx: ブックマークをすべて削除
+ma: ブックマークをすべて表示
+mn: 次のブックマークへ移動
+mp: 前のブックマークへ移動
+
+
+Jumps
+=====
+
+:jumps    : ジャンプの履歴表示
+C-O       : ジャンプの履歴を戻る
+C-I       : ジャンプの履歴を進む
+<C-Left>  : カーソルジャンプの履歴を戻る
+<C-Right> : カーソルジャンプの履歴を進む
+o (v)     : 範囲開始指定をやり直し
+g; g,     : 変更した位置への移動
+
+
+Command
+=======
+
+:args {argument}      : {argument} が対象のファイルリストとなる
+:argdo %s/hoge/fuga/g : args に続けて実行。 {argument} に対して置換が実行される
+:vim foo ##           : args に続けて実行。## が {argument} に置換されて実行される
+<Space>r              : quickrun
+
+
+diff
+====
+
+:Linediff (v) : 選択行の比較 feat. linediff
+:diffthis     : バッファの比較
+
+
+help
+====
+
+:help CTRL-]     : (ノーマルモードの) コントロール文字コマンド CTRL-] のヘルプを表示
+:help i_CTRL-    : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
+:help ''number'' : オプション number のヘルプを表示
+:help E37        : エラーID E37 のヘルプを表示
+:helpgrep hoge   : hoge をヘルプから検索
+:help local-additions   : runtimepath に追加されたプラグインの doc を一覧表示
+:help highlight-groups  : ハイライトのグループ表示
+:help group-name        : ハイライトのグループ表示
+:help cmdline-special      : Exコマンド用の特別な文字 の説明
+
+
+QuickFix
+========
+
+:colder : 古い QuickFix へ移動
+:cnewer : 新しい QuickFix へ移動
+
+
+Macro
+=====
+
+<Space>Q a : マクロ a へ記録
+@a         : マクロ a を実行
+
+
+CtrlP
+=====
+
+c-z : バッファ選択
+c-w : バッファを閉じる
+
+
+qfixhowm
+========
+
+<Space>,l : 最近編集したファイル一覧
+<Space>,g : howm ファイルから grep
+<Space>q  : サブバッファを閉じる feat. closesubwin
+
+
+Others
+======
+
+gv                      : 前回の選択範囲を再度選択
+:verbose inoremap <C-l> : 最後に inoremap したファイルを示してくれる
+:cq                     : vim を不正終了。git コミットのキャンセルなど
+:scriptnames            : 読み込まれているスクリプトを読み込まれた順番どおりに全て表示する
+:Jq .obj                : JSON の obj を抽出。引数なしなら整形のみ
+g/                      : Migemo でインクリメンタルサーチ
+

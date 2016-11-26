@@ -1,0 +1,29 @@
+snippet if
+options indent
+        if (${1}) then (yes)
+          ${2}
+        endif
+
+snippet partition
+options indent
+        partition ${1} {
+          :${2};
+        }
+
+snippet while
+options indent
+        while (${1})
+          :${2};
+        endwhile
+
+snippet noter
+options indent
+        note right
+          ${1}
+        end note
+
+snippet notel
+options indent
+        note left
+          ${1}
+        end note

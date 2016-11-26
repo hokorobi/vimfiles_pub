@@ -1,0 +1,14 @@
+_vimrc.local	exe('edit '.g:vimrc_local)
+plugins.tml	edit ~/vimfiles/rc/plugins.tml
+changelog	exe('edit '.g:howm_dir.'/changelogmemo')
+cheatsheet	edit ~/vimfiles/rc/cheatsheet.txt
+library	exe('edit '.g:howm_dir.'/2009/09/20090927124440.howm')
+PPX.CFG	exe('edit '.g:ppx_dir.'/PPX.CFG')
+Mercurial.ini	edit ~/mercurial.ini
+Gist	Gista list
+Qiita	Qiita -l
+Zenfone Android - Gist	exe('Gista open '.g:gist_zenfone.' zenfone5.md')
+twicli regexp.txt - Gist	exe('Gista open '.g:gist_twicli.' regexp.txt')
+MRU	CtrlPMRUFiles
+edit ft snippets	exe('edit ' . expand('~/vimfiles/snippets/' . &filetype . '.snippets'))
+edit ctrlp-launcher	exe('edit ' . expand('~/vimfiles/.ctrlp-launcher'))
