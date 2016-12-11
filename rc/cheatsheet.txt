@@ -6,6 +6,8 @@ zj zk          : 次/前の折りたたみの先頭/末尾へ移動。feat. submode 連続して j, k
 g; g:          : 前の／次の変更位置へ移動
 gt gT          : 前の／次のタブを表示
 <Space><Space> : 対応するカッコなどに移動。% と同じ
+<Space>;       : 直前の f, F, t, F を繰り返す。 feat. easymotion
+<Space>,       : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
 
 
 Edit
@@ -28,8 +30,12 @@ p (v)                     : 選択範囲をレジスタで置換
 :g/hoge/d                 : ある文字列を含む行を削除
 gs                        : 要素の移動を可能にする swap mode に入る feat. swap
 g<C-a>                    : 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
-cwiw                      : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
+cxiw                      : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
+cxc                       : 入れ替え候補のキャンセル feat. vim-exchange
 X (v)                     : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
+cxx                       : X (v) で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
+u (v)                     : 小文字へ
+U (v)                     : 大文字へ
 
 
 Easy Align
@@ -56,6 +62,7 @@ Suround (feat. sandwich)
 sa{TextObject}" : TextObject を " で括る
 sa" (v)         : 選択範囲を " で括る
 sai"f           : "" 括りを、このあと入力する function と () で括る
+sai"i           : "" 括りを、このあと入力する head と tail で括る
 sdd             : 一番内側の括りを外す
 dss             : 一番内側の括りを外す
 2sdd            : 二番目に内側の括りを外す
@@ -146,15 +153,16 @@ diff
 help
 ====
 
-:help CTRL-]     : (ノーマルモードの) コントロール文字コマンド CTRL-] のヘルプを表示
-:help i_CTRL-    : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
-:help ''number'' : オプション number のヘルプを表示
-:help E37        : エラーID E37 のヘルプを表示
-:helpgrep hoge   : hoge をヘルプから検索
-:help local-additions   : runtimepath に追加されたプラグインの doc を一覧表示
-:help highlight-groups  : ハイライトのグループ表示
-:help group-name        : ハイライトのグループ表示
-:help cmdline-special      : Exコマンド用の特別な文字 の説明
+:help CTRL-]             : (ノーマルモードの) コントロール文字コマンド CTRL-] のヘルプを表示
+:help i_CTRL-            : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
+:help 'number'           : オプション number のヘルプを表示
+:help E37                : エラーID E37 のヘルプを表示
+:helpgrep hoge           : hoge をヘルプから検索
+:help local-additions    : runtimepath に追加されたプラグインの doc を一覧表示
+:help highlight-groups   : ハイライトのグループ表示
+:help group-name         : ハイライトのグループ表示
+:help cmdline-special    : Exコマンド用の特別な文字 の説明
+:help filename-modifiers : :pや:hなどのファイル名修飾子
 
 
 QuickFix

@@ -34,7 +34,7 @@ repo = 'Shougo/neco-syntax'
 [[plugins]]
 repo = 'thinca/vim-quickrun'
 on_cmd = 'QuickRun'
-on_map = '<Plug>(quickrun'
+on_map = '<Plug>'
 depends = 'shabadou.vim'
 hook_add = '''
   let g:quickrun_config = get(g:, 'quickrun_config', {})
@@ -58,6 +58,10 @@ hook_add = '''
   nnoremap <Leader>w :<C-u>WatchdogsRun<CR>
 '''
 hook_source = '''
+  let g:quickrun_config['watchdogs_checker/_'] = {
+        \   'hook/echo/enable': 1,
+        \   'hook/echo/output_success': '> No Errors Found.',
+        \}
   if executable('rst-lint')
     let g:quickrun_config['rst/watchdogs_checker'] = {
           \   'type': 'watchdogs_checker/rst-lint'
@@ -106,12 +110,18 @@ frozen = 1
 hook_add = '''
   " ad: delimited
   " ib: sandwich
+  " ii, ai, iI, aI: indent
   let g:expand_region_text_objects = {
         \ 'iw': 0,
         \ 'iW': 0,
         \ 'iu': 0,
         \ 'ad': 0,
         \ 'ib': 1,
+        \ 'ab': 1,
+        \ 'iI': 0,
+        \ 'aI': 0,
+        \ 'ii': 0,
+        \ 'ia': 0,
         \ }
 
   " expand-regionモードの設定。,eでモードに入り、eで拡張、s, Eで縮小できる
@@ -167,6 +177,9 @@ hook_source = '''
 repo = 'tommcdo/vim-exchange'
 on_map = [['n', 'cx'], ['x', 'X']]
 
+[[plugins]]
+repo = 'kana/vim-textobj-indent'
+
 # }}}1  CtrlP {{{1
 [[plugins]]
 repo = 'ctrlpvim/ctrlp.vim'
@@ -215,7 +228,6 @@ hook_add = '''
   nnoremap <Leader>/ :<C-u>CtrlPLine %<CR>
   nnoremap <Leader>u :<C-u>CtrlPMRUFiles<CR>
   nnoremap <Leader>ff :<C-u>CtrlP<CR>
-  nnoremap <Leader>fu :<C-u>CtrlPMRUFiles<CR>
   nnoremap <Leader>fq :<C-u>CtrlPQuickfix<CR>
   nnoremap <Leader>fr :<C-u>CtrlP ~\_vim\dein\repos<CR>
 '''
@@ -266,6 +278,13 @@ on_cmd = 'CtrlPLocate'
 hook_add = '''
   nnoremap <Leader>e :<C-u>CtrlPLocate<CR>
   let g:ctrlp_locate_command_definition = 'es -n 100 {query}'
+'''
+
+[[plugins]]
+repo = 'tacahiroy/ctrlp-funky'
+on_cmd = 'CtrlPFunky'
+hook_add = '''
+  nnoremap <Leader>fu :<C-u>CtrlPFunky<CR>
 '''
 
 # }}}1  Language, Format, Filetype {{{1
@@ -394,6 +413,14 @@ frozen = 1
 repo = 'cespare/vim-toml'
 hook_add = 'autocmd vimrc BufNewFile,BufRead *.tml,*.toml setfiletype toml'
 
+[[plugins]]
+repo = 'osyo-manga/vim-precious'
+depends = 'context_filetype.vim'
+on_ft = ['markdown', 'toml']
+
+[[plugins]]
+repo = 'Shougo/context_filetype.vim'
+
 # }}}1  tags {{{1
 [[plugins]]
 repo = 'hokorobi/vim-tagsgen'
@@ -432,7 +459,7 @@ hook_add = '''
 
 [[plugins]]
 repo = 'osyo-manga/vim-anzu'
-on_map = '<Plug>(anzu-'
+on_map = '<Plug>'
 hook_add = '''
   " https://raw.githubusercontent.com/DeaR/dotfiles/master/.vimrc
   NXOmap <expr> n v:searchforward ? '<Plug>(anzu-n-with-echo)' : '<Plug>(anzu-N-with-echo)'
@@ -464,7 +491,7 @@ hook_source = 'source ~/vimfiles/rc/lexima.vim'
 
 [[plugins]]
 repo = 'machakann/vim-highlightedyank'
-on_map = '<Plug>(highlightedyank)'
+on_map = '<Plug>'
 hook_source = '''
   let g:highlightedyank_highlight_duration = 300
   highlight link HighlightedyankRegion Visual
@@ -476,7 +503,7 @@ hook_add = '''
 
 [[plugins]]
 repo = 'kana/vim-operator-replace'
-on_map = '<Plug>(operator-replace)'
+on_map = '<Plug>(operator-replace'
 depends = 'vim-operator-user'
 hook_add = 'vmap p <Plug>(operator-replace)'
 
@@ -552,7 +579,7 @@ hook_source = """
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
 on_cmd = 'EasyAlign'
-on_map = '<Plug>(EasyAlign)'
+on_map = '<Plug>(EasyAlign'
 depends = ['vim-repeat', 'visualrepeat']
 hook_add = 'vmap <Enter> <Plug>(EasyAlign)'
 
@@ -563,7 +590,7 @@ hook_add = 'nnoremap U :<C-u>MundoToggle<CR>'
 
 [[plugins]]
 repo = 'osyo-manga/vim-jplus'
-on_map = '<Plug>(jplus'
+on_map = '<Plug>'
 hook_add = '''
   NVmap J <Plug>(jplus-input)<CR>
   NVmap <Leader>J <Plug>(jplus-input)
@@ -571,7 +598,7 @@ hook_add = '''
 
 [[plugins]]
 repo = 'LeafCage/yankround.vim'
-on_map = '<Plug>(yankround-'
+on_map = '<Plug>'
 on_cmd = 'CtrlPYankRound'
 hook_add = '''
   xmap p <Plug>(yankround-p)
@@ -617,7 +644,8 @@ on_cmd = 'ExpandSerialNumber'
 [[plugins]]
 repo = 'hokorobi/indent-detector.vim'
 hook_add = '''
-  autocmd vimrc BufEnter *.{css,go,html,js,js9,json,pu,py,rb,vim} :Indentdetector
+  " FIXME: Vim 起動後、最初に開いたファイルが該当する場合、二回実行される
+  autocmd vimrc BufReadPost,FileReadPost *.{css,go,html,js,js9,json,pu,py,rb,vim} :Indentdetector
   autocmd vimrc BufWritePost *.{css,go,html,js,js9,json,pu,py,rb,vim} :Indentdetector 0 2
 '''
 
@@ -627,7 +655,7 @@ on_map = [['v', '.']]
 
 [[plugins]]
 repo = 'machakann/vim-swap'
-on_map = '<Plug>(swap-'
+on_map = '<Plug>'
 hook_add = 'nmap gs <Plug>(swap-interactive)'
 hook_source = 'let g:swap_no_default_key_mappings = 1'
 
@@ -639,7 +667,7 @@ on_map = ['x', 'I', 'gI', 'A']
 [[plugins]]
 repo = 'easymotion/vim-easymotion'
 depends = 'vim-repeat'
-on_map = '<Plug>(easymotion-'
+on_map = '<Plug>'
 hook_add = '''
   "map g/ <Plug>(easymotion-sn)
 
@@ -650,8 +678,6 @@ hook_add = '''
   NXOmap T <Plug>(easymotion-Tl)
 
   let g:EasyMotion_move_highlight = 0
-  nmap <Leader>; <Plug>(easymotion-next)
-  nmap <Leader>, <Plug>(easymotion-prev)
   call submode#enter_with('emn', 'nv', 'r', '<Leader>;', '<Plug>(easymotion-next)')
   call submode#enter_with('emn', 'nv', 'r', '<Leader>,', '<Plug>(easymotion-prev)')
   call submode#map('emn', 'nv', 'r', ';', '<Plug>(easymotion-next)')
@@ -700,7 +726,7 @@ hook_source = '''
 
 [[plugins]]
 repo = 'haya14busa/vim-asterisk'
-on_map = '<Plug>(asterisk-'
+on_map = '<Plug>'
 # hook_add 内で使うので勝手に depends
 depends = 'vim-anzu'
 hook_add = '''
@@ -784,17 +810,7 @@ hook_add = '''
 repo = 'mhinz/vim-sayonara'
 on_cmd = 'Sayonara'
 hook_add = '''
-  function! Sayonara_wrap()
-    Sayonara!
-    if bufnr("$") != bufnr("^") || bufname("%") != ''
-      return
-    endif
-    while winnr("$") != 1
-      wincmd c
-    endwhile
-  endfunction
-
-  noremap <silent> qq :<C-u>call Sayonara_wrap()<CR>
+  noremap <silent> qq :Sayonara!<CR>
 '''
 
 [[plugins]]
@@ -922,7 +938,7 @@ repo = 'kana/vim-operator-user'
 [[plugins]]
 repo = 'lambdalisue/vim-gista'
 on_cmd = 'Gista'
-on_map = '<Plug>(gista-'
+on_map = '<Plug>'
 depends = 'open-browser.vim'
 hook_add = '''
   let g:gista#client#default_username = 'hokorobi'
@@ -932,7 +948,7 @@ hook_add = '''
 [[plugins]]
 repo = 'lambdalisue/vim-gita'
 on_cmd = 'Gita'
-on_map = '<Plug>(gita-'
+on_map = '<Plug>'
 hook_add = '''
   call extend(g:vimrc_altercmd_dic, {'git[a]': 'Gita'})
   nnoremap <silent> <Space>gs :<C-u>Gita status<CR>
@@ -1041,7 +1057,7 @@ hook_add = '''
   call submode#map('diff', 'n', '', 'j', ']c')
   call submode#map('diff', 'n', '', 'k', '[c')
 
-  " Visual モード時のインクリメンタル、デクリメンタル
+  " Visual モード時のインクリメント、デクリメント
   " http://vim-jp.org/blog/2015/06/30/visual-ctrl-a-ctrl-x.html
   if has('patch-7.4.754')
     call submode#enter_with('vinc', 'v', '', '<Leader>a', '<c-a>gv')
@@ -1054,30 +1070,13 @@ hook_add = '''
 [[plugins]]
 repo = 'ludovicchabant/vim-lawrencium'
 hook_add = '''
-  let g:lawrencium_debug = 1
-
-  " 日本語のフォルダだと Hgcommit などがエラーになる。Windows で utf-8 はやはり厳しい
-
-  " msys2 の env を使う想定
-  let g:lawrencium_hg_executable='env HGENCODING=utf-8 hg'
-
-  " コマンドで日本語を入力すると cp932 になるので utf-8 にしてコマンドに渡す
-  function! Hgwrap(...) abort
-    let s = 'Hg'
-    for w in a:000
-      let s = s . ' '
-      let splitted = split(w, '\zs')
-      for c in splitted
-        let s = s . iconv(c, 'cp932', 'utf-8')
-      endfor
-    endfor
-    execute s
-  endfunction
-  command! -nargs=* Hgwrap call Hgwrap(<f-args>)
-
-  call extend(g:vimrc_altercmd_dic, {'hg': 'Hgwrap'})
   call extend(g:vimrc_altercmd_dic, {'hgci[m]': 'Hgcommit'})
-  call extend(g:vimrc_altercmd_dic, {'hgn[ow]': 'Hgwrap now'})
+  call extend(g:vimrc_altercmd_dic, {'hgs[tatus]': 'Hgstatus'})
+  call extend(g:vimrc_altercmd_dic, {'hg': 'Hg'})
 '''
+
+[[plugins]]
+repo = 'vim-jp/vital.vim'
+on_cmd = 'Vitalize'
 
 # }}}
