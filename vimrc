@@ -55,7 +55,7 @@ command! ToSjis :set fileencoding=cp932
 command! -count -nargs=0 RengBangVertical
       \ let snf=&nf|set nf-=octal|let cl = col('.')|for nc in range(1, <count>?<count>-line('.'):1)|execute 'normal! j' . nc . '<C-a>'|call cursor('.', cl)|endfor|let &nf=snf|unlet cl snf
 
-" / と :s///g をトグル {{{
+" / と :s///g をトグル
 " https://raw.githubusercontent.com/cohama/.vim/master/.vimrc
 cnoremap <expr> <C-t> vimrc#ToggleSubstituteSearch(getcmdtype(), getcmdline())
 
@@ -69,9 +69,6 @@ command! -complete=mapping -nargs=*
       \ NXmap
       \ nmap <args>| xmap <args>
 command! -complete=mapping -nargs=*
-      \ NSmap
-      \ nmap <args>| smap <args>
-command! -complete=mapping -nargs=*
       \ NOmap
       \ nmap <args>| omap <args>
 command! -complete=mapping -nargs=*
@@ -81,14 +78,8 @@ command! -complete=mapping -nargs=*
       \ XOmap
       \ xmap <args>| omap <args>
 command! -complete=mapping -nargs=*
-      \ SOmap
-      \ smap <args>| omap <args>
-command! -complete=mapping -nargs=*
       \ NXOmap
       \ nmap <args>| xmap <args>| omap <args>
-command! -complete=mapping -nargs=*
-      \ NSOmap
-      \ nmap <args>| smap <args>| omap <args>
 
 " noremap
 command! -complete=mapping -nargs=*
@@ -101,9 +92,6 @@ command! -complete=mapping -nargs=*
       \ NXnoremap
       \ nnoremap <args>| xnoremap <args>
 command! -complete=mapping -nargs=*
-      \ NSnoremap
-      \ nnoremap <args>| snoremap <args>
-command! -complete=mapping -nargs=*
       \ NOnoremap
       \ nnoremap <args>| onoremap <args>
 command! -complete=mapping -nargs=*
@@ -113,14 +101,8 @@ command! -complete=mapping -nargs=*
       \ XOnoremap
       \ xnoremap <args>| onoremap <args>
 command! -complete=mapping -nargs=*
-      \ SOnoremap
-      \ snoremap <args>| onoremap <args>
-command! -complete=mapping -nargs=*
       \ NXOnoremap
       \ nnoremap <args>| xnoremap <args>| onoremap <args>
-command! -complete=mapping -nargs=*
-      \ NSOnoremap
-      \ nnoremap <args>| snoremap <args>| onoremap <args>
 "}}}
 
 " My retab
@@ -161,7 +143,7 @@ endif
 command! -nargs=* -bang SortLine call vimrc#sortline(<q-bang>, <f-args>)
 
 " カーソル下の単語を vimgrep
-command! -nargs=1 VimGrepCurrent vimgrep <args> % | cw
+command! -nargs=1 VimGrepCurrent vimgrep <args> % | cwindow
 nnoremap <expr> <Leader>* ':<C-u>VimGrepCurrent ' . expand('<cword>') . '<CR>'
 
 " jq
@@ -178,8 +160,9 @@ call extend(g:vimrc_altercmd_dic, {'dt': 'windo diffthis'})
 " pt 用
 if Vimrc_executable('pt')
   command! -nargs=? GrepWrap call vimrc#GrepWrap(<f-args>)
-  call extend(g:vimrc_altercmd_dic, {'gw': 'GrepWrap'})
-  call extend(g:vimrc_altercmd_dic, {'grepw[rap]': 'GrepWrap'})
+  call extend(g:vimrc_altercmd_dic, {
+        \ 'gw': 'GrepWrap',
+        \ 'grepw[rap]': 'GrepWrap'})
 endif
 
 " }}}1 Option {{{1
@@ -255,7 +238,7 @@ set sessionoptions-=options
 set nospell
 
 " 数値を八進数として解釈しない
-set nrformats-=octal
+set nrformats-=octal nrformats+=alpha
 
 " 矩形選択で長さの足りない行はスペース扱い
 set virtualedit=block
@@ -296,9 +279,6 @@ set showtabline=2
 
 " コマンド行の高さ
 set cmdheight=2
-
-" don't syntax highlight long lines
-set synmaxcol=256
 
 " 長い行を折り返して表示 (nowrap:折り返さない)
 set wrap
@@ -368,6 +348,8 @@ set pumheight=10
 set completeopt+=menuone completeopt-=preview completeopt-=menu
 " コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
 set wildmenu
+" TODO: wildignore を設定する？　ついでに ctrlp custom ignore も？
+" 参考: https://github.com/DeaR/dotfiles/blob/master/.vimrc
 
 " }}}2 indent {{{2
 
@@ -396,6 +378,9 @@ set ignorecase
 set smartcase
 " 検索時にファイルの最後まで行ったら最初に戻る (nowrapscan:戻らない)
 set wrapscan
+
+" タグファイル内検索は大文字小文字を区別する
+set tagcase=match
 
 " }}}2 grep {{{2
 
@@ -463,6 +448,14 @@ let g:loaded_netrwFileHandlers = 1
 set runtimepath+=$HOME/_vim/dein/repos/github.com/Shougo/dein.vim
 let s:vimrcs = []
 let s:toml = expand('~/vimfiles/rc/plugins.tml')
+let s:ctrlp_toml = expand('~/vimfiles/rc/ctrlp.tml')
+let s:denite_toml = expand('~/vimfiles/rc/denite.tml')
+if has('python3')
+  let s:candidate_toml = s:denite_toml
+else
+  let s:candidate_toml = s:ctrlp_toml
+endif
+
 call add(s:vimrcs, s:toml)
 call add(s:vimrcs, expand('$VIM/gvimrc_local.vim'))
 call add(s:vimrcs, expand('~/vimfiles/vimrc'))
@@ -473,14 +466,16 @@ let g:dein#install_log_filename = expand('~/_vim/dein/dein.log')
 if dein#load_state(s:path)
   call dein#begin(s:path, s:vimrcs)
   call dein#load_toml(s:toml)
+  call dein#load_toml(s:candidate_toml)
   call dein#end()
   call dein#save_state()
 endif
 
-call extend(g:vimrc_altercmd_dic, {'du': 'call dein#update()'})
-call extend(g:vimrc_altercmd_dic, {'di': 'call dein#install()'})
-call extend(g:vimrc_altercmd_dic, {'dl': 'view ' . expand('~/_vim/dein/dein.log')})
-call extend(g:vimrc_altercmd_dic, {'dr': 'call dein#recache_runtimepath()'})
+call extend(g:vimrc_altercmd_dic, {
+      \ 'du': 'call dein#update()',
+      \ 'di': 'call dein#install()',
+      \ 'dl': 'view ' . expand('~/_vim/dein/dein.log'),
+      \ 'dr': 'call dein#recache_runtimepath()'})
 
 filetype plugin indent on
 
@@ -616,8 +611,6 @@ cnoreabbrev <expr>b getcmdtype()==':' && getcmdline()=~'^b' ? 'ls<CR>:b' : 'b'
 
 " 新規作成
 noremap <C-n> :<C-u>enew<CR>
-
-nnoremap <silent> <Leader><BS>  :<C-u>bdelete<CR>
 
 " vimrc 開く、読み込み
 command! Ev edit $MYVIMRC
@@ -782,12 +775,11 @@ nnoremap <expr> i vimrc#IndentWithI()
 " "レジスタから挿入
 ICnoremap <C-R> <C-R>"
 
-" カーソル下の文字が数字だったらインクリメント・デクリメント、違ったら Switch
-" FIXME: ビジュアルモードとノーマルモードの動作が逆になる
-noremap <silent> + :Myincrement<CR>
-noremap <silent> - :Mydecrement<CR>
-command! -nargs=0 -range Myincrement call vimrc#Mycrement('+', <line1>, <line2>)
-command! -nargs=0 -range Mydecrement call vimrc#Mycrement('-', <line1>, <line2>)
+" Switch が効かなかったら Speeddating
+nnoremap <silent> + :if !switch#Switch() <bar>
+      \ call speeddating#increment(v:count1) <bar> endif<cr>
+nnoremap <silent> - :if !switch#Switch({'reverse': 1}) <bar>
+      \ call speeddating#increment(-v:count1) <bar> endif<cr>
 
 " }}}2 Search {{{2
 

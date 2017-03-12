@@ -1,0 +1,115 @@
+#       CtrlP {{{1
+[[plugins]]
+repo = 'ctrlpvim/ctrlp.vim'
+hook_add = '''
+  let g:ctrlp_map = '<Nop>'
+
+  " TODO: バッファをフルパスで検索したい。~/ が展開されていない。
+
+  " https://github.com/mattn/files
+  if Vimrc_executable('files')
+    let g:ctrlp_user_command = 'files -A %s'
+  endif
+
+  " 候補の残りにあわせてリサイズはしない
+  let g:ctrlp_match_window = 'bottom,order:ttb,min:20,max:20'
+
+  " Guess vcs root dir
+  let g:ctrlp_working_path_mode = 'ra'
+
+  " Open new file in current window
+  let g:ctrlp_open_new_file = 'r'
+
+  " cache files directory
+  let g:ctrlp_cache_dir = $HOME . '/_vim/.ctrlp'
+
+  " scan for dotfiles, dotdirectories
+  let g:ctrlp_show_hidden = 1
+
+  " enable multi-byte input
+  let g:ctrlp_key_loop = 1
+
+  let g:ctrlp_switch_buffer = 0
+
+  let g:ctrlp_regexp = 0
+
+  " mapping
+  let g:ctrlp_prompt_mappings = {
+        \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>', '<m-m>'],
+        \ 'PrtSelectMove("j")'  : ['<c-j>', '<down>', '<m-j>'],
+        \ 'PrtSelectMove("k")'  : ['<c-k>', '<up>', '<m-k>'],
+        \ 'PrtBS()'             : ['<bs>', '<c-]>', '<c-h>'],
+        \ 'PrtCurLeft()'        : ['<c-b>', '<left>', '<c-^>'],
+        \ 'ToggleType(-1)'      : ['<c-down>'],
+        \ 'PrtCurRight()'       : ['<c-f>', '<c-l>', '<right>'],
+        \ 'ToggleType(1)'       : ['<c-up>'],
+        \ 'PrtInsert("c")'      : ['<c-v>', '<MiddleMouse>', '<insert>'],
+        \ 'PrtDelete()'         : ['<c-d>', '<del>'],
+        \ 'PrtDeleteWord()'     : ['<c-q>'],
+        \ 'ToggleByFname()'     : ['<F8>'],
+        \ 'AcceptSelection("v")': ['<RightMouse>'],
+        \ 'PrtDeleteEnt()':       ['<F7>', '<c-w>'],
+        \ }
+
+  nnoremap <Leader>b :<C-u>CtrlPBuffer<CR>
+  nnoremap <Leader>/ :<C-u>CtrlPLine %<CR>
+  nnoremap <Leader>u :<C-u>CtrlPMRUFiles<CR>
+  nnoremap <Leader>ff :<C-u>CtrlP<CR>
+  nnoremap <Leader>fq :<C-u>CtrlPQuickfix<CR>
+  nnoremap <Leader>fr :<C-u>CtrlP ~\_vim\dein\repos<CR>
+
+'''
+
+[[plugins]]
+repo = 'hokorobi/ctrlp-sessions'
+on_cmd = ['CtrlPSession', 'MkS']
+hook_add = '''
+  let g:ctrlp_session_dir = expand('~/vimfiles/sessions')
+  nnoremap <Leader>fs :<C-u>CtrlPSessions<CR>
+
+  call extend(g:vimrc_altercmd_dic, {'ss': 'MkS'})
+'''
+
+[[plugins]]
+repo = 'mattn/ctrlp-launcher'
+on_cmd = 'CtrlPLauncher'
+hook_add = '''
+  let g:ctrlp_launcher_file = expand('~/vimfiles/.ctrlp-launcher')
+  nnoremap <Leader>fm :<C-u>CtrlPLauncher<CR>
+'''
+
+[[plugins]]
+repo = 'zeero/vim-ctrlp-help'
+on_cmd = 'CtrlPHelp'
+hook_add = '''
+  nnoremap <Leader>fh :<C-u>CtrlPHelp<CR>
+
+  call extend(g:vimrc_altercmd_dic, {'hh': 'CtrlPHelp'})
+'''
+
+[[plugins]]
+repo = 'ivalkeen/vim-ctrlp-tjump'
+on_cmd = ['CtrlPtjump', 'CtrlPtjumpVisual']
+hook_add = '''
+  let g:ctrlp_tjump_only_silent = 1
+  nnoremap <c-]> :CtrlPtjump<cr>
+  vnoremap <c-]> :CtrlPtjumpVisual<cr>
+'''
+
+[[plugins]]
+repo = 'ompugao/ctrlp-locate'
+on_cmd = 'CtrlPLocate'
+hook_add = '''
+  nnoremap <Leader>e :<C-u>CtrlPLocate<CR>
+  let g:ctrlp_locate_command_definition = 'es -n 100 {query}'
+'''
+
+[[plugins]]
+repo = 'tacahiroy/ctrlp-funky'
+on_cmd = 'CtrlPFunky'
+hook_add = '''
+  nnoremap <Leader>fu :<C-u>CtrlPFunky<CR>
+'''
+
+# }}}1
+

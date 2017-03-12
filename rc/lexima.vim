@@ -21,7 +21,7 @@ call lexima#add_rule({
       \   'input': '<Esc>diwo',
       \})
 
-for c in [',', ':']
+for c in [',']
   " 後にスペースを入れる
   call lexima#add_rule({
         \   'at'   : '\%#',
@@ -41,24 +41,6 @@ for c in [',', ':']
         \   'input': '<BS><BS>',
         \})
 endfor
-
-" FQDN っぽい場合は : 直後にスペースを入れない
-call lexima#add_rule({
-      \   'at'   : '\(\w\+\.\)\+\w\+\%#',
-      \   'char' : ':',
-      \})
-
-" 時刻や日付っぽい場合は : 直後にスペースを入れない
-call lexima#add_rule({
-     \   'at'   : '\d\+\%#',
-     \   'char' : ':',
-      \})
-
-" 行頭では : 直後にスペースを入れない
-call lexima#add_rule({
-      \   'at'   : '^\s*\%#',
-      \   'char' : ':',
-      \})
 
 " =の前後にスペースを入れる
 call lexima#add_rule({

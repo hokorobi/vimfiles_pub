@@ -1,6 +1,5 @@
 scriptencoding utf-8
 
-" function {{{1
 " ウィンドウが複数開いていたら新しいタブで開く
 " 外部からファイルを渡して呼び出すことはできないのか？
 function! vimrc#YetAnotherEdit(file)
@@ -12,7 +11,7 @@ function! vimrc#YetAnotherEdit(file)
 endfunction
 
 
-" / と :s///g をトグル {{{
+" / と :s///g をトグル
 function! vimrc#ToggleSubstituteSearch(type, line)
   if a:type ==# '/' || a:type ==# '?'
     let range = s:GetOnetime('s:range', '%')
@@ -35,7 +34,6 @@ function! s:GetOnetime(varname, defaultValue)
   execute 'unlet ' . a:varname
   return varValue
 endfunction
-" }}}
 
 
 " My retab
@@ -191,33 +189,6 @@ function! vimrc#IndentWithI()
   endif
 endfunction
 
-" カーソル下の文字が数字だったらインクリメント・デクリメント、違ったら Switch
-function! vimrc#Mycrement(type, line1, line2) abort
-  let cmd = a:type ==# '-' ? "\<C-a>" : "\<C-x>"
-
-  if a:line1 != a:line2
-    let cmd = 'g' . cmd
-    let posStart = getpos("'<")
-    let posEnd = getpos("'>")
-    call cursor(a:line1, posStart[2])
-    execute "normal! \<C-v>"
-    call cursor(a:line2, posEnd[2])
-    execute 'normal! ' cmd
-    return
-  endif
-
-  if match(matchstr(getline('.'), '.', col('.')-1), '[0-9]') ==# '0'
-    execute 'normal! ' cmd
-    return
-  endif
-
-  if !dein#check_install(['switch.vim'])
-    execute a:type ==# '+' ? 'Switch' : 'SwitchReverse'
-    return
-  endif
-endfunction
-
-
 " split and go
 function! vimrc#SplitAndGo(cmd)
   execute a:cmd
@@ -245,4 +216,26 @@ function! vimrc#ToggleFullScreen()
     let g:vimrc_fullscreen = 1
   endif
 endfunction
-" }}}1
+
+
+" kana/vim-gf-user
+" http://d.hatena.ne.jp/thinca/20140324/1395590910
+" Windows foo.c:23 などでも gf で foo.c を開けるようにする
+function! vimrc#GfFile()
+  let path = expand('<cfile>')
+  let line = 0
+  if path =~# ':\d\+:\?$'
+    let line = matchstr(path, '\d\+:\?$')
+    let path = matchstr(path, '.*\ze:\d\+:\?$')
+  endif
+  let path = findfile(path, getcwd() . ';')  " 追加
+  if !filereadable(path)
+    return 0
+  endif
+  return {
+        \   'path': path,
+        \   'line': line,
+        \   'col':  0,
+        \ }
+endfunction
+

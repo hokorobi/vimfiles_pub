@@ -180,113 +180,6 @@ on_map = [['n', 'cx'], ['x', 'X']]
 [[plugins]]
 repo = 'kana/vim-textobj-indent'
 
-# }}}1  CtrlP {{{1
-[[plugins]]
-repo = 'ctrlpvim/ctrlp.vim'
-hook_add = '''
-  let g:ctrlp_map = '<Nop>'
-
-  " TODO: バッファをフルパスで検索したい。~/ が展開されていない。
-
-  " https://github.com/mattn/files
-  if Vimrc_executable('files')
-    let g:ctrlp_user_command = 'files -A %s'
-  endif
-
-  " バッファの高さが、候補の最大値を超える場合、マーク後に絞込。その後文字列削除でマークの位置がずれる
-  " let g:ctrlp_match_window = 'bottom,order:btt,min:10,max:10,results:10'
-  " Guess vcs root dir
-  let g:ctrlp_working_path_mode = 'ra'
-  " Open new file in current window
-  let g:ctrlp_open_new_file = 'r'
-  " cache files directory
-  let g:ctrlp_cache_dir = $HOME . '/_vim/.ctrlp'
-  " scan for dotfiles, dotdirectories
-  let g:ctrlp_show_hidden = 1
-  " enable multi-byte input
-  let g:ctrlp_key_loop = 1
-  let g:ctrlp_switch_buffer = 0
-  let g:ctrlp_regexp = 0
-  " mapping
-  let g:ctrlp_prompt_mappings = {
-        \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>', '<m-m>'],
-        \ 'PrtSelectMove("j")'  : ['<c-j>', '<down>', '<m-j>'],
-        \ 'PrtSelectMove("k")'  : ['<c-k>', '<up>', '<m-k>'],
-        \ 'PrtBS()'             : ['<bs>', '<c-]>', '<c-h>'],
-        \ 'PrtCurLeft()'        : ['<c-b>', '<left>', '<c-^>'],
-        \ 'ToggleType(-1)'      : ['<c-down>'],
-        \ 'PrtCurRight()'       : ['<c-f>', '<c-l>', '<right>'],
-        \ 'ToggleType(1)'       : ['<c-up>'],
-        \ 'PrtInsert("c")'      : ['<c-v>', '<MiddleMouse>', '<insert>'],
-        \ 'PrtDelete()'         : ['<c-d>', '<del>'],
-        \ 'PrtDeleteWord()'     : ['<c-q>'],
-        \ 'ToggleByFname()'     : ['<F8>'],
-        \ 'AcceptSelection("v")': ['<RightMouse>'],
-        \ 'PrtDeleteEnt()':       ['<F7>', '<c-w>'],
-        \ }
-  nnoremap <Leader>b :<C-u>CtrlPBuffer<CR>
-  nnoremap <Leader>/ :<C-u>CtrlPLine %<CR>
-  nnoremap <Leader>u :<C-u>CtrlPMRUFiles<CR>
-  nnoremap <Leader>ff :<C-u>CtrlP<CR>
-  nnoremap <Leader>fq :<C-u>CtrlPQuickfix<CR>
-  nnoremap <Leader>fr :<C-u>CtrlP ~\_vim\dein\repos<CR>
-'''
-
-[[plugins]]
-repo = 'sgur/ctrlp-extensions.vim'
-on_cmd = 'CtrlPMenu'
-
-[[plugins]]
-repo = 'hokorobi/ctrlp-sessions'
-on_cmd = ['CtrlPSession', 'MkS']
-hook_add = '''
-  let g:ctrlp_session_dir = expand('~/vimfiles/sessions')
-  nnoremap <Leader>fs :<C-u>CtrlPSessions<CR>
-
-  call extend(g:vimrc_altercmd_dic, {'ss': 'MkS'})
-'''
-
-[[plugins]]
-repo = 'mattn/ctrlp-launcher'
-on_cmd = 'CtrlPLauncher'
-hook_add = '''
-  let g:ctrlp_launcher_file = expand('~/vimfiles/.ctrlp-launcher')
-  nnoremap <Leader>fm :<C-u>CtrlPLauncher<CR>
-'''
-
-[[plugins]]
-repo = 'zeero/vim-ctrlp-help'
-on_cmd = 'CtrlPHelp'
-hook_add = '''
-  nnoremap <Leader>fh :<C-u>CtrlPHelp<CR>
-
-  call extend(g:vimrc_altercmd_dic, {'hh': 'CtrlPHelp'})
-'''
-
-[[plugins]]
-repo = 'ivalkeen/vim-ctrlp-tjump'
-on_cmd = ['CtrlPtjump', 'CtrlPtjumpVisual']
-hook_add = '''
-  let g:ctrlp_tjump_only_silent = 1
-  nnoremap <c-]> :CtrlPtjump<cr>
-  vnoremap <c-]> :CtrlPtjumpVisual<cr>
-'''
-
-[[plugins]]
-repo = 'ompugao/ctrlp-locate'
-on_cmd = 'CtrlPLocate'
-hook_add = '''
-  nnoremap <Leader>e :<C-u>CtrlPLocate<CR>
-  let g:ctrlp_locate_command_definition = 'es -n 100 {query}'
-'''
-
-[[plugins]]
-repo = 'tacahiroy/ctrlp-funky'
-on_cmd = 'CtrlPFunky'
-hook_add = '''
-  nnoremap <Leader>fu :<C-u>CtrlPFunky<CR>
-'''
-
 # }}}1  Language, Format, Filetype {{{1
 [[plugins]]
 repo = 'tyru/caw.vim'
@@ -354,8 +247,9 @@ hook_source = '''
   endif
   let g:go_gocode_socket_type = 'tcp'
 
-  call extend(g:vimrc_altercmd_dic, {'godo[c]': 'GoDoc'})
-  call extend(g:vimrc_altercmd_dic, {'goru[n]': 'GoRun'})
+  call extend(g:vimrc_altercmd_dic, {
+        \ 'godo[c]': 'GoDoc',
+        \ 'goru[n]': 'GoRun'})
 
   " neocomplete
   let g:neocomplete#sources = get(g:, 'neocomplete#sources', {})
@@ -373,10 +267,7 @@ on_cmd = 'PrevimOpen'
 depends = 'open-browser.vim'
 
 [[plugins]]
-repo = 'rcmdnk/vim-markdown'
-
-[[plugins]]
-repo = 'nelstrom/vim-markdown-folding'
+repo = 'plasticboy/vim-markdown'
 
 # Vim
 [[plugins]]
@@ -452,6 +343,10 @@ hook_add = '''
         \   'myfenc': 'MyLightLineFenc'}}
 
   function! MyLightLineFenc() abort
+    if winwidth(0) < 70
+      return ''
+    endif
+
     let fenc = strlen(&fileencoding) ? &fileencoding : &encoding
     return fenc !=# 'utf-8' ? fenc : &bomb == 0 ? fenc . 'n' : fenc
   endfunction
@@ -462,8 +357,10 @@ repo = 'osyo-manga/vim-anzu'
 on_map = '<Plug>'
 hook_add = '''
   " https://raw.githubusercontent.com/DeaR/dotfiles/master/.vimrc
-  NXOmap <expr> n v:searchforward ? '<Plug>(anzu-n-with-echo)' : '<Plug>(anzu-N-with-echo)'
-  NXOmap <expr> N v:searchforward ? '<Plug>(anzu-N-with-echo)' : '<Plug>(anzu-n-with-echo)'
+  XOmap <expr> n v:searchforward ? 'n' : 'N'
+  XOmap <expr> N v:searchforward ? 'N' : 'n'
+  nmap <expr> n v:searchforward ? '<Plug>(anzu-n-with-echo)' : '<Plug>(anzu-N-with-echo)'
+  nmap <expr> N v:searchforward ? '<Plug>(anzu-N-with-echo)' : '<Plug>(anzu-n-with-echo)'
 '''
 
 [[plugins]]
@@ -475,6 +372,10 @@ hook_add = '''
   " let g:bookmark_manage_per_buffer = 0
   let g:bookmark_sign = '>>'
   let g:bookmark_annotation_sign = '##'
+  " ctrlp ではファイル名を表示できないので従来の BookmarkShowAll を使用する
+  let g:bookmark_disable_ctrlp = 1
+  " ブックマークを開いたら候補のウィンドウは閉じる
+  let g:bookmark_auto_close = 1
 '''
 
 [[plugins]]
@@ -548,9 +449,9 @@ rtp = ''
 
 [[plugins]]
 repo = 'AndrewRadev/switch.vim'
-on_cmd = 'Switch'
+on_func = 'switch#'
 # 設定に ''' が入っているので """ """ でくくらないと駄目。あと vimrc から移す際に \\ を増やした。
-hook_source = """
+hook_add = """
   " デフォルトのキーマッピングを無効化
   let g:switch_mapping = ''
 
@@ -577,6 +478,10 @@ hook_source = """
 """
 
 [[plugins]]
+repo = 'tpope/vim-speeddating'
+on_func = 'speeddating#'
+
+[[plugins]]
 repo = 'junegunn/vim-easy-align'
 on_cmd = 'EasyAlign'
 on_map = '<Plug>(EasyAlign'
@@ -585,7 +490,7 @@ hook_add = 'vmap <Enter> <Plug>(EasyAlign)'
 
 [[plugins]]
 repo = 'simnalamburt/vim-mundo'
-on_cmd = 'GundoToggle'
+on_cmd = 'MundoToggle'
 hook_add = 'nnoremap U :<C-u>MundoToggle<CR>'
 
 [[plugins]]
@@ -615,6 +520,7 @@ hook_add = '''
   let g:yankround_use_region_hl = 1
 '''
 
+# g<C-a> などは同行での連番はできないようなので、まだ有用
 [[plugins]]
 repo = 'deris/vim-rengbang'
 on_cmd = ['RengBang', 'RengBangUsePrev', 'RengBangConfirm']
@@ -667,7 +573,7 @@ on_map = ['x', 'I', 'gI', 'A']
 [[plugins]]
 repo = 'easymotion/vim-easymotion'
 depends = 'vim-repeat'
-on_map = '<Plug>'
+on_map = ['<Plug>', 'd', 'v']
 hook_add = '''
   "map g/ <Plug>(easymotion-sn)
 
@@ -828,8 +734,9 @@ hook_add = '''
   command! Lmap :Capture lmap
   command! Cmap :Capture cmap
 
-  call extend(g:vimrc_altercmd_dic, {'cap[ture]': 'Capture'})
-  call extend(g:vimrc_altercmd_dic, {'scriptn[ames]': 'Capture scriptnames'})
+  call extend(g:vimrc_altercmd_dic, {
+        \ 'cap[ture]': 'Capture',
+        \ 'scriptn[ames]': 'Capture scriptnames'})
 
   autocmd vimrc FileType capture nnoremap <buffer> qq :q<CR>
 '''
@@ -846,27 +753,8 @@ hook_add ='nnoremap <Leader>q :<C-u>call closesubwin#close_sub_window()<CR>'
 [[plugins]]
 repo = 'kana/vim-gf-user'
 on_map = ['n', 'gf']
-hook_add = '''
-  " http://d.hatena.ne.jp/thinca/20140324/1395590910
-  " Windows foo.c:23 などでも foo.c を開けるようにする
-  function! GfFile()
-    let path = expand('<cfile>')
-    let line = 0
-    if path =~# ':\d\+:\?$'
-      let line = matchstr(path, '\d\+:\?$')
-      let path = matchstr(path, '.*\ze:\d\+:\?$')
-    endif
-    let path = findfile(path, getcwd() . ';')  " 追加
-    if !filereadable(path)
-      return 0
-    endif
-    return {
-          \   'path': path,
-          \   'line': line,
-          \   'col':  0,
-          \ }
-  endfunction
-  autocmd vimrc User dein#source#vim-gf-user call gf#user#extend('GfFile', 1000)
+hook_source = '''
+  call gf#user#extend('vimrc#GfFile', 1000)
 '''
 
 [[plugins]]
@@ -879,11 +767,9 @@ hook_add = '''
 
 [[plugins]]
 repo = 'lambdalisue/vim-protocol'
-on_source = 'J6uil.vim'
-on_path = '^https\?://'
-hook_add = '''
-  let g:J6uil_align_message = 0
-'''
+# e https://hoge を一度読み込んでも plugin が読み込まれるまで。
+# autoload を読み込むのはもう一度実行したあとになるのでコメントアウト。
+# on_path = '^https\?://'
 
 # }}}1  Utility {{{1
 [[plugins]]
@@ -934,6 +820,16 @@ lazy = 1
 [[plugins]]
 repo = 'kana/vim-operator-user'
 
+[[plugins]]
+repo = 'vim-voom/VOoM'
+on_cmd ='Voom'
+hook_add = '''
+  call extend(g:vimrc_altercmd_dic, {
+        \ 'voo[m]': 'Voom rest',
+        \  'out[line]': 'Voom rest'})
+  autocmd vimrc FileType voomtree nnoremap <buffer> qq :VoomQuitAll<CR>
+'''
+
 # }}}1  Web Service {{{1
 [[plugins]]
 repo = 'lambdalisue/vim-gista'
@@ -946,26 +842,26 @@ hook_add = '''
 '''
 
 [[plugins]]
-repo = 'lambdalisue/vim-gita'
-on_cmd = 'Gita'
-on_map = '<Plug>'
+repo = 'lambdalisue/gina.vim'
+on_cmd = 'Gina'
 hook_add = '''
-  call extend(g:vimrc_altercmd_dic, {'git[a]': 'Gita'})
-  nnoremap <silent> <Space>gs :<C-u>Gita status<CR>
-  nnoremap <silent> <Space>gc :<C-u>Gita commit<CR>
-  nnoremap <silent> <Space>ga :<C-u>Gita commit --amend<CR>
-  nnoremap <silent> <Space>gd :<C-u>Gita diff<CR>
-  nnoremap <silent> <Space>gb :<C-u>Gita browse<CR>
-  nnoremap <silent> <Space>gl :<C-u>Gita blame<CR>
-  autocmd FileType gita-status nmap <buffer> cc <Plug>(gita-commit-open)
-  autocmd FileType gita-status nmap <buffer> cA <Plug>(gita-commit-open-amend)
+  call extend(g:vimrc_altercmd_dic, {'gin[a]': 'Gina'})
+  call extend(g:vimrc_altercmd_dic, {'git': 'Gina'})
+'''
+hook_source = '''
+  call gina#custom#command#alias('status', 'st')
+  call gina#custom#command#alias('branch', 'b')
+
+  call gina#custom#mapping#nmap('status', 'qq', ':quit<CR>')
+  call gina#custom#mapping#nmap('log', 'qq', ':quit<CR>')
+  call gina#custom#mapping#nmap('changes', 'qq', ':quit<CR>')
+  call gina#custom#mapping#nmap('branch', 'qq', ':quit<CR>')
 '''
 
 [[plugins]]
 repo = 'mattn/qiita-vim'
 on_cmd = 'Qiita'
 depends = 'webapi-vim'
-hook_source = 'source ~/_vim/_vimrc_qiita.local'
 
 [[plugins]]
 repo = 'basyura/J6uil.vim'
@@ -976,7 +872,7 @@ hook_source = '''
 
   " ImageMagick の convert でアイコン作成
   " ImageMagick-6.9.0-0-Q16-x64-static だと動いたが、
-  " ImageMagick-6.9.0-0-Q16-x64-dll だと動かなかった。ワケガワカラナイヨ
+  " ImageMagick-6.9.0-0-Q16-x64-dll だと動かなかった。
   " コマンドプロンプトでは変わらず実行できるのに……
   " 環境変数を Vim で変えることもできる
   " let $PATH = "C:/path/to/ImageMagick;" . $PATH
@@ -985,6 +881,8 @@ hook_source = '''
   let g:J6uil_empty_separator = 1
   let g:J6uil_config_dir = expand('~/_vim/.J6uil')
   let g:J6uil_no_default_keymappings = 1
+  " 名前の長さに併せて発言を整列しない。人によって位置がずれるのが嫌
+  let g:J6uil_align_message = 0
 
   " メンバー表示がされない、ウィンドウサイズがおかしい、バッファ名もずれている？
   " let g:J6uil_multi_window = 1
@@ -1005,8 +903,7 @@ hook_source = '''
   endfunction
   autocmd vimrc FileType J6uil_say call s:J6uil_say_settings()
   function! s:J6uil_say_settings()
-    nnoremap <silent> <buffer> <esc> :bd!<CR>
-    nnoremap <silent> <buffer> qq :bd!<CR>
+    nnoremap <silent> <buffer> qq :quit<CR>
     inoremap <silent> <buffer> <C-CR> <ESC>:call <SID>post_message()<CR>
   endfunction
 '''
@@ -1065,14 +962,6 @@ hook_add = '''
     call submode#map('vinc', 'v', '', 'a', '<c-a>gv')
     call submode#map('vinc', 'v', '', 'x', '<c-x>gv')
   endif
-'''
-
-[[plugins]]
-repo = 'ludovicchabant/vim-lawrencium'
-hook_add = '''
-  call extend(g:vimrc_altercmd_dic, {'hgci[m]': 'Hgcommit'})
-  call extend(g:vimrc_altercmd_dic, {'hgs[tatus]': 'Hgstatus'})
-  call extend(g:vimrc_altercmd_dic, {'hg': 'Hg'})
 '''
 
 [[plugins]]

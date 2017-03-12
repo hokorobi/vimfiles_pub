@@ -2,13 +2,6 @@ scriptencoding utf-8
 
 setlocal shiftwidth=2 tabstop=2 expandtab
 
-" 変数の場合は : の後にスペースを入れない
-call lexima#add_rule({
-      \   'at'      : '\s\+[gbwtslv]\%#',
-      \   'char'    : ':',
-      \   'filetype': ['vim'],
-      \})
-
 " set 系コマンドでは = の間にスペースを入れない
 call lexima#add_rule({
       \   'at'      : '^set.*\%#',
