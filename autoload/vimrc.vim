@@ -217,8 +217,17 @@ function! vimrc#ToggleFullScreen()
   endif
 endfunction
 
+function! vimrc#BetterBdelete() abort
+  if has_key(get(g:, 'sayonara_filetypes', {}), &filetype)
+    execute g:sayonara_filetypes[&filetype]
+  else
+    bdelete
+  endif
+endfunction
 
-" kana/vim-gf-user
+" plugin {{{1
+
+" gf-user {{{2
 " http://d.hatena.ne.jp/thinca/20140324/1395590910
 " Windows foo.c:23 などでも gf で foo.c を開けるようにする
 function! vimrc#GfFile()
@@ -238,4 +247,29 @@ function! vimrc#GfFile()
         \   'col':  0,
         \ }
 endfunction
+
+" }}}2 template {{{2
+function! vimrc#EditHowmNew(dir) abort
+  let dir = a:dir.strftime('/%Y/%m')
+  if isdirectory(dir) == 0
+    call mkdir(dir, 'p')
+  endif
+  let file = strftime('/%Y%m%d%H%M%S.howm')
+  execute 'edit '.dir.file
+  TemplateLoad
+  " 行末尾追加でインサートモードへ
+  startinsert!
+endfunction
+
+" }}}2 Denite {{{2
+
+" 2017-03-30 現在の Denite では Windows で grep にディレクトリを渡すとエラーになる場合があるので cd する
+function! vimrc#DeniteGrepHowm() abort
+  execute 'cd '.g:howm_dir
+  Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s
+endfunction
+
+" }}}2
+
+" }}}1
 

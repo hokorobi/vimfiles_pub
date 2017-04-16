@@ -7,10 +7,14 @@ hook_add = '''
   nnoremap <Leader>ff :DeniteBufferDir -cursor-wrap file_rec<CR>
   nnoremap <Leader>/ :Denite -cursor-wrap line<CR>
 
+  " howm の grep
+  if exists('g:howm_dir') && isdirectory(g:howm_dir)
+    nnoremap <Leader>,, :call vimrc#DeniteGrepHowm()<CR>
+  endif
+
   call extend(g:vimrc_altercmd_dic, {'den[ite]': 'Denite'})
 '''
 hook_source = '''
-  call denite#custom#var('file_rec', 'command', ['files', '-A'])
   call denite#custom#map('insert', "\<C-j>", '<denite:move_to_next_line>', 'noremap')
   call denite#custom#map('insert', "\<C-k>", '<denite:move_to_previous_line>', 'noremap')
   call denite#custom#map('insert', ';', '<denite:enter_mode:normal>', 'noremap')
@@ -21,7 +25,7 @@ hook_source = '''
   call denite#custom#var('grep', 'separator', [])
   call denite#custom#var('grep', 'default_opts', ['--nogroup', '--nocolor', '--column', '-S'])
 
-  " 体感的に大差ない
+  " 体感的に files と大差ないが files だと音楽の再生が途切れる。I/Oを使い切れるということかも。
   call denite#custom#var('file_rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '-g:', ''])
 '''
 

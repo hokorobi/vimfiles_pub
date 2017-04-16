@@ -80,6 +80,9 @@ command! -complete=mapping -nargs=*
 command! -complete=mapping -nargs=*
       \ NXOmap
       \ nmap <args>| xmap <args>| omap <args>
+command! -complete=mapping -nargs=*
+      \ NXImap
+      \ nmap <args>| xmap <args>| imap <args>
 
 " noremap
 command! -complete=mapping -nargs=*
@@ -578,7 +581,7 @@ nnoremap <expr> gp '`['.strpart(getregtype(),0,1).'`]'
 " if のある行などでも発動するので誤爆が多すぎる
 " nmap o A<CR>
 
-" buffer {{{2
+" Buffer {{{2
 
 " 直前に閉じたファイルを開き直す
 " 実際には、以前開いていたバッファを開くみたい
@@ -645,7 +648,7 @@ command! -count=1 -nargs=1 SplitAndGo call vimrc#SplitAndGo(<q-args>)
 " http://vim.g.hatena.ne.jp/ka-nacht/20090119/1232347709
 nnoremap <silent> [toggle]q :<C-u>call vimrc#toggle_quickfix_window()<CR>
 
-" }}}2 Movement {{{2
+" }}}2 Motion {{{2
 
 " 表示上の行移動変更
 nnoremap j gj
@@ -741,9 +744,8 @@ nnoremap c "_c
 nnoremap C "_C
 
 " }}}2 Edit {{{2
-" BS
-noremap! <C-h> <BS>
-" nnoremap <C-h> X
+" lexima や neocomplete で C-h と BS を同じ挙動にする
+map! <C-h> <BS>
 
 " Del
 noremap! <C-d> <Del>
@@ -775,49 +777,15 @@ nnoremap <expr> i vimrc#IndentWithI()
 " "レジスタから挿入
 ICnoremap <C-R> <C-R>"
 
-" Switch が効かなかったら Speeddating
-nnoremap <silent> + :if !switch#Switch() <bar>
-      \ call speeddating#increment(v:count1) <bar> endif<cr>
-nnoremap <silent> - :if !switch#Switch({'reverse': 1}) <bar>
-      \ call speeddating#increment(-v:count1) <bar> endif<cr>
-
-" }}}2 Search {{{2
-
-" インクリメンタルサーチで /, ? を簡単に検索できるようにする
-" http://vim-jp.org/vim-users-jp/2009/10/22/Hack-91.html
-cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
-cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
-
-" インクリメンタルサーチの最中に次、前の候補に移動する
-" インクリメンタルサーチの最中にカーソル位置の単語を入れる <C-r><C-w> などが使
-" えなくなるので、とりあえずコメントアウト
-" cnoremap <expr> <C-s> getcmdtype() == '?' ? "<CR>/<Up>" : getcmdtype() == '/' ? "<CR>/<Up>" : "<C-s>"
-" cnoremap <expr> <C-r> getcmdtype() == '?' ? "<CR>?<Up>" : getcmdtype() == '/' ? "<CR>?<Up>" : "<C-r>"
-
-"migemo
-" / は incsearch.vim で使うのでコメントアウト
-" nnoremap / g/
-
-" clear hlsearch
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
-
-" 置換繰り返し。フラグも含む
-NXnoremap & :&&<CR>
-
-" 置換
-" nnoremap gs :<C-u>%s///gc<Left><Left><Left><Left>
-" vnoremap gs :s///gc<Left><Left><Left><Left>
-
-" lexima や neocomplete で C-h と BS を同じ挙動にする
-imap <C-h> <BS>
-cmap <C-h> <BS>
-
 " https://raw.githubusercontent.com/machakann/vimrc/3dc16ac1ae31197e35bebdf3f0fbf275117478bd/.vimrc
 " get into incert mode at a character before the end of line.
 " call hoge(piyo)
 "               # I want to insert here.
-" NOTE: 'nnoremap gA $i' is not good, because it is not repeatable.
+" 'nnoremap gA $i' is not good, because it is not repeatable.
 nnoremap gA A<C-g>U<Left>
+
+" 置換繰り返し。フラグも含む
+NXnoremap & :&&<CR>
 
 " http://qiita.com/itmammoth/items/312246b4b7688875d023
 " ハイライトしてから置換する
@@ -832,6 +800,16 @@ endfunction
 " コメント開始文字列を挿入せずに改行
 inoremap <S-CR> <CR><C-u>
 nnoremap <S-CR> o<C-u>
+
+" }}}2 Search {{{2
+
+" インクリメンタルサーチで /, ? を簡単に検索できるようにする
+" http://vim-jp.org/vim-users-jp/2009/10/22/Hack-91.html
+cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
+cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
+
+" clear hlsearch
+nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
 
 " incsearch 中に前後の候補へカーソル移動
 if has('patch-7.4.2268')

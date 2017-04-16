@@ -1,5 +1,9 @@
 scriptencoding utf-8
 
+" plugin {{{1
+
+" lexima
+
 " 改行後に末尾のスペースが2つ以上の場合は2つ残す
 call lexima#add_rule({
       \   'at'      : '\S\+\s\s\+\%#$',
@@ -40,3 +44,4 @@ call lexima#add_rule({
       \   'filetype': ['markdown'],
       \})
 
+" }}}1

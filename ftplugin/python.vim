@@ -1,6 +1,8 @@
 scriptencoding utf-8
 
-setlocal shiftwidth=4 tabstop=4 expandtab
+" plugin {{{1
+
+" lexima
 
 " http://qiita.com/hatchinee/items/c5bc19a656925ce33882
 " classとかの定義時に:までを入れる
@@ -70,3 +72,5 @@ call lexima#add_rule({
       \   'char'    : '<CR>',
       \   'filetype': ['python'],
       \})
+
+" }}}1

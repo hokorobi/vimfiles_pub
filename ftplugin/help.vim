@@ -1,3 +1,6 @@
+" plugin {{{1
 
-nnoremap <buffer> qq :q<CR>
+" openbrowser
 nmap <silent> <buffer> o <Plug>(openbrowser-open)
+
+" }}}1

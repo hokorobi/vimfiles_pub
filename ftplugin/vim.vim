@@ -1,6 +1,8 @@
 scriptencoding utf-8
 
-setlocal shiftwidth=2 tabstop=2 expandtab
+" plugin {{{1
+
+" lexima
 
 " set 系コマンドでは = の間にスペースを入れない
 call lexima#add_rule({
@@ -99,3 +101,4 @@ for s:val in ['{:}', '\[:\]']
 endfor
 "}}}2
 
+" }}}1
