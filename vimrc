@@ -819,6 +819,12 @@ endif
 
 " }}}2
 
+" カーソル位置のハイライト名を表示
+nmap <silent> mx <Plug>(vimrc-show-current-syntax)
+nnoremap <silent> <Plug>(vimrc-show-current-syntax)
+      \ :<C-u>echo join(map(synstack(line('.'), col('.')),'synIDattr(v:val, "name") . "(" . synIDattr(synIDtrans(v:val), "name") . ")"'), ',')<CR>
+nmap <silent> <C-CR> <Plug>(vimrc-show-current-syntax)
+
 " }}}1 GUI {{{1
 if has('gui_running')
   " font {{{
@@ -842,10 +848,6 @@ if has('gui_running')
 
   " 最大化で起動
   autocmd vimrc GUIEnter * simalt ~x
-  let g:vimrc_fullscreen = 1
-
-  " fullscreen toggle
-  nnoremap [toggle]<Space> :<C-u>call vimrc#ToggleFullScreen()<CR>
 
   " colorscheme
   function! DefineMyHighlights()

@@ -2,6 +2,8 @@
 [[plugins]]
 repo = 'Shougo/denite.nvim'
 on_cmd = 'Denite'
+on_ft = 'howm_memo'
+depends = ['neomru.vim']
 hook_add = '''
   nnoremap <Leader>fr :Denite -cursor-wrap file_rec:~/_vim/dein/repos<CR>
   nnoremap <Leader>ff :DeniteBufferDir -cursor-wrap file_rec<CR>
@@ -29,6 +31,14 @@ hook_source = '''
   call denite#custom#var('file_rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '-g:', ''])
 '''
 
+[[plugins]]
+repo = 'Shougo/neomru.vim'
+# howm だけ MRU に保存できれば良いので howm_memo が開かれるまでは読み込まれなくてよし
+lazy = 1
+hook_add = '''
+  " howm にはプレビューがほしいので ctrlp でなく denite+neomru を使う
+  nnoremap <Leader>,u :<C-u>Denite file_mru -auto-preview -input=howm<CR>
+'''
 
 # }}}1  CtrlP {{{1
 [[plugins]]

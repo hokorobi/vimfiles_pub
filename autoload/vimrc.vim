@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 " ウィンドウが複数開いていたら新しいタブで開く
 " 外部からファイルを渡して呼び出すことはできないのか？
-function! vimrc#YetAnotherEdit(file)
+function! vimrc#YetAnotherEdit(file) abort
   if winnr('$') > 1
     execute 'tabnew ' . fnameescape(a:file)
     return
@@ -12,7 +12,7 @@ endfunction
 
 
 " / と :s///g をトグル
-function! vimrc#ToggleSubstituteSearch(type, line)
+function! vimrc#ToggleSubstituteSearch(type, line) abort
   if a:type ==# '/' || a:type ==# '?'
     let range = s:GetOnetime('s:range', '%')
     return "\<End>\<C-U>\<BS>" . substitute(a:line, '^\(.*\)', ':' . range . 's/\1', '')
@@ -25,7 +25,7 @@ function! vimrc#ToggleSubstituteSearch(type, line)
     return "\<End>\<C-U>\<BS>" . '/' . expr
   endif
 endfunction
-function! s:GetOnetime(varname, defaultValue)
+function! s:GetOnetime(varname, defaultValue) abort
   if !exists(a:varname)
     return a:defaultValue
   endif
@@ -37,7 +37,7 @@ endfunction
 
 
 " My retab
-function! vimrc#Retab(old_tabstop)
+function! vimrc#Retab(old_tabstop) abort
   let pos = getpos('.')
   let new_indent = &l:expandtab ? repeat(' ', &l:tabstop) : '\t'
   silent execute '%s/\v%(^ *)@<= {' . a:old_tabstop . '}/' . new_indent . '/ge'
@@ -46,7 +46,7 @@ function! vimrc#Retab(old_tabstop)
 endfunction
 
 " インデントを簡単に設定
-function! vimrc#ISetting(setting, force_retab)
+function! vimrc#ISetting(setting, force_retab) abort
   if empty(a:setting)
     echo 'indent: ' . ((&l:expandtab) ? 'space' : 'tab') . ' ' . &l:shiftwidth
     return
@@ -81,7 +81,7 @@ endfunction
 
 
 " 今開いているファイルを削除
-function! vimrc#DeleteMe(force)
+function! vimrc#DeleteMe(force) abort
   if a:force || !&modified
     let filename = expand('%')
     bdelete!
@@ -93,14 +93,14 @@ endfunction
 
 
 " 今開いているファイルをリネーム
-function! vimrc#RenameMe(newFileName)
+function! vimrc#RenameMe(newFileName) abort
   let currentFileName = expand('%')
   execute 'saveas ' . a:newFileName
   call delete(currentFileName)
 endfunction
 
 " cd
-function! vimrc#ChangeCurrentDir(directory, bang)
+function! vimrc#ChangeCurrentDir(directory, bang) abort
   if a:directory ==# ''
     lcd %:p:h
   else
@@ -114,7 +114,7 @@ endfunction
 
 " diff xdoc2txt
 " vimdiff でファイルを開いた後に xdoc2txt でフィルタリングした結果を diffupdate
-function! vimrc#DiffXdoc2txt()
+function! vimrc#DiffXdoc2txt() abort
   nnoremap qq :<C-u>qa!<CR>
 
   if expand('%:e') !~? 'html\?'
@@ -138,12 +138,12 @@ endfunction
 
 
 " toggle option
-function! vimrc#toggle_option(option_name)
+function! vimrc#toggle_option(option_name) abort
   execute 'setlocal' a:option_name . '!' a:option_name . '?'
 endfunction
 
 " jq
-function! vimrc#Jq(...)
+function! vimrc#Jq(...) abort
   if 0 ==# a:0
     let l:arg = '.'
   else
@@ -155,7 +155,7 @@ endfunction
 
 " ファイラからの起動時に検索文字列を指定するのは使いにくいので、コマンド実行後に検索文字列を入力できるようにする
 " pt 用
-function! vimrc#GrepWrap(...)
+function! vimrc#GrepWrap(...) abort
   let path = a:0 >= 1 ? a:1 : '.'
   let str = input('Pattern: ')
   if len(str) == 0
@@ -165,23 +165,23 @@ function! vimrc#GrepWrap(...)
 endfunction
 
 " pt で grep を実行した後に結果をパス順にしたかったので sort
-function! vimrc#SortQuickfix(fn)
+function! vimrc#SortQuickfix(fn) abort
   call setqflist(sort(getqflist(), a:fn))
 endfunction
-function! vimrc#QfStrCmp(e1, e2)
+function! vimrc#QfStrCmp(e1, e2) abort
   let [t1, t2] = [bufname(a:e1.bufnr), bufname(a:e2.bufnr)]
   return t1 <? t2 ? -1 : t1 ==? t2 ? 0 : 1
 endfunction
 
 " 行をクリップボードへコピー（末尾改行なし、カーソル移動なし）
-function! vimrc#linecopy()
+function! vimrc#linecopy() abort
   let view = winsaveview()
   normal! 0vg_"+y
   silent call winrestview(view)
 endfunction
 
 " smart indent when entering insert mode with i on empty lines
-function! vimrc#IndentWithI()
+function! vimrc#IndentWithI() abort
   if len(getline('.')) == 0
     return 'cc'
   else
@@ -190,7 +190,7 @@ function! vimrc#IndentWithI()
 endfunction
 
 " split and go
-function! vimrc#SplitAndGo(cmd)
+function! vimrc#SplitAndGo(cmd) abort
   execute a:cmd
   if !v:count
     return
@@ -198,30 +198,11 @@ function! vimrc#SplitAndGo(cmd)
   execute 'normal! ' . v:count . 'G'
 endfunction
 
-function! vimrc#toggle_quickfix_window()
+function! vimrc#toggle_quickfix_window() abort
   let _ = winnr('$')
   cclose
   if _ == winnr('$')
     botright cwindow
-  endif
-endfunction
-
-" fullscreen toggle
-function! vimrc#ToggleFullScreen()
-  if g:vimrc_fullscreen == 1
-    simalt ~r
-    let g:vimrc_fullscreen = 0
-  else
-    simalt ~x
-    let g:vimrc_fullscreen = 1
-  endif
-endfunction
-
-function! vimrc#BetterBdelete() abort
-  if has_key(get(g:, 'sayonara_filetypes', {}), &filetype)
-    execute g:sayonara_filetypes[&filetype]
-  else
-    bdelete
   endif
 endfunction
 
@@ -230,7 +211,7 @@ endfunction
 " gf-user {{{2
 " http://d.hatena.ne.jp/thinca/20140324/1395590910
 " Windows foo.c:23 などでも gf で foo.c を開けるようにする
-function! vimrc#GfFile()
+function! vimrc#GfFile() abort
   let path = expand('<cfile>')
   let line = 0
   if path =~# ':\d\+:\?$'

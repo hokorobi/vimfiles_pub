@@ -76,7 +76,6 @@ repo = 'kana/vim-textobj-user'
 
 [[plugins]]
 repo = 'mattn/vim-textobj-url'
-on_source = 'vim-expand-region'
 depends = 'vim-textobj-user'
 
 [[plugins]]
@@ -155,6 +154,7 @@ on_map = [['n', 'cx'], ['x', 'X']]
 
 [[plugins]]
 repo = 'kana/vim-textobj-indent'
+depends = 'vim-textobj-user'
 
 # }}}1  Language, Format, Filetype {{{1
 [[plugins]]
@@ -234,10 +234,6 @@ hook_source = '''
   let g:neocomplete#sources.go = ['file', 'neosnippet', 'dictionary', 'omni', 'member', 'syntax', 'buffer']
 '''
 
-[[plugins]]
-repo = 'mattn/goplayground-vim'
-depends = 'webapi-vim'
-
 # Markdown
 [[plugins]]
 repo = 'kannokanno/previm'
@@ -265,9 +261,8 @@ repo = 'pangloss/vim-javascript'
 
 # SQL
 [[plugins]]
-repo = 'vim-scripts/SQLUtilities'
-on_cmd = 'SQLUFormatter'
-depends = 'Align'
+repo = 'mattn/vim-sqlfmt'
+on_ft = 'sql'
 
 # Others
 [[plugins]]
@@ -291,10 +286,9 @@ repo = 'osyo-manga/vim-precious'
 depends = 'context_filetype.vim'
 on_ft = ['markdown', 'toml']
 hook_source = '''
-  " FIXME: カーソルラインが表示されるとファイルタイプ切り替えが発動する。
   " FIXME: 起動後最初に toml を開いた際にカーソルが Vim script の位置にあると ft が vim になり、
   "        Insert mode で toml になる？　Normal mode に戻ってカーソルを移動するとすべてが範囲外相当
-  "        の色になる
+  "        の色になる。開き直すと正常になる。
 
   let g:precious_enable_switchers = {
   \   '*':        {'setfiletype' : 0},
@@ -321,9 +315,8 @@ repo = 'Shougo/context_filetype.vim'
 # }}}1  tags {{{1
 [[plugins]]
 repo = 'hokorobi/vim-tagsgen'
-on_cmd = ['Tagsgen', 'TagsgenSetDir']
+on_cmd = ['Tagsgen']
 hook_add = '''
-  nnoremap <silent> <Leader>cd :TagsgenSetDir<CR>
   let g:tagsgen_data_dir = expand('~/_vim/.tagsgen')
 '''
 
@@ -412,7 +405,7 @@ hook_add = '''
 
 [[plugins]]
 repo = 'kana/vim-operator-replace'
-on_map = '<Plug>(operator-replace'
+on_map = '<Plug>'
 depends = 'vim-operator-user'
 hook_add = '''
   vmap p <Plug>(operator-replace)
@@ -436,14 +429,10 @@ hook_source = '''
 
   let g:neosnippet#data_directory = expand('~/_vim/.neosnippet')
 
-  " Enable snipMate compatibility feature.
-  let g:neosnippet#enable_snipmate_compatibility = 1
-
   " Tell Neosnippet about the other snippets
   let g:neosnippet#snippets_directory = [
         \   '~/vimfiles/snippets',
-        \   '~/_vim/bundle/neosnippet-snippets/neosnippets',
-        \   '~/_vim/bundle/vim-snippets/snippets',
+        \   '~/_vim/dein/repos/github.com/honza/vim-snippets/snippets/',
         \ ]
 '''
 
@@ -451,9 +440,9 @@ hook_source = '''
 [[plugins]]
 repo = 'Shougo/neosnippet-snippets'
 
-# lazy =1 や rtp = '' にするとエラーが出た
 [[plugins]]
 repo = 'honza/vim-snippets'
+# runtimepath へ追加しない
 rtp = ''
 
 [[plugins]]
@@ -753,7 +742,8 @@ hook_add = '''
         \ 'qf': 'bdelete',
         \ 'voomtree': 'VoomQuitAll',
         \ 'J6uil_say': 'bdelete',
-        \ 'help': 'bdelete',
+        \ 'help': 'bdelete!',
+        \ 'vimcalc': 'bdelete',
         \ }
 '''
 
@@ -855,10 +845,6 @@ repo = 'mattn/webapi-vim'
 
 [[plugins]]
 repo = 'ynkdir/vim-vimlparser'
-
-[[plugins]]
-repo = 'vim-scripts/Align'
-lazy = 1
 
 [[plugins]]
 repo = 'kana/vim-operator-user'
