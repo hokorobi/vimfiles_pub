@@ -10,6 +10,14 @@ call lexima#add_rule({
       \   'mode' : ':',
       \})
 
+"hgcim -> Hg ci -m ""
+call lexima#add_rule({
+      \   'at'   : 'hgci\%#',
+      \   'char' : 'm',
+      \   'input': '<BS><BS><BS><BS>Hg ci -m ""<Left>',
+      \   'mode' : ':',
+      \})
+
 " http://qiita.com/yami_beta/items/26995a5c382bd83ac38f
 inoremap <C-f> <C-r>=lexima#insmode#leave(1, '<LT>C-G>U<LT>RIGHT>')<CR>
 
@@ -68,6 +76,13 @@ call lexima#add_rule({
       \   'at'   : '\w\+ =\+ \%#',
       \   'char' : '=',
       \   'input': '<BS>=<Space>',
+      \})
+
+" ==の場合は != にする（機能していない）
+call lexima#add_rule({
+      \   'at'   : '\w\+ == \%#',
+      \   'char' : '=',
+      \   'input': '<BS><BS><BS>!=<Space>',
       \})
 
 " 演算子直後の=

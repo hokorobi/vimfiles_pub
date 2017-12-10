@@ -19,11 +19,44 @@ hook_source = '''
   let g:neocomplete#sources = get(g:, 'neocomplete#sources', {})
   let g:neocomplete#sources._ = ['file', 'neosnippet', 'dictionary', 'member', 'syntax', 'buffer']
 
-  autocmd vimrc FileType autohotkey,autoit,cfg,git,go,groovy,java,javascript,python,snippet,toml,vb,vim,xsl NeoCompleteEnable
+  autocmd vimrc FileType autohotkey,autoit,cfg,git,go,groovy,java,javascript,python,snippet,toml,vim,vb,xsl NeoCompleteEnable
 '''
 
 [[plugins]]
 repo = 'Shougo/neco-syntax'
+lazy = 1
+
+[[plugins]]
+repo = 'davidhalter/jedi-vim'
+on_ft = 'python'
+depends = ['neocomplete.vim']
+hook_source = '''
+  let g:jedi#auto_initialization = 1
+  let g:jedi#auto_vim_configuration = 0
+  let g:jedi#popup_select_first = 0
+  let g:jedi#popup_on_dot = 0
+
+  " neocomplete
+  autocmd vimrc FileType python setlocal omnifunc=jedi#completions
+  let g:neocomplete#sources = get(g:, 'neocomplete#sources', {})
+  let g:neocomplete#sources.python = ['file', 'neosnippet', 'dictionary', 'omni', 'member', 'syntax', 'buffer']
+  let g:jedi#completions_enabled = 0
+  let g:jedi#auto_vim_configuration = 0
+  let g:neocomplete#force_omni_input_patterns = get(g:, 'neocomplete#force_omni_input_patterns', {})
+  let g:neocomplete#force_omni_input_patterns.python = '\h\w*\|[^. \t]\.\w*'
+'''
+
+[[plugins]]
+repo = 'machakann/vim-Verdin'
+on_ft = 'vim'
+hook_source = '''
+  "関数名のあとの括弧が自動的に入力
+  let g:Verdin#autobraketinsert = 2
+
+  " neocomplete
+  let g:neocomplete#sources = get(g:, 'neocomplete#sources', {})
+  let g:neocomplete#sources.vim = ['member', 'neosnippet', 'Verdin']
+'''
 
 # }}}1  Quickrun {{{1
 [[plugins]]
@@ -84,8 +117,9 @@ on_map = '<Plug>(expand_region'
 frozen = 1
 hook_add = '''
   " ad: delimited
-  " ib: sandwich
+  " ib, ab: sandwich
   " ii, ai, iI, aI: indent
+  " ac: comment
   let g:expand_region_text_objects = {
         \ 'iw': 0,
         \ 'iW': 0,
@@ -93,6 +127,7 @@ hook_add = '''
         \ 'ad': 0,
         \ 'ib': 1,
         \ 'ab': 1,
+        \ 'ac': 0,
         \ 'iI': 0,
         \ 'aI': 0,
         \ 'ii': 0,
@@ -115,7 +150,7 @@ hook_add = '''
   nmap sc  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
   nmap scc <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
   nmap css <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
-  XOmap sc  <Plug>(operator-sandwich-replace)
+  XOmap sc <Plug>(operator-sandwich-replace)
 
   nmap sr  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
   nmap srr <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
@@ -156,6 +191,10 @@ on_map = [['n', 'cx'], ['x', 'X']]
 repo = 'kana/vim-textobj-indent'
 depends = 'vim-textobj-user'
 
+[[plugins]]
+repo = 'glts/vim-textobj-comment'
+depends = 'vim-textobj-user'
+
 # }}}1  Language, Format, Filetype {{{1
 [[plugins]]
 repo = 'tyru/caw.vim'
@@ -178,6 +217,8 @@ on_cmd = ['CSChangeSpaceIndent', 'CSUnretab']
 repo = 'AndrewRadev/linediff.vim'
 on_cmd = 'Linediff'
 hook_add = '''
+  let g:linediff_modify_statusline = 0
+
   call extend(g:vimrc_altercmd_dic, {'diffl[ine]': 'Linediff'})
 '''
 
@@ -189,26 +230,6 @@ repo = 'lambdalisue/vim-diffa'
 repo = 'hdima/python-syntax'
 hook_add = '''
   let g:python_hightlight_all = 1
-'''
-
-[[plugins]]
-repo = 'davidhalter/jedi-vim'
-on_ft = 'python'
-depends = ['neocomplete.vim']
-hook_source = '''
-  let g:jedi#auto_initialization = 1
-  let g:jedi#auto_vim_configuration = 0
-  let g:jedi#popup_select_first = 0
-  let g:jedi#popup_on_dot = 0
-
-  " neocomplete
-  autocmd vimrc FileType python setlocal omnifunc=jedi#completions
-  let g:neocomplete#sources = get(g:, 'neocomplete#sources', {})
-  let g:neocomplete#sources.python = ['file', 'neosnippet', 'dictionary', 'omni', 'member', 'syntax', 'buffer']
-  let g:jedi#completions_enabled = 0
-  let g:jedi#auto_vim_configuration = 0
-  let g:neocomplete#force_omni_input_patterns = get(g:, 'neocomplete#force_omni_input_patterns', {})
-  let g:neocomplete#force_omni_input_patterns.python = '\h\w*\|[^. \t]\.\w*'
 '''
 
 [[plugins]]
@@ -225,13 +246,42 @@ hook_source = '''
   endif
   let g:go_gocode_socket_type = 'tcp'
 
+  " run :GoBuild or :GoTestCompile based on the go file
+  function! s:build_go_files()
+    let l:file = expand('%')
+    if l:file =~# '^\f\+_test\.go$'
+      call go#test#Test(0, 1)
+    elseif l:file =~# '^\f\+\.go$'
+      call go#cmd#Build(0)
+    endif
+  endfunction
+
+  autocmd vimrc FileType go nmap <buffer> <Leader>gb :<C-u>call <SID>build_go_files()<CR>
+  autocmd vimrc FileType go nmap <buffer> <Leader>gr <Plug>(go-run)
+  autocmd vimrc FileType go nmap <buffer> <Leader>gt <Plug>(go-test)
+  autocmd vimrc FileType go nmap <buffer> <Leader>gc <Plug>(go-coverage-toggle)
+  autocmd vimrc FileType go nmap <buffer> <F2> <Plug>(go-alternate-edit)
+  autocmd vimrc FileType go nnoremap <buffer> <Leader>gf :GoDecls<CR>
+
   call extend(g:vimrc_altercmd_dic, {
         \ 'godo[c]': 'GoDoc',
-        \ 'goru[n]': 'GoRun'})
+        \ 'goru[n]': 'GoRun',
+        \})
 
   " neocomplete
-  let g:neocomplete#sources = get(g:, 'neocomplete#sources', {})
-  let g:neocomplete#sources.go = ['file', 'neosnippet', 'dictionary', 'omni', 'member', 'syntax', 'buffer']
+  " 遅いので omni 補完は C-x C-o で手動で使う
+
+  " Sayonara
+  let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+  let g:sayonara_filetypes.godoc = 'bdelete'
+'''
+
+[[plugins]]
+repo = 'hokorobi/godoctor.vim'
+on_ft = 'go'
+frozen = 1
+hook_source = '''
+  autocmd vimrc FileType go xnoremap <buffer> <Leader>ge :GoRefactor extract<Space>
 '''
 
 # Markdown
@@ -242,6 +292,13 @@ depends = 'open-browser.vim'
 
 [[plugins]]
 repo = 'plasticboy/vim-markdown'
+
+[[plugins]]
+repo = 'moorereason/vim-markdownfmt'
+on_ft = 'markdown'
+hook_source = '''
+  let g:markdownfmt_autosave = 1
+'''
 
 # Vim
 [[plugins]]
@@ -324,6 +381,9 @@ hook_add = '''
 [[plugins]]
 repo = 'w0ng/vim-hybrid'
 
+[[plugins]]
+repo = 'cocopon/iceberg.vim'
+
 # }}}1  Look {{{1
 [[plugins]]
 repo = 'itchyny/lightline.vim'
@@ -336,18 +396,26 @@ hook_add = '''
         \ 'colorscheme': 'default',
         \ 'active': {
         \   'left': [['mode', 'paste'], ['readonly', 'filename', 'modified', 'pwd']],
-        \   'right': [['lineinfo'], ['percent'], ['fileformat', 'myfenc', 'filetype']]},
+        \   'right': [['lineinfo'], ['fileformat', 'fenc', 'filetype']]},
         \ 'component_function': {
         \   'pwd': 'getcwd',
-        \   'myfenc': 'MyLightLineFenc'}}
+        \   'fenc': 'LightLineFenc',
+        \   'modified': 'LightlineModified',
+        \   }
+        \ }
 
-  function! MyLightLineFenc() abort
+  " help で - が表示されないように
+  function! LightlineModified()
+    return &modifiable && &modified ? '+' : ''
+  endfunction
+
+  function! LightLineFenc() abort
     if winwidth(0) < 70
       return ''
     endif
 
-    let fenc = strlen(&fileencoding) ? &fileencoding : &encoding
-    return fenc !=# 'utf-8' ? fenc : &bomb == 0 ? fenc . 'n' : fenc
+    let fenc = &fileencoding == '' ? &encoding : &fileencoding
+    return fenc !=# 'utf-8' ? fenc : &bomb ? fenc . ' (BOM)' : fenc
   endfunction
 '''
 
@@ -366,13 +434,15 @@ hook_add = '''
 # 遅延読み込みだと前回起動時のマークが復元されない様子
 repo = 'MattesGroeger/vim-bookmarks'
 hook_add = '''
+  " bookmark_auto_save_file が無効になるので g:bookmark_manage_per_buffer は 1 にしない
   let g:bookmark_auto_save_file = expand('~/_vim/.vim-bookmarks')
-  " 1 にすると bookmark_auto_save_file が無効になる。
-  " let g:bookmark_manage_per_buffer = 0
+
   let g:bookmark_sign = '>>'
   let g:bookmark_annotation_sign = '##'
-  " ctrlp ではファイル名を表示できないので従来の BookmarkShowAll を使用する
+
+  " ctrlp でファイル名を表示できないようなので従来の BookmarkShowAll を使用する
   let g:bookmark_disable_ctrlp = 1
+
   " ブックマークを開いたら候補のウィンドウは閉じる
   let g:bookmark_auto_close = 1
 '''
@@ -382,6 +452,14 @@ repo = 'itchyny/vim-cursorword'
 
 [[plugins]]
 repo = 'itchyny/vim-parenmatch'
+
+[[plugins]]
+repo = 't9md/vim-quickhl'
+on_map = '<Plug>'
+hook_add = '''
+  NXmap <Leader>m <Plug>(quickhl-manual-this)
+  NXmap <Leader>M <Plug>(quickhl-manual-reset)
+'''
 
 # }}}1  Input & Edit {{{1
 [[plugins]]
@@ -393,14 +471,22 @@ hook_source = '''
 
 [[plugins]]
 repo = 'machakann/vim-highlightedyank'
-on_map = '<Plug>'
-hook_source = '''
+hook_add = '''
   let g:highlightedyank_highlight_duration = 300
   highlight link HighlightedyankRegion Visual
-'''
-hook_add = '''
+
+  " nmap にすると yy で固まる
   map y <Plug>(highlightedyank)
-  map Y <Plug>(highlightedyank)$
+  nmap Y <Plug>(highlightedyank)$
+
+  " 行をクリップボードへコピー（末尾改行なし、カーソル移動なし）
+  " 遅延読み込みでは初回実行時にコピーされなかった。
+  nnoremap <silent> <Leader>yy :call <SID>Linecopy()<CR>
+  function! s:Linecopy() abort
+    let view = winsaveview()
+    execute 'normal' "0vg_\"+\<Plug>(highlightedyank)"
+    silent call winrestview(view)
+  endfunction
 '''
 
 [[plugins]]
@@ -430,9 +516,11 @@ hook_source = '''
   let g:neosnippet#data_directory = expand('~/_vim/.neosnippet')
 
   " Tell Neosnippet about the other snippets
+  " gosnippets は vim-go がうまいことやってくれるはずだけど、なんかうまくいかないので直接追加。
   let g:neosnippet#snippets_directory = [
         \   '~/vimfiles/snippets',
         \   '~/_vim/dein/repos/github.com/honza/vim-snippets/snippets/',
+        \   '~/_vim/dein/repos/github.com/fatih/vim-go/gosnippets/snippets/',
         \ ]
 '''
 
@@ -450,8 +538,6 @@ repo = 'uplus/vim-clurin'
 on_map = '<Plug>'
 # 設定に ''' が入っているので """ """ でくくらないと駄目。
 hook_add = """
-  " デフォルトのキーマッピングを無効化
-
   nmap + <Plug>(clurin-next)
   nmap - <Plug>(clurin-prev)
 
@@ -470,6 +556,11 @@ hook_add = """
         \       ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         \       ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         \       ['月', '火', '水', '木', '金', '土', '日'],
+        \       ['true', 'false'],
+        \       ['True', 'False'],
+        \       ['on', 'off'],
+        \       ['enable', 'disable'],
+        \       ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         \       ['yes', 'no'],
         \       ['left', 'right'],
         \       ['=', ' = '],
@@ -479,10 +570,10 @@ hook_add = """
         \       ['/', ' / '],
         \       ['pick', 'fold', 'mess', 'edit', 'drop'],],
         \     'nomatch': function('g:Speeddating')},
-        \   'vim': {
+        \   'toml vim': {
         \     'def': [[
-        \       {'pattern': '"\(\k*\)"'  , 'replace': '"\1"'},
-        \       {'pattern': '''\(\k*\)''', 'replace': '''\1'''}]]}
+        \       {'pattern': '"\([^"]*\)"'  , 'replace': '"\1"'},
+        \       {'pattern': '''\([^'']*\)''', 'replace': '''\1'''}]]},
         \}
 """
 
@@ -502,6 +593,11 @@ hook_add = '''
 [[plugins]]
 repo = 'simnalamburt/vim-mundo'
 on_cmd = 'MundoToggle'
+hook_source = '''
+  " Sayonara
+    let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+    let g:sayonara_filetypes.Mundo = 'MundoHide'
+'''
 
 [[plugins]]
 repo = 'osyo-manga/vim-jplus'
@@ -596,6 +692,8 @@ on_map = [['v', '.']]
 repo = 'machakann/vim-swap'
 on_map = '<Plug>'
 hook_add = '''
+  nmap g< <Plug>(swap-prev)
+  nmap g> <Plug>(swap-next)
   nmap gs <Plug>(swap-interactive)
 '''
 hook_source = '''
@@ -633,28 +731,6 @@ hook_add = '''
 
   highlight link EasyMotionTarget DiffDelete
 
-
-  " Quickly make a macro and use it with '.'
-  " https://github.com/AndrewRadev/Vimfiles/blob/master/startup/mappings.vim
-  "   https://gist.github.com/toshi32tony3/00c441a3619d83d7d97b
-  " kana/vim-repeat では使えない
-  let s:simple_macro_active = 0
-  nnoremap <silent> <M-m> :call <SID>SimpleMacro()<CR>
-  nnoremap <silent> <Plug>(_RepeatSimpleMacro) :<C-u>call repeat#wrap('@m', v:count1)<CR>
-  function! s:SimpleMacro()
-    let s:simple_macro_active = (s:simple_macro_active + 1) % 2
-    if  s:simple_macro_active
-      echo 'call SimpleMacro()'
-      call feedkeys('qm', 'n')
-    else
-      normal! q
-      " remove trailing <A-m>, <C-o>, <Esc>
-      let @m = @m[0 : -3]
-      let @m = stridx(@m, "\<C-o>") == (len(@m) - 1) ? @m[0 : -2] : @m
-      let @m = stridx(@m, "\<Esc>") == (len(@m) - 1) ? @m[0 : -2] : @m
-      call repeat#set("\<Plug>(_RepeatSimpleMacro)", 1)
-    endif
-  endfunction
 '''
 hook_source = '''
   let g:EasyMotion_do_mapping = 0
@@ -730,6 +806,23 @@ hook_add = '''
   autocmd vimrc BufEnter * call s:set_match_words()
 '''
 
+[[plugins]]
+repo = 'hokorobi/cmdlineplus.vim'
+frozen = 1
+on_map = [['c', '<Plug>']]
+hook_add = '''
+  cmap <A-f> <Plug>(cmdlineplus-f)
+  cmap <A-S-f> <Plug>(cmdlineplus-F)
+  cmap <A-t> <Plug>(cmdlineplus-t)
+  cmap <A-S-t> <Plug>(cmdlineplus-T)
+  cmap <A-d> <Plug>(cmdlineplus-df)
+  cmap <A-S-d> <Plug>(cmdlineplus-dF)
+  cmap <C-k> <Plug>(cmdlineplus-killline)
+  cmap <A-;> <Plug>(cmdlineplus-;)
+  cmap <A-:> <Plug>(cmdlineplus-,)
+  cmap <A-,> <Plug>(cmdlineplus-,)
+'''
+
 # }}}1  Buffer {{{1
 [[plugins]]
 repo = 'mhinz/vim-sayonara'
@@ -737,13 +830,8 @@ on_cmd = 'Sayonara'
 hook_add = '''
   noremap <silent> qq :Sayonara!<CR>
   let g:sayonara_filetypes = {
-        \ 'Mundo': 'MundoHide',
-        \ 'capture': 'bdelete',
         \ 'qf': 'bdelete',
-        \ 'voomtree': 'VoomQuitAll',
-        \ 'J6uil_say': 'bdelete',
         \ 'help': 'bdelete!',
-        \ 'vimcalc': 'bdelete',
         \ }
 '''
 
@@ -763,9 +851,14 @@ hook_add = '''
   command! Cmap :Capture cmap
 
   call extend(g:vimrc_altercmd_dic, {
-        \ 'cap[ture]': 'Capture',
-        \ 'scriptn[ames]': 'Capture scriptnames'})
-
+        \   'cap[ture]': 'Capture',
+        \   'scriptn[ames]': 'Capture scriptnames',
+        \ })
+'''
+hook_source = '''
+  " Sayonara
+    let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+    let g:sayonara_filetypes.capture = 'bdelete'
 '''
 
 [[plugins]]
@@ -776,6 +869,8 @@ repo = 'tyru/closesubwin.vim'
 on_func = 'closesubwin#'
 hook_add ='''
   nnoremap <Leader>q :<C-u>call closesubwin#close_sub_window()<CR>
+  " タブを直接指定するマッピングは不要なので 0 にしたいけどエラーになるので 1 へ
+  let g:buftabline_plug_max = 1
 '''
 
 # }}}1  File {{{1
@@ -839,6 +934,29 @@ hook_add = '''
 
 [[plugins]]
 repo = 'tpope/vim-repeat'
+hook_add = '''
+  " Quickly make a macro and use it with '.'
+  " https://github.com/AndrewRadev/Vimfiles/blob/master/startup/mappings.vim
+  "   https://gist.github.com/toshi32tony3/00c441a3619d83d7d97b
+  " kana/vim-repeat では使えない
+  let s:simple_macro_active = 0
+  nnoremap <silent> <M-m> :call <SID>SimpleMacro()<CR>
+  nnoremap <silent> <Plug>(_RepeatSimpleMacro) :<C-u>call repeat#wrap('@m', v:count1)<CR>
+  function! s:SimpleMacro()
+    let s:simple_macro_active = (s:simple_macro_active + 1) % 2
+    if  s:simple_macro_active
+      echo 'call SimpleMacro()'
+      call feedkeys('qm', 'n')
+    else
+      normal! q
+      " remove trailing <A-m>, <C-o>, <Esc>
+      let @m = @m[0 : -3]
+      let @m = stridx(@m, "\<C-o>") == (len(@m) - 1) ? @m[0 : -2] : @m
+      let @m = stridx(@m, "\<Esc>") == (len(@m) - 1) ? @m[0 : -2] : @m
+      call repeat#set("\<Plug>(_RepeatSimpleMacro)", 1)
+    endif
+  endfunction
+'''
 
 [[plugins]]
 repo = 'mattn/webapi-vim'
@@ -854,8 +972,14 @@ repo = 'vim-voom/VOoM'
 on_cmd ='Voom'
 hook_add = '''
   call extend(g:vimrc_altercmd_dic, {
-        \ 'voo[m]': 'Voom rest',
-        \ 'out[line]': 'Voom rest'})
+        \   'voo[m]': 'Voom rest',
+        \   'out[line]': 'Voom rest',
+        \ })
+'''
+hook_source = '''
+  " Sayonara
+    let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+    let g:sayonara_filetypes.voomtree = 'VoomQuitAll'
 '''
 
 # }}}1  Web Service {{{1
@@ -866,6 +990,7 @@ on_map = '<Plug>'
 depends = 'open-browser.vim'
 hook_add = '''
   let g:gista#client#default_username = 'hokorobi'
+
   call extend(g:vimrc_altercmd_dic, {'gis[ta]': 'Gista'})
 '''
 
@@ -873,17 +998,27 @@ hook_add = '''
 repo = 'lambdalisue/gina.vim'
 on_cmd = 'Gina'
 hook_add = '''
-  call extend(g:vimrc_altercmd_dic, {'gin[a]': 'Gina'})
-  call extend(g:vimrc_altercmd_dic, {'git': 'Gina'})
+  nnoremap <Leader>gs :<C-u>Gina status -s<CR>
+
+  call extend(g:vimrc_altercmd_dic, {
+        \   'gin[a]': 'Gina',
+        \   'git': 'Gina',
+        \ })
 '''
 hook_source = '''
   call gina#custom#command#alias('status', 'st')
+  call gina#custom#command#option('st', '-s')
   call gina#custom#command#alias('branch', 'b')
+  call gina#custom#command#alias('log', 'gl')
+  call gina#custom#command#option('gl', '--graph')
 
-  call gina#custom#mapping#nmap('status', 'qq', ':quit<CR>')
-  call gina#custom#mapping#nmap('log', 'qq', ':quit<CR>')
-  call gina#custom#mapping#nmap('changes', 'qq', ':quit<CR>')
-  call gina#custom#mapping#nmap('branch', 'qq', ':quit<CR>')
+  call gina#custom#mapping#nmap('status', 'cc', ':<C-u>Gina commit<CR>', {'noremap': 1, 'silent': 1})
+
+  call gina#custom#mapping#nmap('status', 'qq', ':quit<CR>', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('log', 'qq', ':quit<CR>', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('changes', 'qq', ':quit<CR>', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('branch', 'qq', ':quit<CR>', {'noremap': 1, 'silent': 1})
+  call gina#custom#mapping#nmap('blame', 'qq', ':quit<CR>', {'noremap': 1, 'silent': 1})
 '''
 
 [[plugins]]
@@ -922,7 +1057,7 @@ hook_source = '''
     call append(0, repl)
   endfunction
   function! s:J6uil_settings()
-    nmap <silent> <buffer> <Leader>s <Plug>(J6uil_open_say_buffer)
+    nmap <silent> <buffer> <LocalLeader>s <Plug>(J6uil_open_say_buffer)
     nmap <silent> <buffer> i <Plug>(J6uil_open_say_buffer)
     nmap <silent> <buffer> o <Plug>(J6uil_action_open_links)
     nmap <silent> <buffer> <CR> <Plug>(J6uil_action_enter)
@@ -933,6 +1068,10 @@ hook_source = '''
   function! s:J6uil_say_settings()
     inoremap <silent> <buffer> <C-CR> <ESC>:call <SID>post_message()<CR>
   endfunction
+
+  " Sayonara
+    let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+    let g:sayonara_filetypes.J6uil_say = 'bdelete'
 '''
 
 [[plugins]]
@@ -940,13 +1079,23 @@ repo = 'yasuharu519/vim-codic'
 on_cmd = 'VimCodic'
 hook_add = '''
   let g:vim_codic_access_token = g:codic_token
+
   call extend(g:vimrc_altercmd_dic, {'cod[ic]': 'VimCodic'})
 '''
+
+[[plugins]]
+repo = 'rhysd/wandbox-vim'
+on_cmd = 'Wandbox'
 
 # }}}1  Others {{{1
 [[plugins]]
 repo = 'gregsexton/VimCalc'
 on_cmd = 'Calc'
+hook_source = '''
+  " Sayonara
+    let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+    let g:sayonara_filetypes.vimcalc = 'bdelete'
+'''
 
 [[plugins]]
 repo = 'thinca/vim-submode'

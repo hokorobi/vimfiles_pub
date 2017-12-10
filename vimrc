@@ -31,6 +31,7 @@ endfunction
 
 
 let g:mapleader = "\<Space>"
+let g:maplocalleader = "\<Space>"
 
 
 " Command {{{1
@@ -42,18 +43,6 @@ command! OpenSjis :e ++enc=cp932
 " エンコードを変換
 command! ToUtf8 :set fileencoding=utf-8
 command! ToSjis :set fileencoding=cp932
-
-" ウィンドウが複数開いていたら新しいタブで開く
-" 外部からファイルを渡して呼び出すことはできないのか？
-"command! -nargs=1 Ee call vimrc#YetAnotherEdit('<args>')
-" call extend(g:vimrc_altercmd_dic, {'ee': 'Ee'})
-
-" http://d.hatena.ne.jp/fuenor/20090907/1252315621
-" 並んだ数字に対して行数分 <C-a> を実行。なので同じ数字が並んでいないと意図した結果にならない
-" RengBang では、対象の文字列が正規表現でうまく絞り込めない時に使用
-" g<C-a> が使えるバージョンなら不要。挙動は少し違うけど
-command! -count -nargs=0 RengBangVertical
-      \ let snf=&nf|set nf-=octal|let cl = col('.')|for nc in range(1, <count>?<count>-line('.'):1)|execute 'normal! j' . nc . '<C-a>'|call cursor('.', cl)|endfor|let &nf=snf|unlet cl snf
 
 " / と :s///g をトグル
 " https://raw.githubusercontent.com/cohama/.vim/master/.vimrc
@@ -132,7 +121,7 @@ command! -nargs=1 RenameMe call vimrc#RenameMe(<q-args>)
 command! -nargs=? -complete=dir -bang CD call vimrc#ChangeCurrentDir('<args>', '<bang>')
 
 " diff xdoc2txt
-" vimdiff でファイルを開いた後に xdoc2txt でフィルタリングした結果を diffupdate
+" xdoc2txt でフィルタリングした結果を diff
 if Vimrc_executable('xdoc2txt')
   command! -nargs=0 DiffXdoc2txt call vimrc#DiffXdoc2txt()
 endif
@@ -220,12 +209,13 @@ set hidden
 
 " undo-persistence
 if has('persistent_undo')
-  " persistent-undo(無限undo)を使う
-  set undofile
   " undoファイルを保存するディレクトリの設定
   let &undodir = expand('~/_vim/info/undo')
-  " undodirを作成しておく
-  silent! call mkdir(&undodir, 'p')
+  if !isdirectory(&undodir) 
+    silent! call mkdir(&undodir, 'p')
+  endif
+  " persistent-undo(無限undo)を使う
+  set undofile
 endif
 
 " }}}2 Function {{{2
@@ -330,18 +320,13 @@ function! s:SetFormatoptions(isSetlocal) abort
   " +M マルチバイトの連結は空白なし
   " -t 自動折返し止め
   " -c 自動折返して、現在のコメント開始文字列を自動挿入はやめ
-  execute setcmd . ' formatoptions+=M formatoptions-=t formatoptions-=c'
-  " コメントリーダーを除いて連結
-  if v:version >= 704
-    execute setcmd . ' formatoptions+=j'
-  endif
+  " +j コメントリーダーを除いて連結. v:version >= 704
+  execute setcmd . ' formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j'
 endfunction
 call s:SetFormatoptions(0)
 
 " ファイル末尾に改行を追加しない
-if has('patch-7.4.785')
-  set nofixendofline
-endif
+set nofixendofline
 
 " }}}2 complete {{{2
 
@@ -431,7 +416,7 @@ let g:loaded_matchparen = 1
 " netrw {{{
 " disable netrw.vim
 " vim-protocol で代用
-let g:loaded_netrw             = 1
+let g:loaded_netrw = 1
 
 " curl で HTTP301 などでも移動先を追跡するように
 " これがないと github の raw が取得できなかった。
@@ -732,12 +717,8 @@ nnoremap <C-v> "+gP
 " バッファ全体をクリップボードへコピー
 nnoremap <Leader>ye :<C-u>%y+<CR>
 
-" 行をクリップボードへコピー（末尾改行なし、カーソル移動なし）
-nnoremap <silent> <Leader>yy :call vimrc#linecopy()<CR>
-
 " keep cursor position when yanking in visual mode
 xnoremap <silent> <expr> y "ygv" . mode()
-xnoremap <silent> <expr> Y "Ygv" . mode()
 
 " c: Change into the blackhole register to not clobber the last yank.
 nnoremap c "_c
@@ -812,38 +793,49 @@ cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
 
 " incsearch 中に前後の候補へカーソル移動
-if has('patch-7.4.2268')
-  cnoremap <C-j> <C-g>
-  cnoremap <C-k> <C-t>
-endif
+cnoremap <C-j> <C-g>
+cnoremap <C-k> <C-t>
 
 " }}}2
 
 " カーソル位置のハイライト名を表示
-nmap <silent> mx <Plug>(vimrc-show-current-syntax)
+nmap <silent> <C-CR> <Plug>(vimrc-show-current-syntax)
 nnoremap <silent> <Plug>(vimrc-show-current-syntax)
       \ :<C-u>echo join(map(synstack(line('.'), col('.')),'synIDattr(v:val, "name") . "(" . synIDattr(synIDtrans(v:val), "name") . ")"'), ',')<CR>
-nmap <silent> <C-CR> <Plug>(vimrc-show-current-syntax)
+
+" }}}1 Terminal {{{1
+if has('terminal')
+  tnoremap <Esc> <C-w><S-n>
+
+  " すでに :terminal が存在していればその :terminal を使用する
+  " FIXME: ウィンドウが開いていれば、そこにフォーカスしたい
+  command! -nargs=* Terminal call vimrc#terminal_open(<q-args>)
+  call extend(g:vimrc_altercmd_dic, {'ter[minal]': 'Terminal'})
+endif
 
 " }}}1 GUI {{{1
 if has('gui_running')
   " font {{{
-  set guifont=BDF_M+:h9
+  " set guifont=BDF_M+:h9
+  " set guifont=Cica:h12:qANTIALIASED
+  set guifont=MyricaM_M:h12
+
   " 行間隔の設定
   set linespace=1
+
   " 一部のUCS文字の幅を自動計測して決める
   if has('kaoriya')
     set ambiwidth=auto
   endif
+
   " }}}
 
   " タブ文字などを表示
   set list listchars=eol:$,tab:»\ ,trail:_,extends:\
 
-  " 挿入モード・検索モードのデフォルトのIME状態設定
-  " gvimrc を読み込まないようにしたので拝借
-  if has('multi_byte_ime')
-    set iminsert=0 imsearch=0
+  " IMEの状態をいい感じにする
+  if !has('patch-8.0.1114')
+    set iminsert=0 imsearch=-1
   endif
 
   " 最大化で起動
@@ -859,50 +851,17 @@ if has('gui_running')
       highlight CursorLine gui=underline guifg=NONE guibg=NONE
       " タブ文字を見やすく
       highlight SpecialKey guifg=#707880
+    endif
 
-      " IME の有効無効でカーソルの色を変更する。
-      " colorscheme の後ろに定義する。
-      if has('multi_byte_ime')
-        highlight CursorIM guifg=NONE guibg=Green gui=NONE
-      endif
+    " IME の有効無効でカーソルの色を変更する。
+    if has('multi_byte_ime')
+      highlight CursorIM guifg=NONE guibg=Green gui=NONE
     endif
   endfunction
   autocmd vimrc ColorScheme * :call DefineMyHighlights()
 
   syntax on
-  colorscheme hybrid
-
-  " 'cursorline' を必要な時にだけ有効にする
-  " http://d.hatena.ne.jp/thinca/20090530/1243615055
-  augroup vimrc-auto-cursorline
-    autocmd!
-    autocmd CursorMoved,CursorMovedI * call s:auto_cursorline('CursorMoved')
-    autocmd CursorHold,CursorHoldI * call s:auto_cursorline('CursorHold')
-    autocmd WinEnter * call s:auto_cursorline('WinEnter')
-    autocmd WinLeave * call s:auto_cursorline('WinLeave')
-
-    let s:cursorline_lock = 0
-    function! s:auto_cursorline(event)
-      if a:event ==# 'WinEnter'
-        setlocal cursorline
-        let s:cursorline_lock = 2
-      elseif a:event ==# 'WinLeave'
-        setlocal nocursorline
-      elseif a:event ==# 'CursorMoved'
-        if s:cursorline_lock
-          if 1 < s:cursorline_lock
-            let s:cursorline_lock = 1
-          else
-            setlocal nocursorline
-            let s:cursorline_lock = 0
-          endif
-        endif
-      elseif a:event ==# 'CursorHold'
-        setlocal cursorline
-        let s:cursorline_lock = 1
-      endif
-    endfunction
-  augroup END
+  colorscheme iceberg
 
 endif
 

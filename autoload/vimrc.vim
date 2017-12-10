@@ -173,13 +173,6 @@ function! vimrc#QfStrCmp(e1, e2) abort
   return t1 <? t2 ? -1 : t1 ==? t2 ? 0 : 1
 endfunction
 
-" 行をクリップボードへコピー（末尾改行なし、カーソル移動なし）
-function! vimrc#linecopy() abort
-  let view = winsaveview()
-  normal! 0vg_"+y
-  silent call winrestview(view)
-endfunction
-
 " smart indent when entering insert mode with i on empty lines
 function! vimrc#IndentWithI() abort
   if len(getline('.')) == 0
@@ -203,6 +196,14 @@ function! vimrc#toggle_quickfix_window() abort
   cclose
   if _ == winnr('$')
     botright cwindow
+  endif
+endfunction
+
+function! vimrc#terminal_open(args) abort
+  if empty(term_list())
+    execute 'terminal' a:args
+  else
+    execute 'buffer' term_list()[0]
   endif
 endfunction
 
@@ -245,6 +246,7 @@ endfunction
 " }}}2 Denite {{{2
 
 " 2017-03-30 現在の Denite では Windows で grep にディレクトリを渡すとエラーになる場合があるので cd する
+" 最近の更新で grep:'C:\path\to\dir'::^=\\s が使えるようになったかと思ったが、カレントディレクトリが C ドライブでないとエラーになる
 function! vimrc#DeniteGrepHowm() abort
   execute 'cd '.g:howm_dir
   Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s

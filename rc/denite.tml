@@ -75,6 +75,8 @@ hook_add = '''
 
   let g:ctrlp_regexp = 0
 
+  let g:ctrlp_mruf_exclude = '^C:\\Users\\hokorobi\\AppData\\Local\\Temp\\.*'
+
   " mapping
   let g:ctrlp_prompt_mappings = {
         \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>', '<m-m>'],

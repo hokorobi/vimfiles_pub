@@ -28,8 +28,10 @@ p (v)                     : 選択範囲をレジスタで置換
 <C-R> (i)                 : レジスタから貼り付け
 :v/hoge/d                 : ある文字列を含む行のみを残して削除
 :g/hoge/d                 : ある文字列を含む行を削除
-gs                        : 要素の移動を可能にする swap mode に入る feat. swap
-g<C-a>                    : 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
+gs                        : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動) に入る feat. swap
+g>                        : 要素を右に移動 feat. swap
+g<                        : 要素を左に移動 feat. swap
+g<C-a> (v)                : 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
 cxiw                      : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
 cxc                       : 入れ替え候補のキャンセル feat. vim-exchange
 X (v)                     : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
@@ -175,6 +177,7 @@ QuickFix
 Macro
 =====
 
+A-m        : マクロ m へ記録
 <Space>Q a : マクロ a へ記録
 @a         : マクロ a を実行
 
@@ -182,17 +185,24 @@ Macro
 CtrlP
 =====
 
-c-z : バッファ選択
-c-w : バッファを閉じる
+C-z : バッファ選択
+C-w : バッファを閉じる
 
 
-qfixhowm
+howm
 ========
 
-<Space>,l : 最近編集したファイル一覧
-<Space>,g : howm ファイルから grep
-<Space>q  : サブバッファを閉じる feat. closesubwin
+<Space>,u : 最近編集したファイル一覧
+<Space>,, : howm ファイルから grep
 
+vim-go
+======
+
+]] [[       : 次、前の関数へ
+:GoDecls    : ファイル内の関数、変数の定義を CtrlP で表示
+:GoDeclsDir : ディレクトリ内の関数、変数の定義を CtrlP で表示
+C-t         : GoDef のジャンプの前の位置に戻る
+:GoFreeVars : 選択範囲のコードで使用される変数がわかる
 
 Others
 ======
@@ -203,4 +213,4 @@ gv                      : 前回の選択範囲を再度選択
 :scriptnames            : 読み込まれているスクリプトを読み込まれた順番どおりに全て表示する
 :Jq .obj                : JSON の obj を抽出。引数なしなら整形のみ
 g/                      : Migemo でインクリメンタルサーチ
-
+/[\u3041-\u3096]        : ひらがな検索 https://so-zou.jp/software/tech/programming/tech/regular-expression/meta-character/variable-width-encoding.htm
