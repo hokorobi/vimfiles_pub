@@ -6,14 +6,10 @@ changelog	exe('edit '.g:howm_dir.'/changelogmemo')
 PPX.CFG	exe('edit '.g:ppx_dir.'/PPX.CFG')
 Mercurial.ini	edit ~/mercurial.ini
 Gist	Gista list
-Qiita	Qiita -l
 Zenfone Android - Gist	exe('Gista open '.g:gist_zenfone.' zenfone5.md')
 cVim - Gist	exe('Gista open '.g:gist_cvim.' gistfile1.txt')
 twicli regexp.txt - Gist	exe('Gista open '.g:gist_twicli.' regexp.txt')
 MRU	CtrlPMRUFiles
 edit ft snippets	exe('edit ' . expand('~/vimfiles/snippets/' . &filetype . '.snippets'))
+edit ft ftplugin	exe('edit ' . expand('~/vimfiles/after/ftplugin/' . &filetype . '.vim'))
 autoload vimrc	edit ~/vimfiles/autoload/vimrc.vim
-git blame	exe('Qiita b0f7cc9da0ef38276c5c')
-git commit comment kawasima	exe('Qiita feac49a299213e2c8ba6')
-git commit comment	exe('Qiita a5f922a3ef3aa58a1839')
-git commit comment オシャレ	exe('Qiita 4cb49f0fb74e8778804d')

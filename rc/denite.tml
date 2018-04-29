@@ -5,9 +5,12 @@ on_cmd = 'Denite'
 on_ft = 'howm_memo'
 depends = ['neomru.vim']
 hook_add = '''
-  nnoremap <Leader>fr :Denite -cursor-wrap file_rec:~/_vim/dein/repos<CR>
-  nnoremap <Leader>ff :DeniteBufferDir -cursor-wrap file_rec<CR>
-  nnoremap <Leader>/ :Denite -cursor-wrap line<CR>
+  " vim-rooter を使うので DeniteBuffer はやめた
+  nnoremap <Leader>ff :Denite -cursor-wrap file/rec<CR>
+  nnoremap <Leader>fr :Denite -cursor-wrap file/rec:~/_vim/dein/repos<CR>
+  nnoremap <Leader>fg :Denite -cursor-wrap file/rec:~/src<CR>
+  nnoremap <Leader>fv :Denite -cursor-wrap file/rec:~/vimfiles<CR>
+  nnoremap <Leader>/ :Denite -cursor-wrap line::noempty<CR>
 
   " howm の grep
   if exists('g:howm_dir') && isdirectory(g:howm_dir)
@@ -25,10 +28,13 @@ hook_source = '''
   call denite#custom#var('grep', 'command', ['pt'])
   call denite#custom#var('grep', 'recursive_opts', [])
   call denite#custom#var('grep', 'separator', [])
-  call denite#custom#var('grep', 'default_opts', ['--nogroup', '--nocolor', '--column', '-S'])
+  call denite#custom#var('grep', 'default_opts', ['--nogroup', '--nocolor', '--column', '--hidden', '--home-ptignore', '-S'])
+
+  " fuzzy だと期待したファイル以上のファイルが出てくる
+  call denite#custom#source('file/rec', 'matchers', ['matcher_substring'])
 
   " 体感的に files と大差ないが files だと音楽の再生が途切れる。I/Oを使い切れるということかも。
-  call denite#custom#var('file_rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '-g:', ''])
+  call denite#custom#var('file/rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '--home-ptignore', '-g:', ''])
 '''
 
 [[plugins]]
@@ -77,6 +83,9 @@ hook_add = '''
 
   let g:ctrlp_mruf_exclude = '^C:\\Users\\hokorobi\\AppData\\Local\\Temp\\.*'
 
+  " ctrlp-sessions setting
+  let g:ctrlp_open_single_match = ['session:']
+
   " mapping
   let g:ctrlp_prompt_mappings = {
         \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>', '<m-m>'],
@@ -103,10 +112,10 @@ hook_add = '''
 repo = 'hokorobi/ctrlp-sessions'
 on_cmd = ['CtrlPSession', 'MkS']
 hook_add = '''
-  let g:ctrlp_session_dir = expand('~/vimfiles/sessions')
   nnoremap <Leader>fs :<C-u>CtrlPSessions<CR>
-
   call extend(g:vimrc_altercmd_dic, {'ss': 'MkS'})
+
+  let g:ctrlp_session_dir = expand('~/vimfiles/sessions')
 '''
 
 [[plugins]]
@@ -150,5 +159,15 @@ hook_add = '''
   nnoremap <Leader>fu :<C-u>CtrlPFunky<CR>
 '''
 
+[[plugins]]
+repo = 'christoomey/ctrlp-generic'
+depends = 'vim-system_job'
+hook_add = '''
+  function! PasteCallback(selected_value) abort
+    call setreg('z', a:selected_value)
+    normal! "zp
+  endfunction
+  command! -nargs=1 CtrlPCmdPaste call CtrlPGeneric(system_job#systemlist(<q-args>), 'PasteCallback')
+'''
 # }}}1
 

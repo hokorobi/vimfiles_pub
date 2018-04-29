@@ -152,6 +152,16 @@ function! vimrc#Jq(...) abort
   execute '%! jq "' . l:arg . '"'
 endfunction
 
+" jj
+function! vimrc#Jj(...) abort
+  if 0 ==# a:0
+    let l:arg = '-p'
+  else
+    let l:arg = a:1
+  endif
+  execute '%! jj "' . l:arg . '"'
+endfunction
+
 
 " ファイラからの起動時に検索文字列を指定するのは使いにくいので、コマンド実行後に検索文字列を入力できるようにする
 " pt 用
@@ -252,6 +262,33 @@ function! vimrc#DeniteGrepHowm() abort
   Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s
 endfunction
 
+" }}}2 vcs {{{2
+function! vimrc#convert_pattern(pat)
+  let chars = split(a:pat, '\zs')
+  let len = len(chars)
+  let pat = ''
+  let i = 0
+  while i < len
+    let ch = chars[i]
+    if ch ==# '\'
+      let nch = chars[i + 1]
+      if nch =~# '[vVmM<>%]'
+        let i += 1
+      elseif nch ==# 'z'
+        let i += 2
+      elseif nch ==# '%'
+        let i += 2
+        let pat .= chars[i]
+      else
+        let pat .= ch
+      endif
+    else
+      let pat .= ch
+    endif
+    let i += 1
+  endwhile
+  return escape(pat, '\')
+endfunction
 " }}}2
 
 " }}}1

@@ -112,13 +112,10 @@ command! -nargs=? -bang ISetting call vimrc#ISetting(<q-args>, <bang>0)
 " https://github.com/cohama/.vim/blob/master/.vimrc
 command! -bang -nargs=0 DeleteMe call vimrc#DeleteMe(<bang>0)
 
-" 今開いているファイルをリネーム
-" https://github.com/cohama/.vim/blob/master/.vimrc
-command! -nargs=1 RenameMe call vimrc#RenameMe(<q-args>)
-
 " cd
 " http://vim-jp.org/vim-users-jp/2009/09/08/Hack-69.html
 command! -nargs=? -complete=dir -bang CD call vimrc#ChangeCurrentDir('<args>', '<bang>')
+nnoremap cd :<C-u>CD<CR>
 
 " diff xdoc2txt
 " xdoc2txt でフィルタリングした結果を diff
@@ -143,6 +140,13 @@ nnoremap <expr> <Leader>* ':<C-u>VimGrepCurrent ' . expand('<cword>') . '<CR>'
 if Vimrc_executable('jq')
   command! -nargs=? Jq call vimrc#Jq(<f-args>)
   call extend(g:vimrc_altercmd_dic, {'jq': 'Jq'})
+endif
+
+" jj
+" http://qiita.com/tekkoc/items/324d736f68b0f27680b8
+if Vimrc_executable('jj')
+  command! -nargs=? Jj call vimrc#Jj(<f-args>)
+  call extend(g:vimrc_altercmd_dic, {'jj': 'Jj'})
 endif
 
 " ウィンドウで表示しているバッファで diffthis
@@ -211,8 +215,8 @@ set hidden
 if has('persistent_undo')
   " undoファイルを保存するディレクトリの設定
   let &undodir = expand('~/_vim/info/undo')
-  if !isdirectory(&undodir) 
-    silent! call mkdir(&undodir, 'p')
+  if !isdirectory(&undodir)
+  silent! call mkdir(&undodir, 'p')
   endif
   " persistent-undo(無限undo)を使う
   set undofile
@@ -227,10 +231,12 @@ endif
 " セッションにオプションとマッピングは保存しない
 set sessionoptions-=options
 
-" スペルチェックを無効
+" 日本語がチェックエラーになるのでスペルチェックを無効。設定で除外もできるけど
+" スペルチェック自体不要なので。
 set nospell
 
 " 数値を八進数として解釈しない
+" a, b, c ... の連番を使うこともあるので +alpha
 set nrformats-=octal nrformats+=alpha
 
 " 矩形選択で長さの足りない行はスペース扱い
@@ -239,11 +245,8 @@ set virtualedit=block
 " : コマンドの履歴保持数など
 set history=1000
 
-" メモリ使用量
-set maxmem=2000000 maxmemtot=2000000
-
 " " をエスケープしない
-" Hg ci -m "hoge fuga" の引数を "hoge fuga" そのままで渡したいため
+" Hg ci -m "hoge fuga" の引数を "hoge fuga" そのままで渡したかっため
 " 期待した効果は得られなかった
 " set shellxescape-=\"
 
@@ -264,7 +267,7 @@ set scrolloff=10
 " 起動時のメッセージを非表示
 set shortmess+=I
 
-" 括弧入力時に対応する括弧を表示 (noshowmatch:表示しない)
+" 括弧入力時に対応する括弧を表示
 set showmatch
 
 " 常にタブラインを表示
@@ -273,7 +276,7 @@ set showtabline=2
 " コマンド行の高さ
 set cmdheight=2
 
-" 長い行を折り返して表示 (nowrap:折り返さない)
+" 長い行を折り返して表示
 set wrap
 
 " 常にステータス行を表示 (詳細は:he laststatus)
@@ -289,7 +292,7 @@ set title
 set nofoldenable foldmethod=marker foldcolumn=3 fillchars=vert:\|
 
 " 一行が折り返された場合、折り返した行の先頭に表示する文字
-let &showbreak = '> '
+let &showbreak = '>_'
 
 " マウス有効, 入力中にマウスカーソル非表示
 set mouse=a mousehide
@@ -332,8 +335,9 @@ set nofixendofline
 
 " 補完メニューの高さ指定
 set pumheight=10
-" 補完のオプションから preview を除く、候補がひとつのときもメニュー表示
-set completeopt+=menuone completeopt-=preview completeopt-=menu
+" 候補の付加情報をプレビューウィンドウに表示しない -preview
+" 候補がひとつのときもメニュー表示 +menuone
+set completeopt-=preview completeopt+=menuone
 " コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
 set wildmenu
 " TODO: wildignore を設定する？　ついでに ctrlp custom ignore も？
@@ -342,11 +346,12 @@ set wildmenu
 " }}}2 indent {{{2
 
 " indent
+" デフォルトの設定。ファイルタイプごとの設定は ftplugin にある
 " 賢い indent
 set cindent
 " タブの画面上での幅
 set tabstop=4
-" キーボードで<Tab>キーを押した時に挿入される空白の量。tabstop の値を使う
+" キーボードで<Tab>キーを押した時に挿入される空白の量に tabstop の値を使う
 set softtabstop=0
 " タブをスペースに展開しない
 set noexpandtab
@@ -370,11 +375,15 @@ set wrapscan
 " タグファイル内検索は大文字小文字を区別する
 set tagcase=match
 
+" バッファファイルのあるディレクトリから親を辿って tags を探す
+" http://thinca.hatenablog.com/entry/20090723/1248286959
+set tags=./tags;
+
 " }}}2 grep {{{2
 
 " grep プログラムに pt を指定
 if Vimrc_executable('pt')
-  let &grepprg = 'pt /nogroup /nocolor /column /S'
+  let &grepprg = 'pt /nogroup /nocolor /column /hidden /home-ptignore /S'
   " /column で桁を表示しているので %c も使うパターンを追加
   set grepformat^=%f:%l:%c:%m
 
@@ -433,26 +442,24 @@ let g:loaded_netrwFileHandlers = 1
 " }}}
 
 "       dein {{{2
-set runtimepath+=$HOME/_vim/dein/repos/github.com/Shougo/dein.vim
+let $DEIN_HOME = expand('~/_vim/dein')
+set runtimepath+=$DEIN_HOME/repos/github.com/Shougo/dein.vim
 let s:vimrcs = []
 let s:toml = expand('~/vimfiles/rc/plugins.tml')
-let s:ctrlp_toml = expand('~/vimfiles/rc/ctrlp.tml')
-let s:denite_toml = expand('~/vimfiles/rc/denite.tml')
-if has('python3')
-  let s:candidate_toml = s:denite_toml
-else
-  let s:candidate_toml = s:ctrlp_toml
-endif
+let s:candidate_toml = has('python3')
+      \ ? expand('~/vimfiles/rc/denite.tml')
+      \ : expand('~/vimfiles/rc/ctrlp.tml')
+call extend(s:vimrcs, [
+      \   s:toml,
+      \   s:candidate_toml,
+      \   expand('$VIM/gvimrc_local.vim'),
+      \   expand('~/vimfiles/vimrc'),
+      \   expand('$VIM/vimrc_local.vim'),
+      \ ])
+let g:dein#install_log_filename = $DEIN_HOME . '/dein.log'
 
-call add(s:vimrcs, s:toml)
-call add(s:vimrcs, expand('$VIM/gvimrc_local.vim'))
-call add(s:vimrcs, expand('~/vimfiles/vimrc'))
-call add(s:vimrcs, expand('$VIM/vimrc_local.vim'))
-let s:path = expand('~/_vim/dein')
-let g:dein#install_log_filename = expand('~/_vim/dein/dein.log')
-
-if dein#load_state(s:path)
-  call dein#begin(s:path, s:vimrcs)
+if dein#load_state($DEIN_HOME)
+  call dein#begin($DEIN_HOME, s:vimrcs)
   call dein#load_toml(s:toml)
   call dein#load_toml(s:candidate_toml)
   call dein#end()
@@ -462,12 +469,12 @@ endif
 call extend(g:vimrc_altercmd_dic, {
       \ 'du': 'call dein#update()',
       \ 'di': 'call dein#install()',
-      \ 'dl': 'view ' . expand('~/_vim/dein/dein.log'),
+      \ 'dl': 'view ' . g:dein#install_log_filename,
       \ 'dr': 'call dein#recache_runtimepath()'})
 
 filetype plugin indent on
 
-" }}}   changelog {{{2
+" }}}2  changelog {{{2
 
 let g:changelog_username=''
 let g:changelog_dateformat='%Y-%m-%d (%a)'
@@ -544,8 +551,9 @@ noremap : ;
 nnoremap Q q
 nnoremap q <Nop>
 nnoremap <Leader>Q q
-
-" 誤操作防止のため保存せずに閉じるを無効へ
+" IME のトグルに使っているのでノーマルモードで押し間違えることがあるため
+nnoremap <C-^> <Nop>
+" 保存せずに閉じるを無効へ
 nnoremap ZQ <Nop>
 
 " ビジュアルモードローテーション
@@ -556,27 +564,25 @@ vnoremap v <C-v>
 " help
 nnoremap H :h<Space>
 
-" nnoremap <silent> <Leader>cd :<C-u>CD<CR>
-
 " ペーストした内容を選択
 " インデント以外に何か使い道あるのかな？
 nnoremap <expr> gp '`['.strpart(getregtype(),0,1).'`]'
 
-" lexima の <CR> の定義を使うため
-" if のある行などでも発動するので誤爆が多すぎる
-" nmap o A<CR>
+" カーソル位置のハイライト名を表示
+" https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
+nmap <silent> <C-CR> <Plug>(vimrc-show-current-syntax)
+nnoremap <silent> <Plug>(vimrc-show-current-syntax)
+      \ :<C-u>echo join(map(synstack(line('.'), col('.')),'synIDattr(v:val, "name") . "(" . synIDattr(synIDtrans(v:val), "name") . ")"'), ',')<CR>
 
 " Buffer {{{2
 
 " 直前に閉じたファイルを開き直す
-" 実際には、以前開いていたバッファを開くみたい
+" 実際には、以前開いていたバッファを開く
 noremap <C-z> <C-^>
 
 " バッファ移動
 noremap b :<C-u>bn<CR>
-" noremap <C-Right> :<C-u>bn<CR>
 noremap B :<C-u>bp<CR>
-" noremap <C-Left> :<C-u>bp<CR>
 
 " <C-s> でバッファ変更時のみ保存。無名はダイアログ表示
 " http://d.hatena.ne.jp/tyru/20130803/cua_save
@@ -584,7 +590,6 @@ inoremap <script> <SID>(gui-save) <C-o><SID>(gui-save)
 inoremap <silent> <script> <C-s> <SID>(gui-save)<ESC>
 nnoremap <silent> <script> <C-s> <SID>(gui-save)
 nnoremap <silent> <script> <Leader>s <SID>(gui-save)
-" nmap <silent> <script> <Leader>w <SID>(gui-save)
 nnoremap <SID>(gui-save) :<C-u>call <SID>gui_save()<CR>
 function! s:gui_save()
   if bufname('%') ==# ''
@@ -616,10 +621,10 @@ noremap  <C-l> <C-w>l
 inoremap <C-l> <C-O><C-w><C-w>
 
 " Shift + 矢印でウィンドウサイズを変更
-nnoremap <S-Left>  <C-w><<CR>
-nnoremap <S-Right> <C-w>><CR>
-nnoremap <S-Up>    <C-w>-<CR>
-nnoremap <S-Down>  <C-w>+<CR>
+nnoremap <S-Left>  <C-w><
+nnoremap <S-Right> <C-w>>
+nnoremap <S-Up>    <C-w>-
+nnoremap <S-Down>  <C-w>+
 
 " ウィンドウを閉じる
 noremap <C-q> :<C-u>close<CR>
@@ -636,10 +641,8 @@ nnoremap <silent> [toggle]q :<C-u>call vimrc#toggle_quickfix_window()<CR>
 " }}}2 Motion {{{2
 
 " 表示上の行移動変更
-nnoremap j gj
-nnoremap k gk
-nnoremap gj j
-nnoremap gk k
+nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
+nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 
 " カーソル移動 {{{
 " http://itchyny.hatenablog.com/entry/2016/02/02/210000
@@ -648,8 +651,8 @@ noremap <expr> <M-j> max([winheight(0) - 2, 1]) . "\<C-d>" . (line('.') > line('
 noremap! <M-k> <PageUp>
 noremap <expr> <M-k> max([winheight(0) - 2, 1]) . "\<C-u>" . (line('.') < 1         + winheight(0) ? 'H' : 'L')
 
-onoremap <silent> <Leader>h ^
-onoremap <silent> <Leader>l $
+onoremap <Leader>h ^
+onoremap <Leader>l $
 
 " mode nvi は smarthome でマッピング
 cnoremap <C-a> <Home>
@@ -684,12 +687,11 @@ noremap <C-Tab> :<C-u>tabnext<CR>
 noremap <C-S-Tab> :<C-u>tabprevious<CR>
 
 " cn, cp
-noremap <F10> :cn<CR>
-noremap <S-F10> :cp<CR>
+noremap <F10> :cnext<CR>
+noremap <S-F10> :cprevious<CR>
 
 " http://postd.cc/how-to-boost-your-vim-productivity/
 nnoremap <CR> G
-nnoremap <BS> gg
 
 " https://raw.githubusercontent.com/todashuta/.dotfiles/aa1f494c4f223113e619f2551161af2176df1deb/.vimrc#L693
 " insert mode から戻るときにカーソルを移動させない
@@ -714,6 +716,9 @@ vnoremap <C-x> "+d
 noremap! <C-v> <MiddleMouse>
 nnoremap <C-v> "+gP
 
+" バッファのフルパスをクリップボードへコピー
+nnoremap <silent><expr> <Leader>y% ':let @+ = "' . substitute(expand("%:p"), "\\", "\\\\\\", "g") . '"<CR>'
+
 " バッファ全体をクリップボードへコピー
 nnoremap <Leader>ye :<C-u>%y+<CR>
 
@@ -733,11 +738,8 @@ noremap! <C-d> <Del>
 noremap  <C-d> x
 
 " 行頭まで削除
-inoremap <C-Backspace> <C-u>
-nnoremap <C-Backspace> d0
-
-" バッファ全体をインデント
-noremap <F7> mzgg=G`z<CR>
+inoremap <C-BS> <C-u>
+nnoremap <C-BS> d0
 
 " カーソル移動せずに改行挿入
 nnoremap <M-o> :<C-U>call append(line('.'), repeat([''], v:count1))<CR>
@@ -747,10 +749,6 @@ nnoremap <M-O> :<C-U>call append(line('.') - 1, repeat([''], v:count1))<CR>
 nnoremap <F6> <ESC>i<C-R>=strftime("%Y-%m-%d")<CR><ESC>
 inoremap <F6> <C-R>=strftime("%Y-%m-%d")<CR>
 
-" Make shift-insert work like in Xterm
-map <S-Insert> <MiddleMouse>
-map! <S-Insert> <MiddleMouse>
-
 " smart indent when entering insert mode with i on empty lines
 " http://qiita.com/Qureana/items/4790be39e04add101ee2
 nnoremap <expr> i vimrc#IndentWithI()
@@ -758,18 +756,8 @@ nnoremap <expr> i vimrc#IndentWithI()
 " "レジスタから挿入
 ICnoremap <C-R> <C-R>"
 
-" https://raw.githubusercontent.com/machakann/vimrc/3dc16ac1ae31197e35bebdf3f0fbf275117478bd/.vimrc
-" get into incert mode at a character before the end of line.
-" call hoge(piyo)
-"               # I want to insert here.
-" 'nnoremap gA $i' is not good, because it is not repeatable.
-nnoremap gA A<C-g>U<Left>
-
-" 置換繰り返し。フラグも含む
-NXnoremap & :&&<CR>
-
-" http://qiita.com/itmammoth/items/312246b4b7688875d023
 " ハイライトしてから置換する
+" http://qiita.com/itmammoth/items/312246b4b7688875d023
 nnoremap # "zyiw:let @/ = '\<' . @z . '\>'<CR>:set hlsearch<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
 xnoremap # mz:call <SID>set_vsearch()<CR>:set hlsearch<CR>`z:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
 function! s:set_vsearch()
@@ -781,6 +769,10 @@ endfunction
 " コメント開始文字列を挿入せずに改行
 inoremap <S-CR> <CR><C-u>
 nnoremap <S-CR> o<C-u>
+
+" visual repeat
+" http://vim.wikia.com/wiki/Repeat_command_on_each_line_in_visual_block
+vnoremap . :normal .<CR>
 
 " }}}2 Search {{{2
 
@@ -798,16 +790,12 @@ cnoremap <C-k> <C-t>
 
 " }}}2
 
-" カーソル位置のハイライト名を表示
-nmap <silent> <C-CR> <Plug>(vimrc-show-current-syntax)
-nnoremap <silent> <Plug>(vimrc-show-current-syntax)
-      \ :<C-u>echo join(map(synstack(line('.'), col('.')),'synIDattr(v:val, "name") . "(" . synIDattr(synIDtrans(v:val), "name") . ")"'), ',')<CR>
-
 " }}}1 Terminal {{{1
 if has('terminal')
   tnoremap <Esc> <C-w><S-n>
 
   " すでに :terminal が存在していればその :terminal を使用する
+  " http://secret-garden.hatenablog.com/entry/2017/11/14/113127
   " FIXME: ウィンドウが開いていれば、そこにフォーカスしたい
   command! -nargs=* Terminal call vimrc#terminal_open(<q-args>)
   call extend(g:vimrc_altercmd_dic, {'ter[minal]': 'Terminal'})
@@ -818,7 +806,7 @@ if has('gui_running')
   " font {{{
   " set guifont=BDF_M+:h9
   " set guifont=Cica:h12:qANTIALIASED
-  set guifont=MyricaM_M:h12
+  set guifont=MyricaM_M:h11
 
   " 行間隔の設定
   set linespace=1
@@ -828,6 +816,11 @@ if has('gui_running')
     set ambiwidth=auto
   endif
 
+  " Use colored emoji
+  if has('patch-8.0.1343')
+    " renderoptions の設定のしかた — KaoriYa https://www.kaoriya.net/blog/2016/12/25/
+    set renderoptions=type:directx,renmode:5
+  endif
   " }}}
 
   " タブ文字などを表示
@@ -841,27 +834,61 @@ if has('gui_running')
   " 最大化で起動
   autocmd vimrc GUIEnter * simalt ~x
 
-  " colorscheme
+  " タブページを見やすく {{{
+  " http://secret-garden.hatenablog.com/entry/2017/12/22/233144
+  function! GuiTabLabel() abort
+    let label = ''
+    let bufnrlist = tabpagebuflist(v:lnum)
+
+    " このタブページに変更のあるバッファがるときには '+' を追加する
+    for bufnr in bufnrlist
+      if getbufvar(bufnr, '&modified')
+        let label = '+'
+        break
+      endif
+    endfor
+
+    " ウィンドウが複数あるときにはその数を追加する
+    let wincount = tabpagewinnr(v:lnum, '$')
+    if wincount > 1
+      let label .= wincount
+    endif
+    if label !=# ''
+      let label .= ' '
+    endif
+
+    " バッファ名を追加する
+    return label . bufname(bufnrlist[tabpagewinnr(v:lnum) - 1])
+  endfunction
+  " グローバル関数でないとだめ
+  set guitablabel=%{GuiTabLabel()}
+  " }}}
+
+  " colorscheme {{{
+  " https://github.com/vim-jp/reading-vimrc/wiki/vimrcアンチパターン
   function! DefineMyHighlights()
     if g:colors_name is# 'hybrid'
-      highlight Visual guifg=Black guibg=#d33682 ctermbg=LightRed term=reverse
       " 行番号が見づらかった。
       highlight LineNr ctermfg=14 guifg=#8d7571 guibg=#1d1f21
       " カーソル行もみやすく
       highlight CursorLine gui=underline guifg=NONE guibg=NONE
-      " タブ文字を見やすく
-      highlight SpecialKey guifg=#707880
     endif
 
-    " IME の有効無効でカーソルの色を変更する。
-    if has('multi_byte_ime')
-      highlight CursorIM guifg=NONE guibg=Green gui=NONE
-    endif
+    " 選択業をみやすく
+    highlight Visual guifg=Black guibg=#d33682 ctermbg=LightRed term=reverse
+      " タブ文字を見やすく
+      highlight SpecialKey guifg=#707880
+
+      " IME の有効無効でカーソルの色を変更する。
+      if has('multi_byte_ime')
+        highlight CursorIM guifg=NONE guibg=Green gui=NONE
+      endif
   endfunction
   autocmd vimrc ColorScheme * :call DefineMyHighlights()
 
   syntax on
   colorscheme iceberg
+  " }}}
 
 endif
 
