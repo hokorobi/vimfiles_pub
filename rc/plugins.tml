@@ -15,6 +15,8 @@ hook_source = '''
         \ 'converter_remove_paren',
         \ 'converter_remove_overlap',
         \])
+  " 日本語入力時の勝手に確定を抑制するため
+  call deoplete#custom#option('min_pattern_length', 3)
 '''
 
 [[plugins]]
@@ -349,6 +351,14 @@ repo = 'Shougo/context_filetype.vim'
 [[plugins]]
 repo = 'hnamikaw/vim-autohotkey'
 
+[[plugins]]
+repo = 'hokorobi/riv.vim'
+frozen = 1
+on_ft = 'rst'
+hook_source = '''
+  let g:riv_global_leader = 'e'
+'''
+
 #}}}2
 
 # }}}1  tags {{{1
@@ -442,7 +452,7 @@ hook_add = '''
 # }}}1  Input & Edit {{{1
 [[plugins]]
 repo = 'cohama/lexima.vim'
-on_event = 'InsertEnter'
+on_event = ['InsertEnter', 'CmdlineEnter']
 hook_source = '''
   source ~/vimfiles/rc/lexima.vim
 '''
@@ -795,12 +805,12 @@ hook_add = '''
 repo = 'mhinz/vim-sayonara'
 on_cmd = 'Sayonara'
 hook_add = '''
-  let g:sayonara_filetypes = {
-        \ 'qf': 'bdelete',
-        \ 'help': 'bdelete!',
-        \ }
-
   noremap <silent> qq :Sayonara!<CR>
+'''
+hook_source = '''
+  let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+  let g:sayonara_filetypes.qf = 'bdelete'
+  let g:sayonara_filetypes.help = 'bdelete!'
 '''
 
 [[plugins]]

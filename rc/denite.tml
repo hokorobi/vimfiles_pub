@@ -25,16 +25,25 @@ hook_source = '''
   call denite#custom#map('insert', ';', '<denite:enter_mode:normal>', 'noremap')
   call denite#custom#map('insert', ',', '<denite:input_command_line>', 'noremap')
 
-  call denite#custom#var('grep', 'command', ['pt'])
-  call denite#custom#var('grep', 'recursive_opts', [])
-  call denite#custom#var('grep', 'separator', [])
-  call denite#custom#var('grep', 'default_opts', ['--nogroup', '--nocolor', '--column', '--hidden', '--home-ptignore', '-S'])
+  if Vimrc_executable('rg')
+    call denite#custom#var('grep', 'command', ['rg'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+  elseif Vimrc_executable('pt')
+    call denite#custom#var('grep', 'command', ['pt'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'separator', [])
+    call denite#custom#var('grep', 'default_opts', ['--nogroup', '--nocolor', '--column', '--hidden', '--home-ptignore', '-S'])
+  endif
 
   " fuzzy だと期待したファイル以上のファイルが出てくる
   call denite#custom#source('file/rec', 'matchers', ['matcher_substring'])
 
-  " 体感的に files と大差ないが files だと音楽の再生が途切れる。I/Oを使い切れるということかも。
-  call denite#custom#var('file/rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '--home-ptignore', '-g:', ''])
+  if Vimrc_executable('rg')
+    call denite#custom#var('file/rec', 'command', ['rg', '--files', '--color=never', '--glob', '!.git'])
+  elseif Vimrc_executable('pt')
+    " 体感的に files と大差ないが files だと音楽の再生が途切れる。I/Oを使い切れるということかも。
+    call denite#custom#var('file/rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '--home-ptignore', '-g:', ''])
+  endif
 '''
 
 [[plugins]]
@@ -54,8 +63,10 @@ hook_add = '''
 
   " TODO: バッファをフルパスで検索したい。~/ が展開されていない。
 
-  " https://github.com/mattn/files
-  if Vimrc_executable('files')
+  if Vimrc_executable('rg')
+    let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
+  elseif Vimrc_executable('files')
+    " https://github.com/mattn/files
     let g:ctrlp_user_command = 'files -A %s'
   endif
 
@@ -148,7 +159,7 @@ hook_add = '''
 repo = 'ompugao/ctrlp-locate'
 on_cmd = 'CtrlPLocate'
 hook_add = '''
-  nnoremap <Leader>e :<C-u>CtrlPLocate<CR>
+  nnoremap <Leader>fe :<C-u>CtrlPLocate<CR>
   let g:ctrlp_locate_command_definition = 'es -n 100 {query}'
 '''
 

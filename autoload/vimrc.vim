@@ -99,7 +99,7 @@ function! vimrc#RenameMe(newFileName) abort
   call delete(currentFileName)
 endfunction
 
-" cd
+" 開いているファイルのディレクトリへ移動
 function! vimrc#ChangeCurrentDir(directory, bang) abort
   if a:directory ==# ''
     lcd %:p:h

@@ -112,7 +112,7 @@ command! -nargs=? -bang ISetting call vimrc#ISetting(<q-args>, <bang>0)
 " https://github.com/cohama/.vim/blob/master/.vimrc
 command! -bang -nargs=0 DeleteMe call vimrc#DeleteMe(<bang>0)
 
-" cd
+" 開いているファイルのディレクトリへ移動
 " http://vim-jp.org/vim-users-jp/2009/09/08/Hack-69.html
 command! -nargs=? -complete=dir -bang CD call vimrc#ChangeCurrentDir('<args>', '<bang>')
 nnoremap cd :<C-u>CD<CR>
@@ -135,19 +135,18 @@ command! -nargs=* -bang SortLine call vimrc#sortline(<q-bang>, <f-args>)
 command! -nargs=1 VimGrepCurrent vimgrep <args> % | cwindow
 nnoremap <expr> <Leader>* ':<C-u>VimGrepCurrent ' . expand('<cword>') . '<CR>'
 
-" jq
-" http://qiita.com/tekkoc/items/324d736f68b0f27680b8
-if Vimrc_executable('jq')
-  command! -nargs=? Jq call vimrc#Jq(<f-args>)
-  call extend(g:vimrc_altercmd_dic, {'jq': 'Jq'})
-endif
-
 " jj
 " http://qiita.com/tekkoc/items/324d736f68b0f27680b8
 if Vimrc_executable('jj')
   command! -nargs=? Jj call vimrc#Jj(<f-args>)
+  command! -nargs=? Jq call vimrc#Jj(<f-args>)
   call extend(g:vimrc_altercmd_dic, {'jj': 'Jj'})
+elseif Vimrc_executable('jq')
+  " jq
+  command! -nargs=? Jq call vimrc#Jq(<f-args>)
+  call extend(g:vimrc_altercmd_dic, {'jq': 'Jq'})
 endif
+
 
 " ウィンドウで表示しているバッファで diffthis
 call extend(g:vimrc_altercmd_dic, {'dt': 'windo diffthis'})
@@ -216,7 +215,7 @@ if has('persistent_undo')
   " undoファイルを保存するディレクトリの設定
   let &undodir = expand('~/_vim/info/undo')
   if !isdirectory(&undodir)
-  silent! call mkdir(&undodir, 'p')
+    silent! call mkdir(&undodir, 'p')
   endif
   " persistent-undo(無限undo)を使う
   set undofile
@@ -226,7 +225,7 @@ endif
 
 " クリップボードをOSと共有
 " x なども共有されてしまうのでやめ
-"set clipboard=unnamed
+"set clipboard+=unnamed
 
 " セッションにオプションとマッピングは保存しない
 set sessionoptions-=options
@@ -374,7 +373,6 @@ set wrapscan
 
 " タグファイル内検索は大文字小文字を区別する
 set tagcase=match
-
 " バッファファイルのあるディレクトリから親を辿って tags を探す
 " http://thinca.hatenablog.com/entry/20090723/1248286959
 set tags=./tags;
@@ -382,7 +380,10 @@ set tags=./tags;
 " }}}2 grep {{{2
 
 " grep プログラムに pt を指定
-if Vimrc_executable('pt')
+if Vimrc_executable('rg')
+  set grepprg=rg\ --vimgrep\ --no-heading
+  set grepformat=%f:%l:%c:%m,%f:%l:%m
+elseif Vimrc_executable('pt')
   let &grepprg = 'pt /nogroup /nocolor /column /hidden /home-ptignore /S'
   " /column で桁を表示しているので %c も使うパターンを追加
   set grepformat^=%f:%l:%c:%m
@@ -441,7 +442,10 @@ let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
 " }}}
 
-"       dein {{{2
+"       sayonara {{{2
+let g:sayonara_filetypes = {}
+
+" }}}2  dein {{{2
 let $DEIN_HOME = expand('~/_vim/dein')
 set runtimepath+=$DEIN_HOME/repos/github.com/Shougo/dein.vim
 let s:vimrcs = []
@@ -729,6 +733,17 @@ xnoremap <silent> <expr> y "ygv" . mode()
 nnoremap c "_c
 nnoremap C "_C
 
+if exists("##TextYankPost")
+  nmap Y y$
+
+  nnoremap <silent> <Leader>yy :call <SID>Linecopy()<CR>
+  function! s:Linecopy() abort
+    let view = winsaveview()
+    execute 'normal' "0vg_\"+y"
+    silent call winrestview(view)
+  endfunction
+endif
+
 " }}}2 Edit {{{2
 " lexima や neocomplete で C-h と BS を同じ挙動にする
 map! <C-h> <BS>
@@ -748,6 +763,8 @@ nnoremap <M-O> :<C-U>call append(line('.') - 1, repeat([''], v:count1))<CR>
 " 日付入力
 nnoremap <F6> <ESC>i<C-R>=strftime("%Y-%m-%d")<CR><ESC>
 inoremap <F6> <C-R>=strftime("%Y-%m-%d")<CR>
+inoremap <S-F6> [<C-R>=strftime("%Y-%m-%d")<CR>]!<SPACE>
+nnoremap <S-F6> <ESC>i[<C-R>=strftime("%Y-%m-%d")<CR>]!<SPACE><ESC>
 
 " smart indent when entering insert mode with i on empty lines
 " http://qiita.com/Qureana/items/4790be39e04add101ee2
@@ -819,7 +836,8 @@ if has('gui_running')
   " Use colored emoji
   if has('patch-8.0.1343')
     " renderoptions の設定のしかた — KaoriYa https://www.kaoriya.net/blog/2016/12/25/
-    set renderoptions=type:directx,renmode:5
+    " 8.0.1390 から scrlines:1 でちょっと速くなるらしいので試しに
+    set renderoptions=type:directx,renmode:5,scrlines:1
   endif
   " }}}
 
@@ -874,15 +892,15 @@ if has('gui_running')
       highlight CursorLine gui=underline guifg=NONE guibg=NONE
     endif
 
-    " 選択業をみやすく
+    " 選択行をみやすく
     highlight Visual guifg=Black guibg=#d33682 ctermbg=LightRed term=reverse
-      " タブ文字を見やすく
-      highlight SpecialKey guifg=#707880
+    " タブ文字を見やすく
+    highlight SpecialKey guifg=#707880
 
-      " IME の有効無効でカーソルの色を変更する。
-      if has('multi_byte_ime')
-        highlight CursorIM guifg=NONE guibg=Green gui=NONE
-      endif
+    " IME の有効無効でカーソルの色を変更する。
+    if has('multi_byte_ime')
+      highlight CursorIM guifg=NONE guibg=Green gui=NONE
+    endif
   endfunction
   autocmd vimrc ColorScheme * :call DefineMyHighlights()
 

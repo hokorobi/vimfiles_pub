@@ -191,6 +191,32 @@ Gina.vim
 cc (status) : Gina commit
 s (blame)   : Gina show
 
+riv.vim
+=======
+<riv> = e
+<riv>cdd      : 今日の日付を挿入
+<riv>cf       : footnote 追加
+<riv>cs       : カーソル位置の単語を強調
+< >           : インデント。リストも同じく
+<riv>s1       : レベル1の見出し追加。1 は 6 まで変えられる
+<riv>hs       : 現在のカレントを参照
+<riv>cb       : コードブロック（::）追加
+<riv>cm       : explicit mark (..) 追加
+<riv>cr       : -------- 追加
+<riv>ck       : リンク追加
+<riv>cl       : ```` 追加
+<riv>l1       : 現在行をリストアイテム化。1 - 6 でレベル指定
+<riv>lx       : 現在行を非リストアイテム化
+C-Enter (i)   : リストアイテムを追加
+S-Enter (i)   : 子のリストアイテムを追加
+C-S-Enter (i) : 親のリストアイテムを追加
+<riv>ee       : リストのときに TODO へ。TODO のときは [] -> [o] -> [x] に変更。
+<riv>ep       : TODO の優先度を追加 or 下げる
+Enter         : リンクのターゲットへ移動
+<riv>tc       : テーブル追加
+C-Enter (i)   : テーブルの行を追加
+| (i)         : テーブルの列を追加
+
 Others
 ======
 
