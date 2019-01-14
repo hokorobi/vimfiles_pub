@@ -2,49 +2,24 @@ scriptencoding utf-8
 
 call lexima#set_default_rules()
 
-" docstring の改行
-for c in ["'", '"']
-  call lexima#add_rule({
-        \   'at'         : c . '\{3}.*\%#' . c . '\{3}',
-        \   'char'       : '<CR>',
-        \   'input_after': '<CR>',
-        \})
-endfor
+" mode ':' {{{1
+" :s -> :%s {{{2
+call lexima#add_rule({
+      \   'at'   : '^s\%#',
+      \   'char' : '/',
+      \   'input': '<left><left>%<Right><Right>/',
+      \   'mode' : ':',
+      \})
 
-" 括弧補完を cgn で使う
-" http://qiita.com/yami_beta/items/26995a5c382bd83ac38f
-inoremap <C-f> <C-r>=lexima#insmode#leave(1, '<LT>C-G>U<LT>RIGHT>')<CR>
+call lexima#add_rule({
+      \   'at'   : '^s\%#',
+      \   'char' : '@',
+      \   'input': '<left><left>%<Right><Right>@',
+      \   'mode' : ':',
+      \})
 
-" 空白を後ろに入れたい文字 {{{1
-" https://github.com/awaman/dotfiles/blob/master/.vim/rc/lexima.vim
-for c in [',']
-  " 後にスペースを入れる
-  call lexima#add_rule({
-        \   'at'   : '\%#',
-        \   'char' : c,
-        \   'input': c . '<Space>',
-        \})
-  " 後にスペースを続けられないようにする
-  call lexima#add_rule({
-        \   'at'   : c . ' \%#',
-        \   'char' : '<Space>',
-        \   'input': '',
-        \})
-  " 一度に削除する
-  call lexima#add_rule({
-        \   'at'   : '\S\+' . c . ' \%#',
-        \   'char' : '<BS>',
-        \   'input': '<BS><BS>',
-        \})
-  " 改行時に末尾の空白削除
-  call lexima#add_rule({
-        \   'at' : c . ' \%#',
-        \   'char' : '<CR>',
-        \   'input' : '<BS><CR>',
-        \})
-endfor
 
-" }}}1 Hg {{{1
+" }}}2 Hg {{{2
 
 "Hg cim -> Hg ci -m ""
 call lexima#add_rule({
@@ -76,7 +51,51 @@ call lexima#add_rule({
       \   'mode' : ':',
       \})
 
-" }}}1 = {{{1
+" }}}2
+" }}}1 mode 'i' {{{1
+" docstring の改行 {{{2
+for c in ["'", '"']
+  call lexima#add_rule({
+        \   'at'         : c . '\{3}.*\%#' . c . '\{3}',
+        \   'char'       : '<CR>',
+        \   'input_after': '<CR>',
+        \})
+endfor
+
+" }}}2 括弧補完を cgn で使う {{{2
+" http://qiita.com/yami_beta/items/26995a5c382bd83ac38f
+inoremap <C-f> <C-r>=lexima#insmode#leave(1, '<LT>C-G>U<LT>RIGHT>')<CR>
+
+" }}}2 空白を後ろに入れる {{{2
+" https://github.com/awaman/dotfiles/blob/master/.vim/rc/lexima.vim
+for c in [',']
+  " 後にスペースを入れる
+  call lexima#add_rule({
+        \   'at'   : '\%#',
+        \   'char' : c,
+        \   'input': c . '<Space>',
+        \})
+  " 後にスペースを続けられないようにする
+  call lexima#add_rule({
+        \   'at'   : c . ' \%#',
+        \   'char' : '<Space>',
+        \   'input': '',
+        \})
+  " 一度に削除する
+  call lexima#add_rule({
+        \   'at'   : '\S\+' . c . ' \%#',
+        \   'char' : '<BS>',
+        \   'input': '<BS><BS>',
+        \})
+  " 改行時に末尾の空白削除
+  call lexima#add_rule({
+        \   'at' : c . ' \%#',
+        \   'char' : '<CR>',
+        \   'input' : '<BS><CR>',
+        \})
+endfor
+
+" }}}2 = {{{2
 
 " =の前後にスペースを入れる
 call lexima#add_rule({
@@ -127,8 +146,8 @@ call lexima#add_rule({
       \   'input': '<BS><BS><BS><BS>',
       \})
 
-" }}}1 filetype {{{1
-" vim {{{2
+" }}}2 filetype {{{2
+" vim {{{3
 
 " set 系コマンドでは = の間にスペースを入れない
 call lexima#add_rule({
@@ -243,7 +262,7 @@ for s:val in ['{:}', '\[:\]']
 endfor
 "}}}3
 
-" }}}2 go {{{2
+" }}}3 go {{{3
 " == の場合は := にする
 call lexima#add_rule({
       \   'at'      : '\w\+ == \%#',
@@ -252,7 +271,55 @@ call lexima#add_rule({
       \   'filetype': 'go',
       \})
 
-" }}}2 python {{{2
+" := の場合は != にする
+call lexima#add_rule({
+      \   'at'      : '\w\+ := \%#',
+      \   'char'    : '=',
+      \   'input'   : '<BS><BS><BS>!=<Space>',
+      \   'filetype': 'go',
+      \})
+
+" != の場合は = にする
+call lexima#add_rule({
+      \   'at'      : '\w\+ != \%#',
+      \   'char'    : '=',
+      \   'input'   : '<BS><BS><BS>=<Space>',
+      \   'filetype': 'go',
+      \})
+
+" != の場合は := にする
+call lexima#add_rule({
+      \   'at'      : '\w\+ != \%#',
+      \   'char'    : '+',
+      \   'input'   : '<BS><BS><BS>:=<Space>',
+      \   'filetype': 'go',
+      \})
+
+" := の場合は == にする
+call lexima#add_rule({
+      \   'at'      : '\w\+ := \%#',
+      \   'char'    : '+',
+      \   'input'   : '<BS><BS><BS>==<Space>',
+      \   'filetype': 'go',
+      \})
+
+" == の場合は = にする
+call lexima#add_rule({
+      \   'at'      : '\w\+ == \%#',
+      \   'char'    : '+',
+      \   'input'   : '<BS><BS><BS>=<Space>',
+      \   'filetype': 'go',
+      \})
+
+" = の場合は != にする
+call lexima#add_rule({
+      \   'at'      : '\w\+ = \%#',
+      \   'char'    : '+',
+      \   'input'   : '<BS><BS>!=<Space>',
+      \   'filetype': 'go',
+      \})
+
+" }}}3 python {{{3
 
 " http://qiita.com/hatchinee/items/c5bc19a656925ce33882
 " classとかの定義時に:までを入れる
@@ -323,7 +390,7 @@ call lexima#add_rule({
       \   'filetype': ['python'],
       \})
 
-" }}}2 markdown {{{2
+" }}}3 markdown {{{3
 " 改行後に末尾のスペースが2つ以上の場合は2つ残す
 call lexima#add_rule({
       \   'at'      : '\S\+\s\s\+\%#$',
@@ -364,7 +431,7 @@ call lexima#add_rule({
       \   'filetype': ['markdown'],
       \})
 
-" }}}2 space {{{2
+" }}}3 others {{{3
 " =の前後にスペースを入れない
 call lexima#add_rule({
       \   'at'   : '.\%#',
@@ -372,5 +439,6 @@ call lexima#add_rule({
       \   'filetype': ['rst', 'sh']
       \})
 
+" }}}3
 " }}}2
 " }}}1

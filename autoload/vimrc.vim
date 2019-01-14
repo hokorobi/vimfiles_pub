@@ -12,6 +12,7 @@ endfunction
 
 
 " / と :s///g をトグル
+" 8.1.0271 あたりからいらなくなったはず
 function! vimrc#ToggleSubstituteSearch(type, line) abort
   if a:type ==# '/' || a:type ==# '?'
     let range = s:GetOnetime('s:range', '%')
@@ -217,6 +218,95 @@ function! vimrc#terminal_open(args) abort
   endif
 endfunction
 
+" 端末ウィンドウを複製する
+function! vimrc#dup_term_buf() abort
+  let file = tempname()
+  call term_dumpwrite('', file)
+  call term_dumpload(file)
+  setlocal nolist
+  call delete(file)
+endfunction
+
+let s:hint_i_ctrl_x_msg = join([
+      \ 'l: While lines',
+      \ 'n/p: keywords in the current file',
+      \ "k: keywords in 'dictionary'",
+      \ "t: keywords in 'thesaurus'",
+      \ 'i: keywords in the current and included files',
+      \ ']: tags',
+      \ 'f: file names',
+      \ 'd: definitions or macros',
+      \ 'v: Vim command-line',
+      \ "u: User defined completion ('completefunc')",
+      \ "o: omni completion ('omnifunc')",
+      \ "s: Spelling suggestions ('spell')"
+      \], "\n")
+function! vimrc#InsCompl() abort
+  echo s:hint_i_ctrl_x_msg
+  let c = nr2char(getchar())
+  if c == 'l'
+    return "\<C-x>\<C-l>"
+  elseif c == 'n'
+    return "\<C-x>\<C-n>"
+  elseif c == 'p'
+    return "\<C-x>\<C-p>"
+  elseif c == 'k'
+    return "\<C-x>\<C-k>"
+  elseif c == 't'
+    return "\<C-x>\<C-t>"
+  elseif c == 'i'
+    return "\<C-x>\<C-i>"
+  elseif c == ']'
+    return "\<C-x>\<C-]>"
+  elseif c == 'f'
+    return "\<C-x>\<C-f>"
+  elseif c == 'd'
+    return "\<C-x>\<C-d>"
+  elseif c == 'v'
+    return "\<C-x>\<C-v>"
+  elseif c == 'u'
+    return "\<C-x>\<C-u>"
+  elseif c == 'o'
+    return "\<C-x>\<C-o>"
+  elseif c == 's'
+    return "\<C-x>s"
+  elseif c == nr2char(27)
+    " ESC
+    return ''
+  endif
+  return "\<Tab>"
+endfunction
+
+" QuickFix か loclist かをを自動的に判定して項目移動 {{{
+function! s:listmove(winnr, direction) abort
+  let l:wi = getwininfo(win_getid(a:winnr))[0]
+  if l:wi.loclist
+    if a:direction ==# 'next'
+      silent! lnext
+    else
+      silent! lprevious
+    endif
+    return v:true
+  elseif l:wi.quickfix
+    if a:direction ==# 'next'
+      silent! cnext
+    else
+      silent! cprevious
+    endif
+    return v:true
+  endif
+  return v:false
+endfunction
+
+function! vimrc#listmove(direction) abort
+  for i in range(1, winnr('$'))
+    if s:listmove(i, a:direction)
+      return
+    endif
+  endfor
+endfunction
+" }}}
+
 " plugin {{{1
 
 " gf-user {{{2
@@ -262,33 +352,6 @@ function! vimrc#DeniteGrepHowm() abort
   Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s
 endfunction
 
-" }}}2 vcs {{{2
-function! vimrc#convert_pattern(pat)
-  let chars = split(a:pat, '\zs')
-  let len = len(chars)
-  let pat = ''
-  let i = 0
-  while i < len
-    let ch = chars[i]
-    if ch ==# '\'
-      let nch = chars[i + 1]
-      if nch =~# '[vVmM<>%]'
-        let i += 1
-      elseif nch ==# 'z'
-        let i += 2
-      elseif nch ==# '%'
-        let i += 2
-        let pat .= chars[i]
-      else
-        let pat .= ch
-      endif
-    else
-      let pat .= ch
-    endif
-    let i += 1
-  endwhile
-  return escape(pat, '\')
-endfunction
 " }}}2
 
 " }}}1

@@ -1,7 +1,9 @@
 _vimrc.local	exe('edit '.g:vimrc_local)
 plugins.tml	edit ~/vimfiles/rc/plugins.tml
 denite.tml	edit ~/vimfiles/rc/denite.tml
+ctrlp_both.tml	edit ~/vimfiles/rc/ctrlp_both.tml
 cheatsheet	edit ~/vimfiles/rc/cheatsheet.txt
+scriptnames	Capture scriptnames
 changelog	exe('edit '.g:howm_dir.'/changelogmemo')
 PPX.CFG	exe('edit '.g:ppx_dir.'/PPX.CFG')
 Mercurial.ini	edit ~/mercurial.ini
