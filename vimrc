@@ -209,16 +209,16 @@ set nobackup backupdir=$temp
 " 編集中でも他のファイルを開く
 set hidden
 
-" undo-persistence
-if has('persistent_undo')
-  " undoファイルを保存するディレクトリの設定
-  let &undodir = expand('~/_vim/info/undo')
-  if !isdirectory(&undodir)
+" undo-persistence {{{
+" undoファイルを保存するディレクトリの設定
+let &undodir = expand('~/_vim/info/undo')
+if !isdirectory(&undodir)
     silent! call mkdir(&undodir, 'p')
-  endif
-  " persistent-undo(無限undo)を使う
-  set undofile
 endif
+
+set undofile
+" }}}
+
 
 " }}}2 Function {{{2
 

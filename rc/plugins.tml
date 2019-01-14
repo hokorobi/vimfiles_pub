@@ -512,6 +512,9 @@ repo = 'itchyny/vim-cursorword'
 [[plugins]]
 repo = 'andymass/vim-matchup'
 hook_add = '''
+  " ds% cs% を有効にする
+  let g:matchup_surround_enabled = 1
+
   function! s:set_match_words()
     " Enable these pairs for all file types
     let words = ['(:)', '{:}', '[:]', '（:）', '「:」', '『:』', '【:】']
@@ -1129,7 +1132,6 @@ hook_add = '''
   let g:ale_linters = {
         \   'javascript': ['eslint'],
         \   'rst': ['rstcheck', 'textlint'],
-        \   'text': ['textlint'],
         \   'vim': ['vint'],
         \}
   let g:ale_fixers = {

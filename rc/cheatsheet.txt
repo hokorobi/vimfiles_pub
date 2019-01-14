@@ -228,7 +228,6 @@ gv                      : 前回の選択範囲を再度選択
 :cq                     : vim を不正終了。git コミットのキャンセルなど
 :Jq .obj                : JSON の obj を抽出。引数なしなら整形のみ
 :Jj obj                 : JSON の obj を抽出。引数なしなら整形のみ（Jq より高速。まだ若いのでバグがあるかも）
-g/                      : Migemo でインクリメンタルサーチ
 /[\u3041-\u3096]        : ひらがな検索 https://so-zou.jp/software/tech/programming/tech/regular-expression/meta-character/variable-width-encoding.htm
 
 
@@ -244,8 +243,17 @@ E887: このコマンドは無効です,ごめんなさい. Python の site モ�
 :verbose function gista#autocmd#call
 :verbose function {157}
 
+
 :p:h などのヘルプ
 -----------------
 
 :help filename-modifiers
+
+
+. で連続して置換
+-----------------
+
+/ で検索
+cgn で次の合致文字列を変更
+. で次の合致文字列を同様に置換
 
