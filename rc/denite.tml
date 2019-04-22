@@ -3,9 +3,9 @@
 repo = 'Shougo/denite.nvim'
 on_cmd = 'Denite'
 on_ft = 'howm_memo'
-depends = ['neomru.vim']
+depends = ['neomru.vim', 'vim-hug-neovim-rpc', 'nvim-yarp', 'denite-migemo']
 hook_add = '''
-  " vim-rooter を使うので DeniteBuffer はやめた
+  " vim-rooter などで pwd を project root にするので DeniteBuffer はやめて file/rec を使う
   nnoremap <Leader>ff :Denite -cursor-wrap file/rec<CR>
   nnoremap <Leader>fr :Denite -cursor-wrap file/rec:~/_vim/dein/repos<CR>
   nnoremap <Leader>fg :Denite -cursor-wrap file/rec:~/src<CR>
@@ -44,6 +44,21 @@ hook_source = '''
     " 体感的に files と大差ないが files だと音楽の再生が途切れる。I/Oを使い切れるということかも。
     call denite#custom#var('file/rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '--home-ptignore', '-g:', ''])
   endif
+
+  " denite-migemo
+  call denite#custom#filter('matcher/migemo', 'dict_path', expand('~/migemo/dict/utf-8/migemo-dict'))
+  call denite#custom#source('line', 'matchers', ['matcher/migemo'])
+'''
+
+[[plugins]]
+repo = 'roxma/vim-hug-neovim-rpc'
+lazy = 1
+
+[[plugins]]
+repo = 'roxma/nvim-yarp'
+lazy = 1
+hook_add = '''
+  let g:python3_host_prog = 'C:\Users\hokorobi\AppData\Local\Programs\Python\Python37\python.exe'
 '''
 
 [[plugins]]
@@ -68,6 +83,10 @@ depends = ['denite']
 hook_add = '''
   nnoremap <Leader>fm :<C-u>Denite mapping<CR>
 '''
+
+[[plugins]]
+repo = 'nekowasabi/denite-migemo'
+
 
 # }}}1  CtrlP {{{1
 [[plugins]]

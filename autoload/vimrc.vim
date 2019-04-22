@@ -125,19 +125,6 @@ function! vimrc#DiffXdoc2txt() abort
   diffupdate
 endfunction
 
-
-" , 区切りの文字列をソートする（行全体）
-function! vimrc#sortline(bang, ...) abort
-  let space = a:bang ==# '!' ? '' : ' '
-  let currentDelimiter = a:0 > 0 ? a:1 : ','
-  let newDelimiter = a:0 > 1 ? a:2 : currentDelimiter
-
-  let line = substitute(getline('.'), ' *' . currentDelimiter . ' *', ',', 'g')
-  let newLine = join(sort(split(line, ',')), newDelimiter.space)
-  call setline('.', newLine)
-endfunction
-
-
 " toggle option
 function! vimrc#toggle_option(option_name) abort
   execute 'setlocal' a:option_name . '!' a:option_name . '?'
@@ -227,56 +214,6 @@ function! vimrc#dup_term_buf() abort
   call delete(file)
 endfunction
 
-let s:hint_i_ctrl_x_msg = join([
-      \ 'l: While lines',
-      \ 'n/p: keywords in the current file',
-      \ "k: keywords in 'dictionary'",
-      \ "t: keywords in 'thesaurus'",
-      \ 'i: keywords in the current and included files',
-      \ ']: tags',
-      \ 'f: file names',
-      \ 'd: definitions or macros',
-      \ 'v: Vim command-line',
-      \ "u: User defined completion ('completefunc')",
-      \ "o: omni completion ('omnifunc')",
-      \ "s: Spelling suggestions ('spell')"
-      \], "\n")
-function! vimrc#InsCompl() abort
-  echo s:hint_i_ctrl_x_msg
-  let c = nr2char(getchar())
-  if c == 'l'
-    return "\<C-x>\<C-l>"
-  elseif c == 'n'
-    return "\<C-x>\<C-n>"
-  elseif c == 'p'
-    return "\<C-x>\<C-p>"
-  elseif c == 'k'
-    return "\<C-x>\<C-k>"
-  elseif c == 't'
-    return "\<C-x>\<C-t>"
-  elseif c == 'i'
-    return "\<C-x>\<C-i>"
-  elseif c == ']'
-    return "\<C-x>\<C-]>"
-  elseif c == 'f'
-    return "\<C-x>\<C-f>"
-  elseif c == 'd'
-    return "\<C-x>\<C-d>"
-  elseif c == 'v'
-    return "\<C-x>\<C-v>"
-  elseif c == 'u'
-    return "\<C-x>\<C-u>"
-  elseif c == 'o'
-    return "\<C-x>\<C-o>"
-  elseif c == 's'
-    return "\<C-x>s"
-  elseif c == nr2char(27)
-    " ESC
-    return ''
-  endif
-  return "\<Tab>"
-endfunction
-
 " QuickFix か loclist かをを自動的に判定して項目移動 {{{
 function! s:listmove(winnr, direction) abort
   let l:wi = getwininfo(win_getid(a:winnr))[0]
@@ -332,12 +269,12 @@ endfunction
 
 " }}}2 template {{{2
 function! vimrc#EditHowmNew(dir) abort
-  let dir = a:dir.strftime('/%Y/%m')
+  let dir = a:dir . strftime('/%Y/%m')
   if isdirectory(dir) == 0
     call mkdir(dir, 'p')
   endif
   let file = strftime('/%Y%m%d%H%M%S.howm')
-  execute 'edit '.dir.file
+  execute 'edit ' . dir . file
   TemplateLoad
   " 行末尾追加でインサートモードへ
   startinsert!
@@ -348,7 +285,7 @@ endfunction
 " 2017-03-30 現在の Denite では Windows で grep にディレクトリを渡すとエラーになる場合があるので cd する
 " 最近の更新で grep:'C:\path\to\dir'::^=\\s が使えるようになったかと思ったが、カレントディレクトリが C ドライブでないとエラーになる
 function! vimrc#DeniteGrepHowm() abort
-  execute 'cd '.g:howm_dir
+  execute 'cd ' . g:howm_dir
   Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s
 endfunction
 

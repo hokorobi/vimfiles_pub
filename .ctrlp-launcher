@@ -1,16 +1,17 @@
-_vimrc.local	exe('edit '.g:vimrc_local)
+_vimrc.local	exe('edit ' . g:vimrc_local)
 plugins.tml	edit ~/vimfiles/rc/plugins.tml
 denite.tml	edit ~/vimfiles/rc/denite.tml
 ctrlp_both.tml	edit ~/vimfiles/rc/ctrlp_both.tml
-cheatsheet	edit ~/vimfiles/rc/cheatsheet.txt
+webschedule	edit C:/OLS/Network/webScheduler/webScheduler.exe.json
 scriptnames	Capture scriptnames
-changelog	exe('edit '.g:howm_dir.'/changelogmemo')
-PPX.CFG	exe('edit '.g:ppx_dir.'/PPX.CFG')
+changelog	exe('edit ' . g:howm_dir . '/changelogmemo')
+cheatsheet	edit ~/vimfiles/rc/cheatsheet.rst
+PPX.CFG	exe('edit ' . g:ppx_dir . '/PPX.CFG')
 Mercurial.ini	edit ~/mercurial.ini
 Gist	Gista list
-Zenfone Android - Gist	exe('Gista open '.g:gist_zenfone.' zenfone5.md')
-cVim - Gist	exe('Gista open '.g:gist_cvim.' gistfile1.txt')
-twicli regexp.txt - Gist	exe('Gista open '.g:gist_twicli.' regexp.txt')
+Zenfone Android - Gist	exe('Gista open ' . g:gist_zenfone . ' zenfone5.md')
+cVim - Gist	exe('Gista open ' . g:gist_cvim . ' gistfile1.txt')
+Gista twicli regexp	exe('Gista open ' . g:gist_twicli_regexp . ' twicli-regexp')
 MRU	CtrlPMRUFiles
 edit ft snippets	exe('edit ' . expand('~/vimfiles/snippets/' . &filetype . '.snippets'))
 edit ft ftplugin	exe('edit ' . expand('~/vimfiles/after/ftplugin/' . &filetype . '.vim'))

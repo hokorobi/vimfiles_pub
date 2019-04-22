@@ -3,21 +3,28 @@ scriptencoding utf-8
 call lexima#set_default_rules()
 
 " mode ':' {{{1
-" :s -> :%s {{{2
+" :s/ -> :%s//g {{{2
 call lexima#add_rule({
       \   'at'   : '^s\%#',
       \   'char' : '/',
-      \   'input': '<left><left>%<Right><Right>/',
+      \   'input': '<Left><Left>%<Right><Right>//g<Left><Left>',
       \   'mode' : ':',
       \})
 
 call lexima#add_rule({
       \   'at'   : '^s\%#',
       \   'char' : '@',
-      \   'input': '<left><left>%<Right><Right>@',
+      \   'input': '<Left><Left>%<Right><Right>@@g<Left><Left>',
       \   'mode' : ':',
       \})
 
+" 効かない。at の書き方が悪いんだろうけどわからず
+" call lexima#add_rule({
+"     \   'at'   : '^\'\<,\'>s\%#',
+"     \   'char' : '/',
+"     \   'input': '//g<Left><Left>',
+"     \   'mode' : ':',
+"     \})
 
 " }}}2 Hg {{{2
 

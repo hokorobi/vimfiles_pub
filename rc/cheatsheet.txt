@@ -3,8 +3,11 @@ Movement
 
 [z ]z       : 現在の折りたたみの先頭/末尾へ移動
 zj zk       : 次/前の折りたたみの先頭/末尾へ移動。feat. submode 連続して j, k 入力で次、前へ移動
-g; g:       : 前の／次の変更位置へ移動
 gt gT       : 前の／次のタブを表示
+g; g,       : 変更した位置への移動。feat. submode 連続して ;, , 入力で次、前へ移動
+:jumps      : ジャンプの履歴表示
+C-I         : ジャンプの履歴を進む
+o (v)       : 範囲開始指定をやり直し
 <Space>;    : 直前の f, F, t, F を繰り返す。 feat. easymotion
 <Space>,    : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
 <A-f> (c)   : コマンドモードで f. feat.cmdlineplus
@@ -22,7 +25,7 @@ gt gT       : 前の／次のタブを表示
 Edit
 ====
 
-F6                        : 日付の入力
+F6 (ni)                   : 日付の入力
 ~                         : 大文字小文字入れ替え
 :ISetting[!] [st][0-9]    : インデントの変更。s2 なら space で幅2 に変更。! 付きなら Retab も実行
 :ExpandSerialNumber       : hoge [100-120] fuga などと入力して実行すると、hoge 100 fuga, hoge 101 fuga が各行に展開される。 feat. ExpandSerialNumber
@@ -41,6 +44,8 @@ X (v)                     : 入れ替えたい単語で実行することで入�
 cxx                       : X (v) で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
 # (nv)                    : (n: カーソル下の単語|v: 選択文字列) をハイライトしてから置換
 ^M などの入力             : vim --clean filename で起動。Insert mode で Ctrl+v Ctrl+m
+<C-R>" (i)                : 直前のレジスタから Paste
+<C-R>0 (i)                : 一つ前のレジスタから Paste。cw<C-R>" だと変更前の単語が Paste されるので、こちらを使う。
 
 複数ファイルに対する処理
 ------------------------
@@ -50,9 +55,23 @@ cxx                       : X (v) で選択した行と、これを実行した�
 :argdo %s/hoge/fuga/g : args に続けて実行。 {argument} に対して置換が実行される
 :vim foo ##           : args に続けて実行。## が {argument} に置換されて実行される
 
+. で連続して置換
+-----------------
+
+/ で検索
+cgn で次の合致文字列を変更
+. で次の合致文字列を同様に置換
+
+複数の単語に同様の変更を加える
+-------------------------------
+
+1. 最初の単語で cw<p><C-R><C-P>"</p><ESC> として <p></p> で囲む（<C-R><C-P>" でなく <C-R>" では駄目）
+2. 次の単語で .
+
 
 Easy Align
 ==========
+
 <Space>    : Around 1st whitespaces
 3<Space>   : Around 2nd whitespaces
 -<Space>   : Around the last whitespaces
@@ -84,6 +103,7 @@ srr(            : 一番内側の括りを () に置き換える
 rss(            : 一番内側の括りを () に置き換える
 css(            : 一番内側の括りを () に置き換える
 2css(           : 二番目に内側の括りを () に置き換える
+sdt             : HTML のタグを削除
 
 
 fold
@@ -125,16 +145,6 @@ mn: 次のブックマークへ移動
 mp: 前のブックマークへ移動
 
 
-Jumps
-=====
-
-:jumps : ジャンプの履歴表示
-C-I    : ジャンプの履歴を進む
-o (v)  : 範囲開始指定をやり直し
-g; g,  : 変更した位置への移動
-
-
-
 help
 ====
 
@@ -146,7 +156,7 @@ help
 :help local-additions    : runtimepath に追加されたプラグインの doc を一覧表示
 :help highlight-groups   : ハイライトのグループ表示
 :help cmdline-special    : Exコマンド用の特別な文字 の説明
-:help filename-modifiers : :pや:hなどのファイル名修飾子
+:help filename-modifiers : :p や :h などのファイル名修飾子
 <C-CR>                   : カーソル位置のハイライト名を表示
 
 
@@ -178,14 +188,15 @@ howm
 <Space>,u : 最近編集したファイル一覧
 <Space>,, : howm ファイルから grep
 
-vim-go
-======
+golang
+=======
 
-]] [[       : 次、前の関数へ
-:GoDecls    : ファイル内の関数、変数の定義を CtrlP で表示
-:GoDeclsDir : ディレクトリ内の関数、変数の定義を CtrlP で表示
-C-t         : GoDef のジャンプの前の位置に戻る
-:GoFreeVars : 選択範囲のコードで使用される変数がわかる
+]] [[       : 次、前の関数へ feat. vim-go
+:GoDecls    : ファイル内の関数、変数の定義を CtrlP で表示 feat. vim-go
+:GoDeclsDir : ディレクトリ内の関数、変数の定義を CtrlP で表示 feat. vim-go
+C-t         : GoDef のジャンプの前の位置に戻る feat. vim-go
+:GoFreeVars : 選択範囲のコードで使用される変数がわかる feat. vim-go
+<Space>ge   : 選択したコードを続けて入力する名前で関数化 feat. godoctor.vim
 
 Gina.vim
 ========
@@ -234,26 +245,12 @@ gv                      : 前回の選択範囲を再度選択
 関数エラーからの Vim script の追い方
 ------------------------------------
 
+以下のようなエラーが表示された場合に関数を指定してコードを確認する。
+
 function gista#autocmd#call[14]..<SNR>159_on_BufWriteCmd[13]..gista#command#patch#call[14]..gista#resource#remote#patch[17]..gista#resource#remote#get[19]..159[9]..157[34]..<SNR>137_request[33]..166 の処理中にエラーが検出されました:
 行   94:
 E887: このコマンドは無効です,ごめんなさい. Python の site モジュールをロードできませんでした.
 
-関数の指定して中身を見る
-
 :verbose function gista#autocmd#call
 :verbose function {157}
-
-
-:p:h などのヘルプ
------------------
-
-:help filename-modifiers
-
-
-. で連続して置換
------------------
-
-/ で検索
-cgn で次の合致文字列を変更
-. で次の合致文字列を同様に置換
 

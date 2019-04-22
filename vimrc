@@ -45,7 +45,7 @@ command! ToUtf8 :set fileencoding=utf-8
 command! ToSjis :set fileencoding=cp932
 
 " / と :s///g をトグル
-" 8.1.0271 あたりからいらなくなったはず
+" 8.1.0271 あたりから :s でハイライトされるようになったのでいらなくなったはず
 " https://raw.githubusercontent.com/cohama/.vim/master/.vimrc
 cnoremap <expr> <C-t> vimrc#ToggleSubstituteSearch(getcmdtype(), getcmdline())
 
@@ -127,14 +127,6 @@ endif
 " ウィンドウで表示しているバッファで diffthis
 call extend(g:vimrc_altercmd_dic, {'dt': 'windo diffthis'})
 
-" , 区切りの文字列をソートする（行全体）
-" http://vim.1045645.n5.nabble.com/sort-words-within-a-line-td2651668.html
-" TODO: 選択範囲のみに適用
-" ひとつ目の引数は区切り文字。なければ ,
-" ふたつ目の引数は新しい区切り文字。なければひとつ目の区切り文字と同じ
-" SortLine! で区切り文字の後ろにスペースを付けない
-command! -nargs=* -bang SortLine call vimrc#sortline(<q-bang>, <f-args>)
-
 " カーソル下の単語を vimgrep
 command! -nargs=1 VimGrepCurrent vimgrep <args> %
 nnoremap <expr> <Leader>* ':<C-u>VimGrepCurrent ' . expand('<cword>') . '<CR>'
@@ -213,7 +205,7 @@ set hidden
 " undoファイルを保存するディレクトリの設定
 let &undodir = expand('~/_vim/info/undo')
 if !isdirectory(&undodir)
-    silent! call mkdir(&undodir, 'p')
+  silent! call mkdir(&undodir, 'p')
 endif
 
 set undofile
@@ -321,6 +313,10 @@ endif
 
 set belloff=all
 
+" パターンマッチに使うメモリを増やす
+" rst で足りなくなった。
+set maxmempattern=2000
+
 " }}}2 edit {{{2
 
 " バックスペースでインデントや改行を削除できるようにする
@@ -341,7 +337,7 @@ set nofixendofline
 set pumheight=10
 " 候補の付加情報をプレビューウィンドウに表示しない -preview
 " 候補がひとつのときもメニュー表示 +menuone
-set completeopt-=preview completeopt+=menuone
+set completeopt-=preview completeopt+=menuone completeopt-=menu completeopt+=noinsert completeopt+=noselect
 " コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
 set wildmenu
 " TODO: wildignore を設定する？　ついでに ctrlp custom ignore も？
@@ -520,17 +516,28 @@ function! s:restore_cursor_position()
 endfunction
 " }}}
 
-" バイナリファイルのテキスト化
-" http://vim.wikia.com/wiki/VimTip1356
+" バイナリファイルのテキスト化 {{{
+" https://vim.fandom.com/wiki/Open_PDF_files?oldid=16226
+autocmd vimrc BufReadPost *.{doc,docx,pdf,ppt,pptx,xls,xlsx} setlocal readonly buftype=nofile noswapfile
 if Vimrc_executable('xdoc2txt')
   " xlsx などが zip として表示されることを避ける
 
   " デフォルトプラグインの停止で設定済みになっているのでここでは不要
   " let g:loaded_zipPlugin= 1
 
-  autocmd vimrc BufReadPre *.{doc,docx,pdf,ppt,pptx,xls,xlsx} setlocal readonly buftype=nofile noswapfile
-  autocmd vimrc BufReadPost *.{doc,docx,pdf,ppt,pptx,xls,xlsx} %!xdoc2txt "%"
+  autocmd vimrc BufReadPost *.{doc,docx,ppt,pptx,xls,xlsx} %!xdoc2txt "%"
 endif
+
+" PDF のテキスト表示は pdftotext を使用
+" xdoc2txt で変換できないファイルも変換できたので。
+" https://qiita.com/u1and0/items/526d95d6991bc19003d2
+if Vimrc_executable('pdftotext')
+  autocmd vimrc BufReadPost *.pdf %!pdftotext -layout -nopgbrk "%" -
+elseif Vimrc_executable('xdoc2txt')
+  autocmd vimrc BufReadPost *.pdf %!xdoc2txt "%"
+endif
+
+" }}}
 
 " PPx 用
 autocmd vimrc Filetype cfg setlocal noexpandtab
@@ -538,9 +545,9 @@ autocmd vimrc BufNewFile,BufRead *.js9 set filetype=javascript
 
 " diff バッファは最初から折り返す
 if has('patch-8.1.397')
-  autocmd vimrc DiffUpdated * if &diff | setlocal wrap< | endif
+  autocmd vimrc DiffUpdated * if &diff | setlocal wrap | endif
 else
-  autocmd vimrc FilterWritePre * if &diff | setlocal wrap< | endif
+  autocmd vimrc FilterWritePre * if &diff | setlocal wrap | endif
 endif
 
 " }}}1 Key Mapping {{{1
@@ -563,8 +570,8 @@ endif
 nnoremap <Space> <Nop>
 
 " toggle
-nmap <Leader>t  [toggle]
-nnoremap [toggle]  <Nop>
+nmap <Leader>t [toggle]
+nnoremap [toggle] <Nop>
 
 nnoremap <silent> [toggle]w :<C-u>call vimrc#toggle_option('wrap')<CR>
 nnoremap <silent> <C-F3> :<C-u>call vimrc#toggle_option('wrap')<CR>
@@ -573,7 +580,7 @@ nnoremap <silent> <C-F3> :<C-u>call vimrc#toggle_option('wrap')<CR>
 noremap ; :
 noremap : ;
 
-" 誤爆を防ぐ
+" 誤爆を防ぐ {{{
 nnoremap Q q
 nnoremap q <Nop>
 nnoremap <Leader>Q q
@@ -581,14 +588,12 @@ nnoremap <Leader>Q q
 nnoremap <C-^> <Nop>
 " 保存せずに閉じるを無効へ
 nnoremap ZQ <Nop>
+" }}}
 
 " ビジュアルモードローテーション
 " ノーマルモードから v でビジュアルモード、さらに v で矩形ビジュアルモード、
 " さらに v でノーマルモード
 vnoremap v <C-v>
-
-" help
-nnoremap H :h<Space>
 
 " ペーストした内容を選択
 " インデント以外に何か使い道あるのかな？
@@ -640,6 +645,9 @@ command! Ev edit $MYVIMRC
 command! Rv source $MYVIMRC
 noremap <F4> :Ev<CR>
 noremap <F5> :Rv<CR>
+
+" Open cheatsheet
+nnoremap <Leader>fc :split<CR>:edit ~/vimfiles/rc/cheatsheet.rst<CR>
 
 " }}}2 Window {{{2
 
@@ -729,12 +737,8 @@ nnoremap <CR> G
 " その際 jumplist も更新しない
 inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
 
-" 補完候補を Tab で選択 & 補完機能を呼び出す
-" http://koturn.hatenablog.com/entry/2018/02/10/170000
-" https://daisuzu.hatenablog.com/entry/2015/12/05/002129
-" neosnippet 読み込み後は上書きされる
-" FIXME: 自動補完プラグインを使う場合でも手動補完時は completeopt から noselect を除きたい。
-inoremap <silent><expr><Tab> pumvisible() ? '<C-n>' : vimrc#InsCompl()
+" 補完候補を Tab で選択
+inoremap <expr> <Tab> pumvisible() ? '<C-n>' : '<Tab>'
 
 " }}}2 Yank {{{2
 
@@ -753,12 +757,11 @@ nnoremap <silent><expr> <Leader>y% ':let @+ = "' . substitute(expand("%:p"), "\\
 nnoremap <Leader>ye :<C-u>%y+<CR>
 
 " keep cursor position when yanking in visual mode
-xnoremap <silent> <expr> y "ygv" . mode()
+" https://raw.githubusercontent.com/aoyama-val/dot/6d5143a2e62c28d60c775f0414ec00f51bee069f/etc/.vim/.vimrc
+xnoremap <silent> y y`>
 
-" c: Change into the blackhole register to not clobber the last yank.
-nnoremap c "_c
-nnoremap C "_C
 
+" highlightedyank で TextYankPost の有無で動きが違うので、それに併せて設定する
 if exists('##TextYankPost')
   nmap Y y$
 
@@ -776,7 +779,6 @@ map! <C-h> <BS>
 
 " Del
 noremap! <C-d> <Del>
-noremap  <C-d> x
 
 " 行頭まで削除
 inoremap <C-BS> <C-u>
@@ -795,9 +797,6 @@ nnoremap <S-F6> <ESC>i[<C-R>=strftime("%Y-%m-%d")<CR>]!<SPACE><ESC>
 " smart indent when entering insert mode with i on empty lines
 " http://qiita.com/Qureana/items/4790be39e04add101ee2
 nnoremap <expr> i vimrc#IndentWithI()
-
-" "レジスタから挿入
-ICnoremap <C-R> <C-R>"
 
 " ハイライトしてから置換する
 " http://qiita.com/itmammoth/items/312246b4b7688875d023
@@ -825,6 +824,9 @@ nnoremap <C-Down> "zdd"zp
 vnoremap <C-Up> "zx<Up>"zP`[V`]
 vnoremap <C-Down> "zx"zp`[V`]
 
+" 選択範囲を置換
+vnoremap <C-R> "hy:%s/\V<C-R>h//g<left><left>
+
 " }}}2 Search {{{2
 
 " インクリメンタルサーチで /, ? を簡単に検索できるようにする
@@ -838,6 +840,9 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
 " incsearch 中に前後の候補へカーソル移動
 cnoremap <C-j> <C-g>
 cnoremap <C-k> <C-t>
+
+" 選択範囲内を検索
+vnoremap / <Esc>/\%V
 
 " }}}2
 
@@ -879,7 +884,7 @@ if has('gui_running')
   " }}}
 
   " タブ文字などを表示
-  set list listchars=eol:$,tab:»\ ,trail:_,extends:\
+  set list listchars=eol:$,tab:»-,trail:_,extends:\
 
   " IMEの状態をいい感じにする
   if !has('patch-8.0.1114')
