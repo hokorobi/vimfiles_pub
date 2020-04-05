@@ -7,7 +7,6 @@ repo = 'Shougo/dein.vim'
 [[plugins]]
 repo = 'hokorobi/asyncomplete.vim'
 rev = 'mine'
-frozen = 1
 on_ft = ['autohotkey', 'cfg', 'git', 'go', 'java', 'javascript', 'plantuml', 'python', 'rst', 'snippet', 'toml', 'vim', 'vb', 'xsl']
 hook_add = '''
   " let g:asyncomplete_log_file = expand('~/_vim/.asyncomplete/asyncomplete.log')
@@ -99,21 +98,23 @@ hook_source = '''
   let g:neosnippet#data_directory = expand('~/_vim/.neosnippet')
 
   " Tell Neosnippet about the other snippets
-  " gosnippets は vim-go がうまいことやってくれるはずだけど、なんかうまくいかないので直接追加。
   let g:neosnippet#snippets_directory = [
         \   '~/vimfiles/snippets',
         " TODO: rst の snippet を自作のものだけにするため、いったんコメントアウト
         " \   '~/_vim/dein/repos/github.com/honza/vim-snippets/snippets/',
+        " vim-go がうまいことやってくれるはずだけど、なんかうまくいかないので直接追加。
         \   '~/_vim/dein/repos/github.com/fatih/vim-go/gosnippets/snippets/',
-        " \   '~/_vim/dein/repos/github.com/Shougo/neosnippet-snippets/neosnippets',
         \ ]
+
+  " neosnippets ディレクトリを読み込まない filetype
+  let g:neosnippet#disable_runtime_snippets = {
+        \   'rst' : 1,
+        \ }
 '''
 
-# TODO: rst の snippet を自作のものだけにするため、いったんコメントアウト
-# 最終的にどうしようか？
-# [[plugins]]
-# repo = 'Shougo/neosnippet-snippets'
-# # rtp = '' は NG
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
+# rtp = '' は NG
 
 # TODO: rst の snippet を自作のものだけにするため、いったんコメントアウト
 # 最終的にどうしようか？
@@ -370,7 +371,6 @@ hook_source = '''
 [[plugins]]
 repo = 'hokorobi/vim-restructuredtext'
 on_ft = 'rst'
-frozen = 1
 hook_add = '''
   let g:rst_fold_enabled = 1
 
@@ -415,7 +415,6 @@ repo = 'PProvost/vim-ps1'
 
 [[plugins]]
 repo = 'hokorobi/plantuml-syntax'
-frozen = 1
 merged = 0
 
 [[plugins]]
@@ -464,7 +463,6 @@ on_ft = 'html'
 
 [[plugins]]
 repo = 'hokorobi/vim-changelog-alt'
-frozen = 1
 
 #}}}2
 
@@ -872,7 +870,6 @@ hook_add = '''
 [[plugins]]
 repo = 'hokorobi/vim-smarthome'
 on_map = [['nxi', '<Plug>']]
-frozen = 1
 hook_add = '''
   NXImap <silent> <Home> <Plug>(smarthome-home)
   NXImap <silent> <C-a> <Plug>(smarthome-home)
@@ -1262,18 +1259,6 @@ on_cmd = 'ColorHighlight'
 repo = 'rbtnn/vim-vimscript_lasterror'
 on_cmd = 'VimscriptLastError'
 
-# }}}1  Web Service {{{1
-[[plugins]]
-repo = 'lambdalisue/vim-gista'
-on_cmd = 'Gista'
-on_map = '<Plug>'
-depends = 'open-browser.vim'
-hook_add = '''
-  let g:gista#client#default_username = 'hokorobi'
-
-  call extend(g:vimrc_altercmd_dic, {'gis[ta]': 'Gista'})
-'''
-
 # }}}1  Others {{{1
 [[plugins]]
 repo = 'fedorenchik/VimCalc3'
@@ -1383,7 +1368,6 @@ hook_source = '''
 
 [[plugins]]
 repo = 'hokorobi/vim-howm-syntax-mini'
-frozen = 1
 
 # [[plugins]]
 # repo = 'vim-jp/vital.vim'

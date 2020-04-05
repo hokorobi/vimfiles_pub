@@ -7,9 +7,6 @@ changelog	exe('edit ' .. g:howm_dir .. '/changelogmemo')
 cheatsheet	edit ~/vimfiles/rc/cheatsheet.rst
 PPX.CFG	exe('edit ' .. g:ppx_dir .. '/PPX.CFG')
 gitconfig	edit ~/.gitconfig
-Gist	Gista list
-cVim - Gist	exe('Gista open ' .. g:gist_cvim .. ' gistfile1.txt')
-twicli regexp - Gist	exe('Gista open ' .. g:gist_twicli_regexp .. ' twicli-regexp')
 edit ft snippets	exe('edit ' .. expand('~/vimfiles/snippets/' .. &filetype .. '.snippets'))
 edit ft ftplugin	exe('edit ' .. expand('~/vimfiles/after/ftplugin/' .. &filetype .. '.vim'))
 autoload vimrc	edit ~/vimfiles/autoload/vimrc.vim
