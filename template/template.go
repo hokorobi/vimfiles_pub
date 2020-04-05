@@ -4,9 +4,20 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"os"
 )
 
 func main() {
-	<+CURSOR+>
+	if err := _main(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
+
+func _main() error {
+	<+CURSOR+>
+	return nil
+}
+
+// vim: ff=unix

@@ -1,51 +1,47 @@
-#       dein {{{1
+# dein {{{1
 [[plugins]]
 repo = 'Shougo/dein.vim'
 
 # }}}1  Completion {{{1
+
 [[plugins]]
-repo = 'prabirshrestha/asyncomplete.vim'
-on_ft = ['autohotkey', 'autoit', 'cfg', 'git', 'go', 'groovy', 'java', 'javascript', 'plantuml', 'python', 'rst', 'snippet', 'toml', 'vim', 'vb', 'xsl']
+repo = 'hokorobi/asyncomplete.vim'
+rev = 'mine'
+frozen = 1
+on_ft = ['autohotkey', 'cfg', 'git', 'go', 'java', 'javascript', 'plantuml', 'python', 'rst', 'snippet', 'toml', 'vim', 'vb', 'xsl']
 hook_add = '''
   " let g:asyncomplete_log_file = expand('~/_vim/.asyncomplete/asyncomplete.log')
+  " デフォルトでは asyncomplete を有効にしない
   let g:asyncomplete_enable_for_all = 0
   let g:asyncomplete_auto_completeopt = 0
-  autocmd vimrc FileType autohotkey,autoit,cfg,git,go,groovy,java,javascript,plantuml,python,rst,snippet,toml,vim,vb,xsl call asyncomplete#enable_for_buffer()
+  " form unmerged RP https://github.com/prabirshrestha/asyncomplete.vim/pull/135
+  let g:asyncomplete_min_chars = 3
+  let g:asyncomplete_popup_delay = 200
+  autocmd vimrc FileType autohotkey,cfg,git,go,java,javascript,plantuml,python,rst,snippet,toml,vim,vb,xsl call asyncomplete#enable_for_buffer()
 '''
 
 [[plugins]]
-repo = 'prabirshrestha/asyncomplete-buffer.vim'
-on_ft = ['autohotkey', 'autoit', 'cfg', 'git', 'go', 'groovy', 'java', 'javascript', 'plantuml', 'python', 'snippet', 'toml', 'vim', 'vb', 'xsl']
+repo = 'hokorobi/asyncomplete-buffer.vim'
+on_ft = ['autohotkey', 'cfg', 'git', 'java', 'javascript', 'plantuml', 'rst', 'snippet', 'toml', 'vb', 'vim', 'xsl']
 hook_source = '''
   autocmd vimrc User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
       \ 'name': 'buffer',
       \ 'priority': 5,
       \ 'whitelist': ['*'],
+      \ 'blacklist': ['go', 'python'],
       \ 'completor': function('asyncomplete#sources#buffer#completor'),
       \ }))
 '''
 
 [[plugins]]
-repo = 'prabirshrestha/asyncomplete-file.vim'
-on_ft = ['autohotkey', 'autoit', 'cfg', 'git', 'go', 'groovy', 'java', 'javascript', 'python', 'snippet', 'toml', 'vim', 'vb', 'xsl']
-hook_source = '''
-  autocmd vimrc User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
-      \ 'name': 'file',
-      \ 'priority': 3,
-      \ 'whitelist': ['*'],
-      \ 'completor': function('asyncomplete#sources#file#completor'),
-      \ }))
-'''
-
-[[plugins]]
 repo = 'prabirshrestha/asyncomplete-necosyntax.vim'
-on_ft = ['autohotkey', 'autoit', 'cfg', 'git', 'go', 'groovy', 'java', 'javascript', 'plantuml', 'python', 'snippet', 'toml', 'vim', 'vb', 'xsl']
+on_ft = ['autohotkey', 'java', 'javascript', 'plantuml', 'vb']
 depends = ['neco-syntax']
 hook_source = '''
   autocmd vimrc User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
       \ 'name': 'necosyntax',
       \ 'priority': 7,
-      \ 'whitelist': ['*'],
+      \ 'whitelist': ['autohotkey', 'java', 'javascript', 'plantuml', 'vb'],
       \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
       \ }))
 '''
@@ -72,89 +68,122 @@ repo = 'Shougo/neco-vim'
 lazy = 1
 
 [[plugins]]
-repo = 'prabirshrestha/asyncomplete-neosnippet.vim'
-on_ft = ['autohotkey', 'autoit', 'cfg', 'git', 'go', 'groovy', 'java', 'javascript', 'plantuml', 'python', 'rst', 'snippet', 'toml', 'vim', 'vb', 'xsl']
+repo = 'hokorobi/asyncomplete-neosnippet.vim'
+on_ft = ['rst', 'snippet', 'toml', 'vim']
 depends = ['neosnippet.vim']
 hook_source = '''
   autocmd vimrc User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#neosnippet#get_source_options({
       \ 'name': 'neosnippet',
-      \ 'whitelist': ['*'],
+      \ 'whitelist': ['rst', 'snippet', 'vim'],
       \ 'priority': 9,
       \ 'completor': function('asyncomplete#sources#neosnippet#completor'),
       \ }))
 '''
 
 [[plugins]]
+repo = 'Shougo/neosnippet.vim'
+on_i = 1
+hook_source = '''
+  " <TAB>: completion.
+  inoremap <expr> <S-TAB> pumvisible() ? '<C-p>' : '<S-TAB>'
+
+  " Plugin key-mappings.
+  imap <C-k> <Plug>(neosnippet_expand_or_jump)
+  smap <C-k> <Plug>(neosnippet_expand_or_jump)
+  xmap <C-k> <Plug>(neosnippet_expand_target)
+
+  " SuperTab like snippets behavior.
+  imap <expr> <TAB> neosnippet#jumpable() ? '<Plug>(neosnippet_expand_or_jump)' : pumvisible() ? '<C-n>' : '<TAB>'
+  smap <expr> <TAB> neosnippet#jumpable() ? '<Plug>(neosnippet_expand_or_jump)' : '<TAB>'
+
+  let g:neosnippet#data_directory = expand('~/_vim/.neosnippet')
+
+  " Tell Neosnippet about the other snippets
+  " gosnippets は vim-go がうまいことやってくれるはずだけど、なんかうまくいかないので直接追加。
+  let g:neosnippet#snippets_directory = [
+        \   '~/vimfiles/snippets',
+        " TODO: rst の snippet を自作のものだけにするため、いったんコメントアウト
+        " \   '~/_vim/dein/repos/github.com/honza/vim-snippets/snippets/',
+        \   '~/_vim/dein/repos/github.com/fatih/vim-go/gosnippets/snippets/',
+        " \   '~/_vim/dein/repos/github.com/Shougo/neosnippet-snippets/neosnippets',
+        \ ]
+'''
+
+# TODO: rst の snippet を自作のものだけにするため、いったんコメントアウト
+# 最終的にどうしようか？
+# [[plugins]]
+# repo = 'Shougo/neosnippet-snippets'
+# # rtp = '' は NG
+
+# TODO: rst の snippet を自作のものだけにするため、いったんコメントアウト
+# 最終的にどうしようか？
+# [[plugins]]
+# repo = 'honza/vim-snippets'
+# # snippets ファイルだけを使うので runtimepath へ追加しない
+# rtp = ''
+
+[[plugins]]
 repo = 'prabirshrestha/async.vim'
 
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
+depends = 'async.vim'
 # on_ft を使うとうまく動かなかった
 hook_add = '''
   " hook_source だとうまく動かなかった
 
   " let g:lsp_log_verbose = 1
   " let g:lsp_log_file = expand('~/_vim/.asyncomplete/vim-lsp.log')
+  let g:lsp_diagnostics_float_cursor = 1
+  let g:lsp_diagnostics_float_delay = 200
 
+  nmap <Leader>al <plug>(lsp-document-diagnostics)
+  "submode
+  call submode#enter_with('lsp', 'n', 'br', '<Leader>aj', '<plug>(lsp-next-error)')
+  call submode#enter_with('lsp', 'n', 'br', '<Leader>an', '<plug>(lsp-next-error)')
+  call submode#enter_with('lsp', 'n', 'br', '<Leader>ak', '<plug>(lsp-previous-error)')
+  call submode#enter_with('lsp', 'n', 'br', '<Leader>ap', '<plug>(lsp-previous-error)')
+  call submode#map('lsp', 'n', 'brs', 'j', '<plug>(lsp-next-error)')
+  call submode#map('lsp', 'n', 'brs', 'n', '<plug>(lsp-next-error)')
+  call submode#map('lsp', 'n', 'brs', 'k', '<plug>(lsp-previous-error)')
+  call submode#map('lsp', 'n', 'brs', 'p', '<plug>(lsp-previous-error)')
+
+  " 参考: https://github.com/tsuyoshicho/vim-efm-langserver-settings
   if Vimrc_executable('efm-langserver')
     autocmd vimrc User lsp_setup call lsp#register_server({
-       \ 'name': 'efm-langserver-vim',
-       \ 'cmd': ['efm-langserver', '-c=C:\Users\hokorobi\vimfiles\rc\efm-langserver.yaml'],
-       \ 'whitelist': ['vim'],
-       \ })
+      \ 'name': 'efm-langserver-vim',
+      "\ 'cmd': ['efm-langserver', '-c=C:\Users\hokorobi\vimfiles\rc\efm-langserver.yaml', '-log=C:\Users\hokorobi\_vim\.log\efm-langserver.log'],
+      \ 'cmd': ['efm-langserver', '-c=C:\Users\hokorobi\vimfiles\rc\efm-langserver.yaml'],
+      \ 'whitelist': ['vim', 'rst', 'yaml'],
+      \ })
   endif
 
-  if Vimrc_executable('pyls')
-    autocmd vimrc User lsp_setup call lsp#register_server({
-       \ 'name': 'pyls',
-       \ 'cmd': ['pyls'],
-       \ 'whitelist': ['python'],
-       \ })
-  endif
+  autocmd vimrc FileType go nmap <buffer> gd <Plug>(lsp-definition)
+  autocmd vimrc FileType go nmap <buffer> <C-]> <Plug>(lsp-definition)
+  autocmd vimrc FileType go nmap <buffer> <F2> <Plug>(lsp-rename)
+'''
 
-  " 補完はうまく動かない
-  " sign は表示してくれる
-  if Vimrc_executable('gopls')
-    autocmd vimrc User lsp_setup call lsp#register_server({
-     \ 'name': 'gopls',
-     \ 'cmd': ['gopls', '-mode', 'stdio'],
-     \ 'whitelist': ['go'],
-     \ })
-  endif
-
-  " bingo より初回の補完までが速い気がする
-  " if Vimrc_executable('go-langserver')
-  "   autocmd vimrc User lsp_setup call lsp#register_server({
-  "  \ 'name': 'go-langserver',
-  "  \ 'cmd': ['go-langserver', '-gocodecompletion'],
-  "  \ 'whitelist': ['go'],
-  "  \ })
-  "  endif
-
-  " -disable-func-snippet をつけないと引数の説明も補完されてしまうみたい
-  " if Vimrc_executable('bingo')
-  "   autocmd vimrc User lsp_setup call lsp#register_server({
-  "     \ 'name': 'bingo',
-  "     \ 'cmd': ['bingo', '-mode', 'stdio', '-disable-func-snippet'],
-  "     \ 'whitelist': ['go'],
-  "     \ })
-  "  endif
-
-   autocmd vimrc FileType go nmap <buffer> gd <Plug>(lsp-definition)
-   autocmd vimrc FileType go nmap <buffer> <C-]> <Plug>(lsp-definition)
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+depends = 'vim-lsp'
+hook_add = '''
+  let g:lsp_settings_servers_dir = expand('~/_vim/lspservers')
 '''
 
 [[plugins]]
 repo = 'prabirshrestha/asyncomplete-lsp.vim'
-on_ft = ['python']
+on_ft = ['python', 'go']
 depends = ['asyncomplete.vim', 'vim-lsp']
 
-# }}}1  Quickrun {{{1
+# }}}1  REPL {{{1
+
+# Quickrun {{{2
 [[plugins]]
 repo = 'thinca/vim-quickrun'
 on_cmd = 'QuickRun'
 on_map = '<Plug>'
 depends = 'shabadou.vim'
+rev = 'develop'
 hook_add = '''
   call extend(g:vimrc_altercmd_dic, {'quic[krun]': 'Quickrun'})
 '''
@@ -170,6 +199,12 @@ hook_source = '''
 [[plugins]]
 repo = 'osyo-manga/shabadou.vim'
 
+# }}}2
+
+[[plugins]]
+repo = 'rhysd/reply.vim'
+on_cmd = ['Repl', 'ReplAuto']
+
 # }}}1  Text Object {{{1
 [[plugins]]
 repo = 'kana/vim-textobj-user'
@@ -179,35 +214,7 @@ repo = 'mattn/vim-textobj-url'
 depends = 'vim-textobj-user'
 
 [[plugins]]
-repo = 'terryma/vim-expand-region'
-on_map = '<Plug>(expand_region'
-hook_source = '''
-  " ad: delimited
-  " ib, ab: sandwich
-  " ii, ai, iI, aI: indent
-  " ac: comment
-  " ac, iv: variable
-  let g:expand_region_text_objects = {
-        \ 'iv': 0,
-        \ 'av': 0,
-        \ 'iw': 0,
-        \ 'iW': 0,
-        \ 'iu': 0,
-        \ 'ad': 0,
-        \ 'ib': 1,
-        \ 'ab': 1,
-        \ 'ac': 0,
-        \ 'iI': 0,
-        \ 'aI': 0,
-        \ 'ii': 0,
-        \ 'ai': 0,
-        \ }
-'''
-
-[[plugins]]
 repo = 'machakann/vim-sandwich'
-on_map = '<Plug>(operator-sandwich-'
-on_source = 'vim-expand-region'
 hook_add = '''
   NXmap s <Nop>
 
@@ -230,8 +237,34 @@ hook_add = '''
 
   nmap saa <Plug>(operator-sandwich-add)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
   NXOmap sa <Plug>(operator-sandwich-add)
-'''
-hook_source = '''
+  " https://github.com/machakann/vimrc/blob/3dc16ac1ae31197e35bebdf3f0fbf275117478bd/.vimrc#L1127-L1152
+  nmap s( <Plug>(operator-sandwich-add-query1st)(
+  nmap s8 <Plug>(operator-sandwich-add-query1st)(
+  nmap s) <Plug>(operator-sandwich-add-query1st))
+  nmap s9 <Plug>(operator-sandwich-add-query1st))
+  xmap s( <Plug>(operator-sandwich-add)(
+  xmap s8 <Plug>(operator-sandwich-add)(
+  xmap s) <Plug>(operator-sandwich-add))
+  xmap s9 <Plug>(operator-sandwich-add))
+  nmap s[ <Plug>(operator-sandwich-add-query1st)[
+  nmap s] <Plug>(operator-sandwich-add-query1st)]
+  xmap s[ <Plug>(operator-sandwich-add)[
+  xmap s] <Plug>(operator-sandwich-add)]
+  nmap s{ <Plug>(operator-sandwich-add-query1st){
+  nmap s} <Plug>(operator-sandwich-add-query1st)}
+  xmap s{ <Plug>(operator-sandwich-add){
+  xmap s} <Plug>(operator-sandwich-add)}
+  nmap s" <Plug>(operator-sandwich-add-query1st)"
+  nmap s2 <Plug>(operator-sandwich-add-query1st)"
+  xmap s" <Plug>(operator-sandwich-add)"
+  xmap s2 <Plug>(operator-sandwich-add)"
+  nmap s' <Plug>(operator-sandwich-add-query1st)'
+  nmap s7 <Plug>(operator-sandwich-add-query1st)'
+  xmap s' <Plug>(operator-sandwich-add)'
+  xmap s7 <Plug>(operator-sandwich-add)'
+  nmap sf <Plug>(operator-sandwich-add-query1st)<C-f>
+  xmap sf <Plug>(operator-sandwich-add)<C-f>
+
   let g:sandwich_no_default_key_mappings = 1
   let g:textobj#sandwich#stimeoutlen = 100
   let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
@@ -244,9 +277,10 @@ hook_source = '''
 
 [[plugins]]
 repo = 'machakann/vim-textobj-delimited'
-on_source = 'vim-expand-region'
-hook_source = '''
-  let g:textobj_delimited_patterns = [[', *', '\m\%(, *\)\?\%([^,[\]{}]\+, *\)\+\%([^,[\]{}]\+\)\?']]
+hook_post_source = '''
+  let g:textobj_delimited_patterns = deepcopy(g:textobj#delimited#default_patterns)
+  " , 区切りのパターン
+  let g:textobj_delimited_patterns += [[', *', '\m\%(, *\)\?\%([^,[\]{}]\+, *\)\+\%([^,[\]{}]\+\)\?']]
 '''
 
 [[plugins]]
@@ -270,21 +304,21 @@ depends = 'vim-textobj-user'
 repo = 'tyru/caw.vim'
 on_map = '<Plug>(caw:prefix)'
 hook_add = '''
-  NVmap gc <Plug>(caw:prefix)
+  NXmap gc <Plug>(caw:prefix)
   " 現在行をコピーしてコメントアウト
   nmap gcy yypgcIk
   " 選択範囲をコピーしてコメントアウト
-  vmap gcy ygvgcIp
+  xmap gcy ygvgcIp
 '''
 
- [[plugins]]
-repo = 'tsuyoshicho/vim-slumlord'
-on_ft = ['plantuml']
-rev = 'feature/aggressive'
-hook_add = '''
-  let g:slumlord_plantuml_jar_path = 'M:/ols/Graphic/plantuml.jar'
-  let g:slumlord_separate_win = 1
-  let g:slumlord_asciiart_utf = 0
+# TODO: 文字化け対処
+[[plugins]]
+repo = 'tsuyoshicho/plantuml-previewer.vim'
+rev = 'ea00df4'
+depends = 'open-browser.vim'
+on_cmd = 'PlantumlOpen'
+hook_source = '''
+  let g:plantuml_previewer#plantuml_jar_path = 'C:/ols/Graphic/plantuml.jar'
 '''
 
 # diff {{{2
@@ -298,10 +332,6 @@ hook_source = '''
   let g:linediff_modify_statusline = 0
 '''
 
-[[plugins]]
-repo = 'lambdalisue/vim-diffa'
-on_ft = 'diff'
-
 # }}}2 Python {{{2
 [[plugins]]
 repo = 'hdima/python-syntax'
@@ -312,56 +342,9 @@ hook_add = '''
 [[plugins]]
 repo = 'hynek/vim-python-pep8-indent'
 
-#}}}2 Golang {{{2
-[[plugins]]
-repo = 'fatih/vim-go'
-on_ft = 'go'
-hook_source = '''
-  " GoFmt でも goimports を使う
-  if Vimrc_executable('goimports')
-    let g:go_fmt_command = 'goimports'
-  endif
-  let g:go_gocode_socket_type = 'tcp'
+# }}}2 Golang {{{2
 
-  " run :GoBuild or :GoTestCompile based on the go file
-  function! s:build_go_files()
-    let l:file = expand('%')
-    if l:file =~# '^\f\+_test\.go$'
-      call go#test#Test(0, 1)
-    elseif l:file =~# '^\f\+\.go$'
-      call go#cmd#Build(0)
-    endif
-  endfunction
-
-  " <Plug>(lsp-definition) がうまく動かなくなっていたのでこちらを使うからコメントアウト
-  " let g:go_def_mapping_enabled = 0
-
-  autocmd vimrc FileType go nmap <buffer> <Leader>gb <Plug>(go-build)
-  autocmd vimrc FileType go nmap <buffer> <Leader>gr <Plug>(go-run)
-  autocmd vimrc FileType go nmap <buffer> <Leader>gt <Plug>(go-test)
-  autocmd vimrc FileType go nmap <buffer> <Leader>gc <Plug>(go-coverage-toggle)
-  autocmd vimrc FileType go nmap <buffer> <F2> <Plug>(go-alternate-edit)
-  autocmd vimrc FileType go nnoremap <buffer> <Leader>gf :GoDecls<CR>
-
-  call extend(g:vimrc_altercmd_dic, {
-        \ 'godo[c]': 'GoDoc',
-        \ 'goru[n]': 'GoRun',
-        \})
-
-  " Sayonara
-  let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
-  let g:sayonara_filetypes.godoc = 'bdelete'
-'''
-
-[[plugins]]
-repo = 'hokorobi/godoctor.vim'
-on_ft = 'go'
-hook_source = '''
-  " 選択したコード群を続けて入力した名前で関数化
-  autocmd vimrc FileType go xnoremap <buffer> <Leader>ge :GoRefactor extract<Space>
-'''
-
-#}}}2 Markdown {{{2
+# }}}2 Markdown {{{2
 [[plugins]]
 repo = 'previm/previm'
 on_cmd = 'PrevimOpen'
@@ -383,7 +366,44 @@ hook_source = '''
         \]
 '''
 
-#}}}2 Others {{{2
+# }}}2 rst {{{2
+[[plugins]]
+repo = 'hokorobi/vim-restructuredtext'
+on_ft = 'rst'
+frozen = 1
+hook_add = '''
+  let g:rst_fold_enabled = 1
+
+  " load after/ftplugin/rst.vim
+'''
+
+# }}}2 quickfix {{{2
+[[plugins]]
+repo = 'lambdalisue/qfloc.vim'
+on_ft = 'qf'
+hook_add = '''
+  " TODO: LSP を使わない filetype では有効にする
+  let g:qfloc_disable_sign = v:true
+  let g:qfloc_disable_default_mappings = v:true
+  let g:qfloc_disable_hover = v:true
+
+  nmap Q <Plug>(qfloc-cswitch)
+  nmap L <Plug>(qfloc-lswitch)
+  " nmap <expr> ]c &diff ? ']c' : "\<Plug>(qfloc-cnext)"
+  " nmap <expr> [c &diff ? '[c' : "\<Plug>(qfloc-cprevious)"
+  " nmap ]l <Plug>(qfloc-lnext)
+  " nmap [l <Plug>(qfloc-lprevious)
+
+  " load after/ftplugin/qf.vim
+'''
+
+# preview Quickfix at popup
+[[plugins]]
+repo = 'AndrewRadev/quickpeek.vim'
+on_ft = 'qf'
+# load after/ftplugin/qf.vim
+
+# }}}2 Others {{{2
 [[plugins]]
 repo = 'vim-jp/syntax-vim-ex'
 
@@ -392,13 +412,11 @@ repo = 'pangloss/vim-javascript'
 
 [[plugins]]
 repo = 'PProvost/vim-ps1'
-hook_add = '''
-  autocmd vimrc BufNewFile,BufRead *.ps1 setfiletype ps1
-'''
 
 [[plugins]]
 repo = 'hokorobi/plantuml-syntax'
-rev = 'experiment'
+frozen = 1
+merged = 0
 
 [[plugins]]
 repo = 'cespare/vim-toml'
@@ -437,29 +455,26 @@ repo = 'Shougo/context_filetype.vim'
 repo = 'hnamikaw/vim-autohotkey'
 
 [[plugins]]
-repo = 'hokorobi/riv.vim'
-on_ft = 'rst'
-rev = 'fix_wrong_setlocal'
-hook_source = '''
-  let g:riv_global_leader = '<C-u>'
-  let g:riv_fold_auto_update = 1
-'''
-
-[[plugins]]
 repo = 'mechatroner/rainbow_csv'
 on_cmd = 'RainbowDelim'
 
-#}}}2
-
-# }}}1  tags {{{1
 [[plugins]]
-repo = 'hokorobi/vim-tagsgen'
-on_cmd = 'Tagsgen'
-depends = 'vim-system_job'
+repo = 'mattn/emmet-vim'
+on_ft = 'html'
+
+[[plugins]]
+repo = 'hokorobi/vim-changelog-alt'
+frozen = 1
+
+#}}}2
 
 # }}}1  Look {{{1
 [[plugins]]
-repo = 'cocopon/iceberg.vim'
+repo = 'rhysd/vim-color-spring-night'
+hook_add = '''
+  let g:spring_night_kill_italic = 1
+  let g:spring_night_kill_bold = 1
+'''
 
 [[plugins]]
 repo = 'itchyny/lightline.vim'
@@ -469,26 +484,40 @@ hook_add = '''
   let g:vimshell_force_overwrite_statusline = 0
 
   let g:lightline = {
-        \ 'colorscheme': 'default',
-        \ 'active': {
-        \     'left': [['mode', 'paste'], ['ale', 'readonly', 'filename', 'modified', 'pwd']],
+        \   'colorscheme': 'default',
+        \   'active': {
+        \     'left': [['mode', 'paste'], ['readonly', 'swap', 'filename', 'modified', 'pwd']],
         \     'right': [['lineinfo'], ['fileformat', 'fenc', 'filetype']]
         \   },
-        \ 'component_function': {
-        \   'pwd': 'getcwd',
-        \   'fenc': 'LightLineFenc',
+        \   'component_function': {
+        \     'swap': 'Swap',
+        \     'pwd': 'getcwd',
+        \     'fenc': 'LightLineFenc',
+        \     'bufferinfo': 'lightline#buffer#bufferinfo',
         \   },
-        \   'component_expand': {
-        \     'ale': 'Ale_string',
-        \   },
-        \   'component_type': {
-        \     'ale': 'warning',
+        \   'mode_map': {
+        \     'n' : 'N',
+        \     'i' : 'I',
+        \     'R' : 'R',
+        \     'v' : 'V',
+        \     'V' : 'VL',
+        \     "\<C-v>": 'VB',
+        \     'c' : 'C',
+        \     's' : 'S',
+        \     'S' : 'SL',
+        \     "\<C-s>": 'SB',
+        \     't': 'T',
         \   },
         \ }
 
   " help で - が表示されないように
   function! LightlineModified()
     return &modifiable && &modified ? '+' : ''
+  endfunction
+
+  " https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L378
+  function! Swap()
+    return get(b:, 'swapfile_exists', 0) ? 'swp' : ''
   endfunction
 
   function! LightLineFenc() abort
@@ -514,46 +543,14 @@ hook_add = '''
 '''
 
 [[plugins]]
-# 遅延読み込みだと前回起動時のマークが復元されない様子
-repo = 'MattesGroeger/vim-bookmarks'
-hook_add = '''
-  " bookmark_auto_save_file が無効になるので g:bookmark_manage_per_buffer は 1 にしない
-  let g:bookmark_auto_save_file = expand('~/_vim/.vim-bookmarks')
-
-  let g:bookmark_sign = '>>'
-  let g:bookmark_annotation_sign = '##'
-
-  " ctrlp でファイル名を表示できないようなので従来の BookmarkShowAll を使用する
-  let g:bookmark_disable_ctrlp = 1
-
-  " ブックマークを開いたら候補のウィンドウは閉じる
-  let g:bookmark_auto_close = 1
-'''
-
-[[plugins]]
 repo = 'itchyny/vim-cursorword'
 
 # replace matchparen
 [[plugins]]
 repo = 'andymass/vim-matchup'
 hook_add = '''
-  " ds% cs% を有効にする
-  let g:matchup_surround_enabled = 1
-
-  function! s:set_match_words()
-    " Enable these pairs for all file types
-    let words = ['(:)', '{:}', '[:]', '（:）', '「:」', '『:』', '【:】']
-    if exists('b:match_words')
-      for w in words
-        if b:match_words !~ '\V' . w
-          let b:match_words .= ',' . w
-        endif
-      endfor
-    else
-      let b:match_words = join(words, ',')
-    endif
-  endfunction
-  autocmd vimrc BufEnter * call s:set_match_words()
+  " sandwich の ib ab を使うため ds% cs% は無効にする
+  let g:matchup_surround_enabled = 0
 '''
 
 [[plugins]]
@@ -572,10 +569,10 @@ hook_add = '''
 '''
 
 [[plugins]]
-repo = 'hrsh7th/vim-unmatchparen'
-hook_add = '''
-  " 効いていないみたい
-  let g:unmatchparen#disable_filetypes = ['cfg']
+repo = 'liuchengxu/vista.vim'
+on_cmd = 'Vista'
+hook_source = '''
+  let g:sayonara_filetypes.vista = 'Vista!'
 '''
 
 # }}}1  Input & Edit {{{1
@@ -610,55 +607,13 @@ hook_add = '''
 '''
 
 [[plugins]]
-repo = 'kana/vim-operator-replace'
-on_map = '<Plug>'
-depends = 'vim-operator-user'
-hook_add = '''
-  vmap p <Plug>(operator-replace)
-'''
-
-[[plugins]]
-repo = 'Shougo/neosnippet.vim'
-depends = 'neosnippet-snippets'
-hook_source = '''
-  " <TAB>: completion.
-  inoremap <expr> <S-TAB> pumvisible() ? '<C-p>' : '<S-TAB>'
-
-  " Plugin key-mappings.
-  imap <C-k> <Plug>(neosnippet_expand_or_jump)
-  smap <C-k> <Plug>(neosnippet_expand_or_jump)
-
-  " SuperTab like snippets behavior.
-  imap <expr> <TAB> neosnippet#jumpable() ? '<Plug>(neosnippet_expand_or_jump)' : pumvisible() ? '<C-n>' : '<TAB>'
-  smap <expr> <TAB> neosnippet#jumpable() ? '<Plug>(neosnippet_expand_or_jump)' : '<TAB>'
-
-  let g:neosnippet#data_directory = expand('~/_vim/.neosnippet')
-
-  " Tell Neosnippet about the other snippets
-  " gosnippets は vim-go がうまいことやってくれるはずだけど、なんかうまくいかないので直接追加。
-  let g:neosnippet#snippets_directory = [
-        \   '~/vimfiles/snippets',
-        \   '~/_vim/dein/repos/github.com/honza/vim-snippets/snippets/',
-        \   '~/_vim/dein/repos/github.com/fatih/vim-go/gosnippets/snippets/',
-        \ ]
-'''
-
-[[plugins]]
-repo = 'Shougo/neosnippet-snippets'
-
-[[plugins]]
-repo = 'honza/vim-snippets'
-# snippets ファイルだけを使うので runtimepath へ追加しない
-rtp = ''
-
-[[plugins]]
 repo = 'uplus/vim-clurin'
 on_map = '<Plug>'
-# 設定に ''' が入っているので """ """ でくくらないと駄目。
-hook_add = """
+hook_add = '''
   nmap + <Plug>(clurin-next)
   nmap - <Plug>(clurin-prev)
-"""
+'''
+# 設定に ''' が入っているので """ """ でくくらないと駄目。
 hook_source = """
   function! g:Speeddating(cnt) abort
     if a:cnt < 0
@@ -687,7 +642,7 @@ hook_source = """
         \       ['-', ' - '],
         \       ['*', ' * '],
         \       ['/', ' / '],
-        \       ['pick', 'fold', 'mess', 'edit', 'drop'],],
+        \       ['pick', 'reword', 'edit', 'squash', 'fixup'],],
         \     'nomatch': function('g:Speeddating')},
         \   'toml vim': {
         \     'def': [[
@@ -699,6 +654,9 @@ hook_source = """
 [[plugins]]
 repo = 'tpope/vim-speeddating'
 on_func = 'speeddating#'
+hook_add = '''
+  let g:speeddating_no_mappings = v:true
+'''
 
 [[plugins]]
 repo = 'junegunn/vim-easy-align'
@@ -729,24 +687,29 @@ on_map = '<Plug>'
 hook_add = '''
   " 空白を削除して行を結合
   " 空白ありで連結のほうが使うことが多い。
-  "NVmap J <Plug>(jplus-input)<CR>
+  "NXmap J <Plug>(jplus-input)<CR>
 
   " 空白を削除した上で任意の文字を挿入して行を結合
-  NVmap <Leader>J <Plug>(jplus-input)
+  NXmap <Leader>J <Plug>(jplus-input)
 '''
 
 [[plugins]]
-repo = 'LeafCage/yankround.vim'
+repo = 'hokorobi/yankround.vim'
 on_map = '<Plug>'
 on_cmd = 'CtrlPYankRound'
 hook_add = '''
-  nnoremap <Leader>fp :<C-u>CtrlPYankRound<CR>
-
   NXmap <expr> P yankround#is_active() ? '<Plug>(myyr)' : '<Plug>(yankround-P)'
   NXmap <expr> p yankround#is_active() ? '<Plug>(myyr)' : '<Plug>(yankround-p)'
+  nnoremap <leader>fp :<C-u>CtrlPYankRound<CR>
 
   let g:yankround_dir = expand('~/_vim/.yankround')
   let g:yankround_use_region_hl = 1
+
+  " submode
+  call submode#enter_with('yr', 'n', 'r', '<Plug>(myyr)', '<Plug>(yankround-prev)')
+  call submode#map('yr', 'n', 'rs', 'p', '<Plug>(yankround-prev)')
+  call submode#map('yr', 'n', 'rs', 'n', '<Plug>(yankround-next)')
+  call submode#map('yr', 'n', 'rs', 'P', '<Plug>(yankround-next)')
 '''
 
 # g<C-a> などは同行での連番はできないようなので、まだ有用
@@ -774,6 +737,17 @@ hook_add = '''
 '''
 
 [[plugins]]
+repo = 'mattn/vim-sonictemplate'
+hook_add = '''
+  let g:sonictemplate_vim_template_dir = [
+    \ '$HOME/vimfiles/sonictemplate',
+    \ '$HOME/_vim/dein/repos/github.com/mattn/vim-sonictemplate/template',
+    \]
+
+  nnoremap <Leader>s :<C-u>call fz#sonictemplate#run()<CR>
+'''
+
+[[plugins]]
 repo = 'deris/vim-pasta'
 on_map = [['nx', '<Space>p'], ['nx', '<Space>P']]
 hook_source = '''
@@ -790,7 +764,7 @@ repo = 'lambdalisue/vim-findent'
 on_cmd = ['Findent', 'FindentRestore']
 hook_add = '''
   let g:findent#enable_messages = 0
-  autocmd vimrc FileType autohotkey,javascript,json,plantuml,python,ruby,vim Findent
+  autocmd vimrc FileType autohotkey,javascript,json,neosnippet,plantuml,python,ruby,vim Findent
 '''
 
 [[plugins]]
@@ -851,14 +825,22 @@ hook_source = '''
   let g:EasyMotion_space_jump_first = 1
   let g:EasyMotion_use_smartsign_us = 1
   let g:EasyMotion_do_shade = 0
+
+  " submode
+  call submode#enter_with('emn', 'nx', 'r', ':', '<Plug>(easymotion-next)')
+  call submode#enter_with('emn', 'nx', 'r', '<Leader>;', '<Plug>(easymotion-next)')
+  call submode#enter_with('emn', 'nx', 'r', ',', '<Plug>(easymotion-prev)')
+  call submode#map('emn', 'nx', 'rs', ';', '<Plug>(easymotion-next)')
+  call submode#map('emn', 'nx', 'rs', ':', '<Plug>(easymotion-next)')
+  call submode#map('emn', 'nx', 'rs', ',', '<Plug>(easymotion-prev)')
 '''
 
 [[plugins]]
 repo = 'haya14busa/vim-edgemotion'
 on_map = '<Plug>'
 hook_add = '''
-  map <Leader>j <Plug>(edgemotion-j)
-  map <Leader>k <Plug>(edgemotion-k)
+  NXmap <Leader>j <Plug>(edgemotion-j)
+  NXmap <Leader>k <Plug>(edgemotion-k)
 '''
 
 [[plugins]]
@@ -866,8 +848,10 @@ repo = 'haya14busa/vim-asterisk'
 on_map = '<Plug>'
 hook_add = '''
   " http://secret-garden.hatenablog.com/entry/2015/04/07/235941
-  map * <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)
+  map * <Plug>(asterisk-gz*)<Plug>(anzu-update-search-status-with-echo)
+  map g* <Plug>(asterisk-z*)<Plug>(anzu-update-search-status-with-echo)
   map z* <Plug>(asterisk-*)<Plug>(anzu-update-search-status-with-echo)
+  map gz* <Plug>(asterisk-g*)<Plug>(anzu-update-search-status-with-echo)
 '''
 
 # カーソル移動位置を遡る
@@ -888,35 +872,19 @@ hook_add = '''
 [[plugins]]
 repo = 'hokorobi/vim-smarthome'
 on_map = [['nxi', '<Plug>']]
+frozen = 1
 hook_add = '''
   NXImap <silent> <Home> <Plug>(smarthome-home)
   NXImap <silent> <C-a> <Plug>(smarthome-home)
   NXImap <silent> <M-h> <Plug>(smarthome-home)
-  NVmap <silent> <Leader>h <Plug>(smarthome-home)
-  NVmap <silent> 0 <Plug>(smarthome-home)
+  NXmap <silent> <Leader>h <Plug>(smarthome-home)
+  NXmap <silent> 0 <Plug>(smarthome-home)
 
   NXImap <silent> <End> <Plug>(smarthome-end)
   NXImap <silent> <C-e> <Plug>(smarthome-end)
   NXImap <silent> <M-l> <Plug>(smarthome-end)
-  NVmap <silent> <Leader>l <Plug>(smarthome-end)
-  NVmap <silent> $ <Plug>(smarthome-end)
-'''
-
-[[plugins]]
-repo = 'hokorobi/cmdlineplus.vim'
-rev = 'fix-jumpto_next'
-on_map = [['c', '<Plug>']]
-hook_add = '''
-  cmap <A-f> <Plug>(cmdlineplus-f)
-  cmap <A-S-f> <Plug>(cmdlineplus-F)
-  cmap <A-t> <Plug>(cmdlineplus-t)
-  cmap <A-S-t> <Plug>(cmdlineplus-T)
-  cmap <A-d> <Plug>(cmdlineplus-df)
-  cmap <A-S-d> <Plug>(cmdlineplus-dF)
-  cmap <C-k> <Plug>(cmdlineplus-killline)
-  cmap <A-;> <Plug>(cmdlineplus-;)
-  cmap <A-:> <Plug>(cmdlineplus-,)
-  cmap <A-,> <Plug>(cmdlineplus-,)
+  NXmap <silent> <Leader>l <Plug>(smarthome-end)
+  NXmap <silent> $ <Plug>(smarthome-end)
 '''
 
 # }}}1  Buffer {{{1
@@ -927,7 +895,6 @@ hook_add = '''
   noremap <silent><expr> qq &diff == 0 ? ':Sayonara!<CR>' : ':diffoff<CR>'
 '''
 hook_source = '''
-  let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
   let g:sayonara_filetypes.qf = 'bdelete'
   let g:sayonara_filetypes.help = 'bdelete!'
 '''
@@ -942,6 +909,7 @@ hook_add = '''
   command! Vmap :Capture vmap
   command! Xmap :Capture xmap
   command! Smap :Capture smap
+  command! Tmap :Capture tmap
   command! Omap :Capture omap
   command! Imap :Capture imap
   command! Lmap :Capture lmap
@@ -951,29 +919,44 @@ hook_add = '''
         \   'cap[ture]': 'Capture',
         \   'scriptn[ames]': 'Capture scriptnames',
         \ })
+
+  " https://vimconf.org/2019/slides/mopp.pdf
+  command! -nargs=1 -bang GrepBuffer
+        \ :execute printf(':Capture! global%s/%s/print',
+        \                 expand('<bang>'),
+        \                 <q-args>)
 '''
 hook_source = '''
   " Sayonara
-    let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
-    let g:sayonara_filetypes.capture = 'bdelete'
-	let g:capture_override_buffer = 'replace'
+  let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
+  let g:sayonara_filetypes.capture = 'bdelete'
+  let g:capture_override_buffer = 'replace'
 '''
 
 [[plugins]]
 repo = 'ap/vim-buftabline'
+hook_add ='''
+  " タブを直接指定するマッピングは不要なので 0 にしたいけどエラーになるので 1 へ
+  let g:buftabline_plug_max = 10
+  let g:buftabline_numbers = 2
+  nmap <leader>1 <Plug>BufTabLine.Go(1)
+  nmap <leader>2 <Plug>BufTabLine.Go(2)
+  nmap <leader>3 <Plug>BufTabLine.Go(3)
+  nmap <leader>4 <Plug>BufTabLine.Go(4)
+  nmap <leader>5 <Plug>BufTabLine.Go(5)
+  nmap <leader>6 <Plug>BufTabLine.Go(6)
+  nmap <leader>7 <Plug>BufTabLine.Go(7)
+  nmap <leader>8 <Plug>BufTabLine.Go(8)
+  nmap <leader>9 <Plug>BufTabLine.Go(9)
+  nmap <leader>0 <Plug>BufTabLine.Go(10)
+'''
 
 [[plugins]]
 repo = 'tyru/closesubwin.vim'
 on_func = 'closesubwin#'
 hook_add ='''
   nnoremap <Leader>q :<C-u>call closesubwin#close_sub_window()<CR>
-  " タブを直接指定するマッピングは不要なので 0 にしたいけどエラーになるので 1 へ
-  let g:buftabline_plug_max = 1
 '''
-
-[[plugins]]
-repo = 'lambdalisue/qfloc.vim'
-on_ft = 'qf'
 
 # }}}1  File {{{1
 [[plugins]]
@@ -1012,7 +995,150 @@ hook_source = '''
   let g:findroot_not_for_subdir = 0
 '''
 
+# }}}1  CtrlP {{{1
+[[plugins]]
+repo = 'ctrlpvim/ctrlp.vim'
+hook_add = '''
+  let g:ctrlp_map = '<Nop>'
+
+  " TODO: バッファをフルパスで検索したい。~/ が展開されていない。
+
+  " https://github.com/mattn/files
+  let $FILES_IGNORE_PATTERN = '(\.exe|\.bin|\.axf|\.o|\.obj|\.a|\.lib|\.so|\.dll|\.dylib|tags|~|\.swp|\.swo|\.swn|\.lc|\.elc|\.fas|\.pyc|\.pyd|\.pyo|\.luac|\.zwc)$'
+  let g:ctrlp_user_command = 'files -A %s'
+
+  " 候補の残りにあわせてリサイズはしない
+  let g:ctrlp_match_window = 'bottom,order:ttb,min:20,max:20'
+
+  " Guess vcs root dir
+  let g:ctrlp_working_path_mode = 'ra'
+
+  " Open new file in current window
+  let g:ctrlp_open_new_file = 'r'
+
+  " cache files directory
+  let g:ctrlp_cache_dir = $HOME . '/_vim/.ctrlp'
+
+  " scan for dotfiles, dotdirectories
+  let g:ctrlp_show_hidden = 1
+
+  " enable multi-byte input
+  let g:ctrlp_key_loop = 1
+
+  let g:ctrlp_switch_buffer = 0
+
+  let g:ctrlp_regexp = 0
+
+  " mapping
+  let g:ctrlp_prompt_mappings = {
+        \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>', '<m-m>'],
+        \ 'PrtSelectMove("j")'  : ['<c-j>', '<down>', '<m-j>'],
+        \ 'PrtSelectMove("k")'  : ['<c-k>', '<up>', '<m-k>'],
+        \ 'PrtBS()'             : ['<bs>', '<c-]>', '<c-h>'],
+        \ 'PrtCurLeft()'        : ['<c-b>', '<left>', '<c-^>'],
+        \ 'ToggleType(-1)'      : ['<c-down>'],
+        \ 'PrtCurRight()'       : ['<c-f>', '<c-l>', '<right>'],
+        \ 'ToggleType(1)'       : ['<c-up>'],
+        \ 'PrtInsert("c")'      : ['<c-v>', '<MiddleMouse>', '<insert>'],
+        \ 'PrtDelete()'         : ['<c-d>', '<del>'],
+        \ 'PrtDeleteWord()'     : ['<c-q>'],
+        \ 'ToggleByFname()'     : ['<F8>'],
+        \ 'AcceptSelection("v")': ['<RightMouse>'],
+        \ 'PrtDeleteEnt()':       ['<F7>', '<c-w>'],
+        \ }
+
+  nnoremap <Leader>b :<C-u>CtrlPBuffer<CR>
+  nnoremap <Leader>/ :<C-u>CtrlPLine %<CR>
+  nnoremap <Leader>u :<C-u>CtrlPMRUFiles<CR>
+  " nnoremap <Leader>ff :<C-u>CtrlP<CR>
+  nnoremap <Leader>fq :<C-u>CtrlPQuickfix<CR>
+  nnoremap <Leader>fr :<C-u>CtrlP ~\_vim\dein\repos<CR>
+'''
+
+[[plugins]]
+repo = 'hokorobi/ctrlp-sessions'
+on_cmd = ['CtrlPSession', 'MkS']
+hook_add = '''
+  nnoremap <Leader>fs :<C-u>CtrlPSessions<CR>
+  call extend(g:vimrc_altercmd_dic, {'ss': 'MkS'})
+
+  let g:ctrlp_session_dir = expand('~/_vim/sessions')
+'''
+
+[[plugins]]
+repo = 'mattn/ctrlp-launcher'
+on_cmd = 'CtrlPLauncher'
+hook_add = '''
+  let g:ctrlp_launcher_file = expand('~/vimfiles/.ctrlp-launcher')
+  nnoremap <Leader>fl :<C-u>CtrlPLauncher<CR>
+'''
+
+[[plugins]]
+repo = 'zeero/vim-ctrlp-help'
+on_cmd = 'CtrlPHelp'
+hook_add = '''
+  nnoremap <Leader>fh :<C-u>CtrlPHelp<CR>
+
+  call extend(g:vimrc_altercmd_dic, {'hh': 'CtrlPHelp'})
+'''
+
+[[plugins]]
+repo = 'ivalkeen/vim-ctrlp-tjump'
+on_cmd = ['CtrlPtjump', 'CtrlPtjumpVisual']
+hook_add = '''
+  let g:ctrlp_tjump_only_silent = 1
+  nnoremap <c-]> :CtrlPtjump<cr>
+  vnoremap <c-]> :CtrlPtjumpVisual<cr>
+'''
+
+[[plugins]]
+repo = 'ompugao/ctrlp-locate'
+on_cmd = 'CtrlPLocate'
+hook_add = '''
+  nnoremap <Leader>fe :<C-u>CtrlPLocate<CR>
+  let g:ctrlp_locate_command_definition = 'es -n 100 {query}'
+'''
+
+[[plugins]]
+repo = 'tacahiroy/ctrlp-funky'
+on_cmd = 'CtrlPFunky'
+hook_add = '''
+  nnoremap <Leader>fu :<C-u>CtrlPFunky<CR>
+'''
+
+[[plugins]]
+repo = 'printesoi/ctrlp-filetype.vim'
+on_cmd = 'CtrlPFiletype'
+hook_add = '''
+  nnoremap <Leader>ft :<C-u>CtrlPFiletype<CR>
+'''
+
+[[plugins]]
+repo = 'christoomey/ctrlp-generic'
+depends = 'vim-systemjob'
+on_func = 'CtrlPGeneric'
+hook_add = '''
+  function! PasteCallback(selected_value) abort
+    call setreg('z', a:selected_value)
+    normal! "zp
+  endfunction
+  command! -nargs=1 CtrlPCmdPaste call CtrlPGeneric(system_job#systemlist(<q-args>), 'PasteCallback')
+'''
+[[plugins]]
+repo = 'hokorobi/vim-systemjob'
+
 # }}}1  Utility {{{1
+[[plugins]]
+repo = 'mattn/vim-fz'
+on_map = '<Plug>'
+on_cmd = 'Fz'
+on_func = ['fz#run', 'fz#sonictemplate']
+hook_add = '''
+  let $GOF_IGNORE_PATTERN = '(\.exe|\.bin|\.axf|\.o|\.obj|\.a|\.lib|\.so|\.dll|\.dylib|tags|~|\.swp|\.swo|\.swn|\.lc|\.elc|\.fas|\.pyc|\.pyd|\.pyo|\.luac|\.zwc)$'
+  nmap <Leader>ff <Plug>(fz)
+  nmap <Leader><Leader>u <Plug>(fz-mru)
+'''
+
 [[plugins]]
 repo = 'tyru/vim-altercmd'
 on_cmd = ['AlterCommand', 'CAlterCommand']
@@ -1033,18 +1159,23 @@ on_map = '<Plug>(openbrowser-'
 on_func = 'openbrowser#open'
 hook_add = '''
   nmap <Leader>oo <Plug>(openbrowser-open)
-  NVmap <Leader>o <Plug>(openbrowser-open)
+  NXmap <Leader>o <Plug>(openbrowser-open)
 
   function! s:open_github_repository() abort
     let backup_z = @z
     let @z = ''
-    normal! "zyi'
-    if @z ==# ''
-      normal! "zyi"
+    if (stridx(mode(), 'n') == 0)
+      normal! "zyi'
       if @z ==# ''
-        let @z = backup_z
-        return
+        normal! "zyi"
       endif
+    else
+      " TODO: ヴィジュアルモードで選択した文字列を開く。下のコードは期待した動きにならない
+      normal! "zy
+    endif
+    if @z ==# ''
+      let @z = backup_z
+      return
     endif
 
     if stridx(@z, '/') != -1
@@ -1107,113 +1238,29 @@ hook_add = '''
 [[plugins]]
 repo = 'mattn/webapi-vim'
 
-[[plugins]]
-repo = 'ynkdir/vim-vimlparser'
+#[[plugins]]
+#repo = 'ynkdir/vim-vimlparser'
 
 [[plugins]]
 repo = 'kana/vim-operator-user'
 
+# Vim に追加された機能のバージョンを確認
 [[plugins]]
-repo = 'vim-voom/VOoM'
-on_cmd ='Voom'
+repo = 'tweekmonster/helpful.vim'
+on_cmd = 'HelpfulVersion'
 hook_add = '''
-  call extend(g:vimrc_altercmd_dic, {
-        \   'voo[m]': 'Voom rest',
-        \   'out[line]': 'Voom rest',
-        \ })
-'''
-hook_source = '''
-  " Sayonara
-  let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
-  let g:sayonara_filetypes.voomtree = 'VoomQuitAll'
+  call extend(g:vimrc_altercmd_dic, {'Helpfu[lVersion]': 'Capture HelpfulVersion'})
 '''
 
+# #rrggbb や #rgb の色を視覚化
 [[plugins]]
-repo = 'w0rp/ale'
-hook_add = '''
-  " 保存時に常に Lint が動くのは鬱陶しいので一度 Lint を動かしたバッファだけで、
-  " 次の保存時から Lint が動くようにする {{{
-  let g:ale_enabled = 0
+repo = 'lilydjwg/colorizer'
+on_cmd = 'ColorHighlight'
 
-  nnoremap <silent> <Leader>al :<C-u>call <SID>alelint()<CR>
-  nnoremap <silent> <Leader>af :<C-u>call <SID>alefix()<CR>
-  function! s:alelint() abort
-    if !exists('b:ale_enabled')
-      let b:ale_enabled = 1
-    endif
-    ALELint
-  endfunction
-  function! s:alefix() abort
-    if !exists('b:ale_enabled')
-      let b:ale_enabled = 1
-    endif
-    ALEFix
-  endfunction
-
-  " 自動的に ALELint を実行するのは保存時のみ
-  let g:ale_lint_on_text_changed = 0
-  let g:ale_lint_on_insert_leave = 0
-  let g:ale_lint_on_save = 1
-  let g:ale_lint_on_filetype_changed = 0
-  let g:ale_lint_on_enter = 0
-  " }}}
-
-  " 保存時に自動 fixer を実行しない
-  let g:ale_fix_on_save_ignore = 1
-
-  " statusline に ALE の実行中を表示 {{{
-  " https://github.com/delphinus/lightline-delphinus
-  let s:ale_linting_glyph = "\uf250" " 
-  let s:ale_linting = 0
-
-  function! s:ale_pre() abort
-    let s:ale_linting = 1
-    call lightline#update()
-  endfunction
-
-  function! s:ale_post() abort
-    let s:ale_linting = 0
-    call lightline#update()
-  endfunction
-
-  function! Ale_string()
-    return s:ale_linting ? s:ale_linting_glyph : ''
-  endfunction
-
-  augroup LightLineOnALE
-    autocmd!
-    autocmd User ALELint     call lightline#update()
-    autocmd User ALELintPre  call s:ale_pre()
-    autocmd User ALELintPost call s:ale_post()
-  augroup end
-  " }}}
-
-  " 部分的に hook_source に書いてみたが動かなかった。
-
-  " ウィンドウ自動表示
-  let g:ale_open_list = 1
-
-  " LSP 無効化
-  let g:ale_disable_lsp = 1
-
-  " カーソルが消えるのを回避
-  let g:ale_echo_cursor = 0
-
-  let g:ale_linters = {
-        \   'javascript': ['eslint'],
-        \   'rst': ['rstcheck', 'textlint'],
-        \   'vim': ['vint'],
-        \}
-  let g:ale_fixers = {
-        \   'javascript': ['prettier-eslint'],
-        \   'json': ['prettier'],
-        \   'markdown': ['prettier'],
-        \   'python': ['black', 'isort'],
-        \   'sql': ['sqlfmt'],
-        \   'yaml': ['prettier'],
-        \}
-  let g:ale_javascript_prettier_eslint_options = '--single-quote --trailing-comma es5'
-'''
+# Vim script の最後に発生したエラーの箇所を開く
+[[plugins]]
+repo = 'rbtnn/vim-vimscript_lasterror'
+on_cmd = 'VimscriptLastError'
 
 # }}}1  Web Service {{{1
 [[plugins]]
@@ -1233,19 +1280,29 @@ repo = 'fedorenchik/VimCalc3'
 on_cmd = 'Calc'
 hook_source = '''
   " Sayonara
-  let g:sayonara_filetypes = get(g:, 'sayonara_filetypes', {})
   let g:sayonara_filetypes.vimcalc = 'bdelete'
 '''
 
 [[plugins]]
 repo = 'thinca/vim-submode'
-on_event = 'VimEnter'
 hook_add = '''
   let g:submode_keep_leaving_key = 1
   let g:submode_timeout = 0
-'''
-hook_source = '''
+
   " TODO: submode を抜けるときに <silent> を効かせたいけど方法はないのかな？
+
+  " window resize
+  call submode#enter_with('resizewindow', 'n', '', '<Space>rw')
+  call submode#map('resizewindow', 'n', '', 'h', '<c-w><')
+  call submode#map('resizewindow', 'n', '', 'l', '<c-w>>')
+  call submode#map('resizewindow', 'n', '', 'j', '<c-w>+')
+  call submode#map('resizewindow', 'n', '', 'k', '<c-w>-')
+
+  " tab move
+  call submode#enter_with('changetab', 'n', '', 'gt', 'gt')
+  call submode#enter_with('changetab', 'n', '', 'gT', 'gT')
+  call submode#map('changetab', 'n', '', 't', 'gt')
+  call submode#map('changetab', 'n', '', 'T', 'gT')
 
   " 変更した位置
   call submode#enter_with('move-change', 'n', '', 'g;', 'g;')
@@ -1283,40 +1340,10 @@ hook_source = '''
 
   " Visual モード時のインクリメント、デクリメント
   " http://vim-jp.org/blog/2015/06/30/visual-ctrl-a-ctrl-x.html
-  call submode#enter_with('vinc', 'v', '', '<Leader>a', '<c-a>gv')
-  call submode#enter_with('vinc', 'v', '', '<Leader>x', '<c-x>gv')
-  call submode#map('vinc', 'v', '', 'a', '<c-a>gv')
-  call submode#map('vinc', 'v', '', 'x', '<c-x>gv')
-
-  if !dein#check_install('yankround.vim')
-    call submode#enter_with('yr', 'n', 'r', '<Plug>(myyr)', '<Plug>(yankround-prev)')
-    call submode#map('yr', 'n', 'rs', 'p', '<Plug>(yankround-prev)')
-    call submode#map('yr', 'n', 'rs', 'n', '<Plug>(yankround-next)')
-    call submode#map('yr', 'n', 'rs', 'P', '<Plug>(yankround-next)')
-  endif
-
-  if !dein#check_install('vim-expand-region')
-    " expand-regionモードの設定。,eでモードに入り、eで拡張、s, Eで縮小できる
-    call submode#enter_with('expand-region', 'nv', 'r', '<Leader>e', '<Plug>(expand_region_expand)')
-    call submode#map('expand-region', 'nv', 'rs', 'e', '<Plug>(expand_region_expand)')
-    call submode#map('expand-region', 'nv', 'rs', 'E', '<Plug>(expand_region_shrink)')
-  endif
-
-  if !dein#check_install('vim-easymotion')
-    call submode#enter_with('emn', 'nv', 'r', ':', '<Plug>(easymotion-next)')
-    call submode#enter_with('emn', 'nv', 'r', '<Leader>;', '<Plug>(easymotion-next)')
-    call submode#enter_with('emn', 'nv', 'r', ',', '<Plug>(easymotion-prev)')
-    call submode#map('emn', 'nv', 'rs', ';', '<Plug>(easymotion-next)')
-    call submode#map('emn', 'nv', 'rs', ':', '<Plug>(easymotion-next)')
-    call submode#map('emn', 'nv', 'rs', ',', '<Plug>(easymotion-prev)')
-  endif
-
-  if !dein#check_install('ale')
-    call submode#enter_with('ale', 'n', 'r', '<Leader>aj', '<Plug>(ale_next_wrap)')
-    call submode#enter_with('ale', 'n', 'r', '<Leader>ak', '<Plug>(ale_previous_wrap)')
-    call submode#map('ale', 'n', 'rs', 'j', '<Plug>(ale_next_wrap)')
-    call submode#map('ale', 'n', 'rs', 'k', '<Plug>(ale_previous_wrap)')
-  endif
+  call submode#enter_with('vinc', 'x', '', '<Leader>a', '<c-a>gv')
+  call submode#enter_with('vinc', 'x', '', '<Leader>x', '<c-x>gv')
+  call submode#map('vinc', 'x', '', 'a', '<c-a>gv')
+  call submode#map('vinc', 'x', '', 'x', '<c-x>gv')
 '''
 
 [[plugins]]
@@ -1324,6 +1351,8 @@ repo = 'lambdalisue/gina.vim'
 on_cmd = 'Gina'
 hook_add = '''
   nnoremap <Leader>gs :<C-u>Gina status -s --group=status --opener=split<CR>
+  " 開いているファイル、選択行を Github で開く
+  NXnoremap <Leader>oG :Gina browse :<CR>
 
   call extend(g:vimrc_altercmd_dic, {
         \   'gin[a]': 'Gina',
@@ -1334,6 +1363,7 @@ hook_source = '''
   " alias
   call gina#custom#command#alias('status', 'st')
   call gina#custom#command#option('st', '-s')
+  call gina#custom#command#option('status', '--opener', 'split')
 
   call gina#custom#command#alias('branch', 'b')
 
@@ -1352,32 +1382,31 @@ hook_source = '''
 '''
 
 [[plugins]]
-repo = 'hokorobi/vim-hg'
-on_cmd = 'Hg'
-depends = 'vim-system_job'
-hook_add = '''
-  let $HGENCODING = 'UTF-8'
-  let g:hg_path = 'C:/OLS/File/TortoiseHg/hg.exe'
-  call extend(g:vimrc_altercmd_dic, {'hg': 'Hg'})
-'''
-
-[[plugins]]
 repo = 'hokorobi/vim-howm-syntax-mini'
+frozen = 1
 
-[[plugins]]
-repo = 'hokorobi/vim-system_job'
-lazy = 1
+# [[plugins]]
+# repo = 'vim-jp/vital.vim'
+# depends = 'vital-Whisky'
+# on_cmd = 'Vitalize'
 
-[[plugins]]
-repo = 'vim-jp/vital.vim'
-depends = 'vital-Whisky'
-on_cmd = 'Vitalize'
-
-[[plugins]]
-repo = 'lambdalisue/vital-Whisky'
-lazy = 1
+# [[plugins]]
+# repo = 'lambdalisue/vital-Whisky'
+# lazy = 1
 
 [[plugins]]
 repo = 'vim-jp/vimdoc-ja'
+
+# terminal 上で、未入力時に ESC, : が効くようにする
+[[plugins]]
+repo = 'tyru/empty-prompt.vim'
+hook_add = '''
+  " Enter command-line / normal-mode if current line is empty prompt
+  function! s:empty_prompt_mappings() abort
+    call empty_prompt#map(#{lhs: ';', rhs: "<C-w>:"})
+    call empty_prompt#map(#{lhs: '<Esc>', rhs: "<C-w>N"})
+  endfunction
+  autocmd TerminalOpen * ++once call s:empty_prompt_mappings()
+'''
 
 # }}}

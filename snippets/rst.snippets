@@ -1,0 +1,261 @@
+# rst
+
+snippet :
+	:${1:field name}: ${0:field body}
+
+snippet **
+	**${1:#:Strong emphasis}** ${0}
+
+snippet _
+	\`${1:hyperlink-name}\`_
+	.. _\`$1\`: ${0:link-block}
+
+snippet =
+options head
+	${1:Title}
+	=====${2:=}
+	${0}
+
+snippet -
+options head
+	${1:Title}
+	-----${2:-}
+	${0}
+
+#some directive
+snippet img
+abbr    image
+options head
+	.. image:: ${0:img}
+
+snippet fig
+abbr    figure
+options head
+alias   image
+	.. figure:: ${1:img}
+		:alt: ${2:alter text}
+
+		${0}
+
+#Sphinx only
+snippet sid:
+options head
+	.. sidebar:: ${1:Title}
+
+		${0}
+
+snippet todo
+options head
+	.. todo::
+		${0}
+
+snippet list
+options head
+	.. list-table:: ${1:Title}
+		:header-rows: 1
+		:stub-columns: 0
+
+		* - ${0:R1C1}
+		  - R1C2
+		* - R2C1
+		  - R2C2
+
+snippet csv:
+options head
+	.. csv-table:: ${1:Title}
+		:header-rows: 1
+		:stub-columns: 0
+
+		${0:R1C1}, R1C2
+		R2C1, R2C2
+
+snippet     toctree
+abbr        directive_toctree
+options     head
+	.. toctree::
+		:maxdepth: ${1:2}
+
+		${2:#:FILES}
+
+snippet dow:
+	:download:\`${1:text} <${2:path}>\`
+
+snippet ref:
+abbr    role_ref_anytext
+	:ref:\`${1:text} <${2:path}>\` ${0}
+
+snippet ref
+abbr    role_ref
+	:ref:\`${1:#:path}\` ${0}
+
+snippet doc:
+	:doc:\`${1:text} <${2:path}>\`
+
+snippet title
+options head
+  ${1:#:title}
+  ====================================
+
+snippet subtitle
+options head
+  ${1:#:subtitle}
+  -----------------------------------
+
+snippet code_block
+abbr code
+alias syntax
+options head
+  .. code-block:: ${1:#:filetype}
+
+		${2:#:content}
+
+snippet link_raw
+abbr link_as_raw
+options head
+  \`${1:#:link}\`_ ${0}
+
+snippet link_label
+abbr link_and_label
+options head
+  \`${1:#:title} <${2:#:link}>\`_ ${0}
+
+snippet table_grid
+abbr grid_table
+options head
+  +------------------+------------+-----------------------+------------+
+  |${1:#:cel} | | | |
+  +==================+============+=======================+============+
+  | | | | |
+  +------------------+------------+-----------------------+------------+
+  | | | | |
+  +------------------+------------+-----------------------+------------+
+
+snippet table_simple
+abbr simple_table
+options head
+  :${1:#:text}:
+  : :
+  : :
+  : :
+
+snippet caption
+options head
+  [#]
+
+snippet strong
+options head
+  **${1:#:text}**
+
+snippet     link_doc
+abbr        link_to_doc
+options     head
+	:doc:\`${1:#:PageName}\` ${0:#:CURSOR}
+
+
+snippet     label
+abbr        label
+options     head
+	.. _${1:NAME}:
+
+	${0}
+
+snippet     contents
+abbr        directive_content index
+options     head
+	.. contents:: ${1:title}
+		:depth: ${2:2}
+		${3::local:}
+
+	${0}
+
+
+snippet     guilabel
+abbr        role_guilabel
+	:guilabel:\`${1:#:NAME}\` ${0:#:CURSOR}
+
+
+snippet     menuselection
+abbr        role_menuselection
+	:menuselection:\`${1:#:NAME} --> ${2:#:NAME}\` ${0:#:CURSOR}
+
+
+snippet     table
+abbr        directive_table
+options     head
+	.. table:: ${1:#:TITLE}
+		${0:#:CURSOR}
+
+snippet     csvtable
+abbr        directive_csvtable
+options     head
+	.. csv-table:: ${1:#:TITLE}
+		:header: "${2:#:Header1}", "${3:#:Header2}"${4:#:Headers}
+
+		"${5:#:Column1}", "${6:#:Column2}"${0:#:CURSOR}
+
+
+snippet     directive
+	.. ${1:#:NAME}:: ${0:#:CURSOR}
+
+
+snippet note
+options head
+	.. note::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet tip
+options head
+	.. tip::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet warning
+options head
+	.. warning::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet important
+options head
+	.. important::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet attention
+options head
+	.. attention::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet danger
+options head
+	.. danger::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet error
+options head
+	.. error::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet caution
+options head
+	.. caution::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet hint
+options head
+	.. hint::${1:#: contents_simple}
+
+		${2:#:contents}
+
+snippet seealso
+options head
+	.. seealso::${1:#: contents_simple}
+
+		${2:#:contents}
+
+# vim:set list noet sts=0 sw=4 ts=4:

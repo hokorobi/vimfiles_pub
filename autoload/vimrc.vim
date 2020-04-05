@@ -12,7 +12,6 @@ endfunction
 
 
 " / と :s///g をトグル
-" 8.1.0271 あたりからいらなくなったはず
 function! vimrc#ToggleSubstituteSearch(type, line) abort
   if a:type ==# '/' || a:type ==# '?'
     let range = s:GetOnetime('s:range', '%')
@@ -122,6 +121,8 @@ function! vimrc#DiffXdoc2txt() abort
     return
   endif
   windo %!xdoc2txt "%"
+  windo setlocal wrap
+  set diffopt+=iwhiteall
   diffupdate
 endfunction
 
@@ -130,31 +131,36 @@ function! vimrc#toggle_option(option_name) abort
   execute 'setlocal' a:option_name . '!' a:option_name . '?'
 endfunction
 
-" jq
+" json processor
 function! vimrc#Jq(...) abort
-  if 0 ==# a:0
-    let l:arg = '.'
+  if Vimrc_executable('jj')
+    " http://qiita.com/tekkoc/items/324d736f68b0f27680b8
+    let l:cmd = 'jj'
+    let l:arg0 = '-p'
+  elseif Vimrc_executable('jq')
+    " https://github.com/stedolan/jq
+    let l:cmd = 'jq'
+    let l:arg0 = '.'
   else
-    let l:arg = a:1
+    let l:cmd = 'python'
+    let l:arg0 = '-m json.tool'
   endif
-  execute '%! jq "' . l:arg . '"'
-endfunction
 
-" jj
-function! vimrc#Jj(...) abort
   if 0 ==# a:0
-    let l:arg = '-p'
-  else
-    let l:arg = a:1
+    execute '%!' . l:cmd . ' ' . l:arg0
+    return
   endif
-  execute '%! jj "' . l:arg . '"'
+  if l:cmd ==# 'python'
+    echom 'jj, jq コマンドが見つからないため式は評価できません。'
+    return
+  endif
+  execute '%!' . l:cmd ' "' . a:1 . '"'
 endfunction
 
 
 " ファイラからの起動時に検索文字列を指定するのは使いにくいので、コマンド実行後に検索文字列を入力できるようにする
-" pt 用
 function! vimrc#GrepWrap(...) abort
-  let path = a:0 >= 1 ? a:1 : '.'
+  let path = a:0 == 0 ? '.' : a:1
   let str = input('Pattern: ')
   if len(str) == 0
     return 1
@@ -164,7 +170,7 @@ endfunction
 
 " pt で grep を実行した後に結果をパス順にしたかったので sort
 function! vimrc#SortQuickfix(fn) abort
-  call setqflist(sort(getqflist(), a:fn))
+  call setqflist(sort(getqflist(), a:fn), 'r')
 endfunction
 function! vimrc#QfStrCmp(e1, e2) abort
   let [t1, t2] = [bufname(a:e1.bufnr), bufname(a:e2.bufnr)]
@@ -243,6 +249,38 @@ function! vimrc#listmove(direction) abort
   endfor
 endfunction
 " }}}
+
+" Swap {{{
+" https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L651-L687
+function! vimrc#on_SwapExists() abort
+  if !filereadable(expand('<afile>'))
+    let v:swapchoice = 'd'
+    return
+  endif
+  let v:swapchoice = get(b:, 'swapfile_choice', 'o')
+  unlet! b:swapfile_choice
+  if v:swapchoice !=# 'd'
+    let b:swapfile_exists = 1
+  endif
+endfunction
+
+function! vimrc#swapfile_recovery() abort
+  if get(b:, 'swapfile_exists', 0)
+    let b:swapfile_choice = 'r'
+    unlet b:swapfile_exists
+    edit
+  endif
+endfunction
+
+function! vimrc#swapfile_delete() abort
+  if get(b:, 'swapfile_exists', 0)
+    let b:swapfile_choice = 'd'
+    unlet b:swapfile_exists
+    edit
+  endif
+endfunction
+" }}}
+
 
 " plugin {{{1
 

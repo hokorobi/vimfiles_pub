@@ -3,3 +3,15 @@ options     head, indent
 	for ${1}; ${2}; ${3} {
 		${4}
 	}
+
+snippet     close
+	defer ${1}.Close()
+	${2}
+
+snippet     fatal
+options     head
+	if ${1:err} != nil {
+	  log.Fatal($1)
+	}
+	${2}
+

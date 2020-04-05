@@ -1,7 +1,24 @@
+---
 languages:
+  rst:
+    lint-command: 'restructuredtext-lint --encoding utf-8 --level warning --format text ${INPUT}'
+    lint-stdin: false
+    lint-ignore-exit-code: true
+    lint-formats:
+      - '%tARNING %f:%l %m'
+      - '%tRROR %f:%l %m'
+
   vim:
     lint-command: 'vint -'
     lint-stdin: true
     lint-formats:
-        - '%f:%l:%c:%m'
+      - '%f:%l:%c:%m'
 
+  yaml:
+    lint-command: 'yamllint --strict --format parsable ${INPUT}'
+    lint-stdin: false
+    lint-formats:
+      - '%f:%l:%c: [%trror] %m'
+      - '%f:%l:%c: [%tarning] %m'
+    env:
+      - 'PYTHONIOENCODING=UTF-8'

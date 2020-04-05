@@ -1,25 +1,26 @@
+Command
+========
+
+* `M-i` : (c) コマンドラインウィンドウ表示
+
 Movement
 ========
 
 * `[z` `]z`  : 現在の折りたたみの先頭/末尾へ移動
 * `zj` `zk`  : 次/前の折りたたみの先頭/末尾へ移動。feat. submode 連続して j, k 入力で次、前へ移動
-* `gt` `gT`  : 前の／次のタブを表示
+* `gt` `gT`  : 前の／次のタブを表示。feat. submode 連続して t, T 入力で次、前へ移動
 * `g;` `g,`  : 変更した位置への移動。feat. submode 連続して ;, , 入力で次、前へ移動
 * `:jumps`   : ジャンプの履歴表示
 * `C-I`      : ジャンプの履歴を進む
 * `o`        : (v) 範囲開始指定をやり直し
 * `<Space>;` : 直前の f, F, t, F を繰り返す。 feat. easymotion
 * `<Space>,` : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
-* `<A-f>`    : (c) コマンドモードで f. feat.cmdlineplus
-* `<A-S-f>`  : (c) コマンドモードで F. feat.cmdlineplus
-* `<A-t>`    : (c) コマンドモードで t. feat.cmdlineplus
-* `<A-S-t>`  : (c) コマンドモードで T. feat.cmdlineplus
-* `<A-d>`    : (c) コマンドモードで df. feat.cmdlineplus
-* `<A-S-d>`  : (c) コマンドモードで dF. feat.cmdlineplus
-* `<C-k>`    : (c) コマンドモードで C-k. feat.cmdlineplus
-* `<A-;>`    : (c) コマンドモードで ;. feat.cmdlineplus
-* `<A-:>`    : (c) コマンドモードで ,. feat.cmdlineplus
-* `<A-,>`    : (c) コマンドモードで ,. feat.cmdlineplus
+
+
+Select
+=======
+
+* `gv` : 最後に使用したのと同じ範囲のビジュアルモードを開始する
 
 
 Edit
@@ -32,26 +33,28 @@ Edit
                             : [0xa-0xf] 入力後に実行すると a-f を各行に展開 feat. ExpandSerialNumber
 * `:SortLine`               : 行全体で , 区切りの文字列をソートする
 * `<Leader>a` / `<Leader>x` : (v) 選択範囲をインクリメント / デクリメント
-* `:v/hoge/d`               : ある文字列を含む行のみを残して削除
-* `:g/hoge/d`               : ある文字列を含む行を削除
-* `gs`                      : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動) に入る feat. swap
+* `:v/hoge/d`               : hoge を含む行のみを残して削除
+* `:Capture g/hoge/p`       : hoge を含む行のみを Capture バッファへ出力。 feat. Capture
+* `:vim // %`               : 直前の検索条件を含む行のみを Quickfix へ出力
+* `:g/hoge/d`               : hoge を含む行を削除
+* `:g/Second/s/bar/foo/g`   : Second を含む行に存在する bar をすべて foo に置換する。
+* `:s//bar/`                : 直前の / 検索の合致内容を bar に置換する。
+* `:g/hoge/cmd`             : hoge を含む行に対して :cmd を実行
+* `gs`                      : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動、s, S: ソート昇順、降順、r: 反転、g, G: グループ化、解除) に入る。. で繰り返し可能 feat. swap
 * `g>`                      : 要素を右に移動 feat. swap
 * `g<`                      : 要素を左に移動 feat. swap
 * `g<C-a>`                  : (v) 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
 * `cxiw`                    : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
 * `cxc`                     : 入れ替え候補のキャンセル feat. vim-exchange
 * `X`                       : (v) 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
-* `cxx`                     : X (v) で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
+* `cxx`                     : (v) X で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
 * `#`                       : (n: カーソル下の単語|v: 選択文字列) をハイライトしてから置換
 * `^M などの入力`           : vim --clean filename で起動。Insert mode で Ctrl+v Ctrl+m など
 * `<C-R>"`                  : (i) 直前のレジスタから Paste
 * `<C-R>0`                  : (i) 一つ前のレジスタから Paste。cw<C-R>" だと変更前の単語が Paste されるので、こちらを使う。
-
-Select
--------
-
-* `gv` : 最後に使用したのと同じ範囲のビジュアルモードを開始する
-
+* `sdt`                     : HTML のタグだけを削除。 feat. sandwich
+* `M-i`                     : (c) コマンドラインウィンドウ表示
+* `dNib`                    : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
 
 複数ファイルに対する処理
 ------------------------
@@ -78,7 +81,7 @@ Select
 
 
 Easy Align
-==========
+----------
 
 * `<Space>`    : Around 1st whitespaces
 * `3<Space>`   : Around 2nd whitespaces
@@ -94,8 +97,9 @@ Easy Align
 * `<Enter>**=` : Right-left alternating around =
 * `*<C-x>[:=]` : すべての : と = を対象とする (<C-x> で正規表現使用)
 
+
 Surround (feat. sandwich)
-=========================
+-------------------------
 
 * `sa{TextObject}"` : TextObject を " で括る
 * `sa"`             : (v) 選択範囲を " で括る
@@ -114,15 +118,77 @@ Surround (feat. sandwich)
 * `sdt`             : HTML のタグを削除
 
 
+vim-emmet
+---------
+
+* `<c-y>d` / `<c-y>D` : (ni) 外側/内側 のタグの範囲を選択
+* `<c-y>n` / `<c-y>N` : (ni) 次/前 の入力ポイントに移動
+* `<c-y>i`            : (ni) <img> タグに移動して実行するとサイズを挿入
+* `<c-y>k`            : (ni) タグの範囲を削除
+* `<c-y>j`            : (ni) タグの書式をトグル <tag></tag> <--> <tag/>
+* `<c-y>a`            : (ni) URL を <a> タグ化
+* `<c-y>,`            : (i) 短縮入力
+
+   1. 展開
+      入力::
+
+          div>p#foo$*3>a
+
+      展開結果::
+
+         <div>
+             <p id="foo1">
+                 <a href=""></a>
+             </p>
+             <p id="foo2">
+                 <a href=""></a>
+             </p>
+             <p id="foo3">
+                 <a href=""></a>
+             </p>
+         </div>
+
+   2. ラップ
+      入力1::
+
+         test1
+         test2
+         test3
+
+      line wise で選択して、入力2::
+
+          ul>li*
+
+      展開::
+
+         <ul>
+             <li>test1</li>
+             <li>test2</li>
+             <li>test3</li>
+         </ul>
+
+      入力2の別パターン::
+
+          blockquote
+
+      展開::
+
+         <blockquote>
+             test1
+             test2
+             test3
+         </blockquote>
+
+
 fold
 ====
 
-* `zc` `zo` : 現在の折りたたみを閉じる/開く
-* `zC` `zO` : 現在の折りたたみをすべて閉じる/すべて開く
-* `zM` `zR` : すべての折りたたみを閉じる/開く
-* `za`      : 現在の折りたたみを開閉する
-* `zv`      : カーソル位置の折りたたみをすべて開く
-* `zf`      : 折りたたみを作成する
+* `zc` / `zo` : 現在の折りたたみを閉じる/開く
+* `zC` / `zO` : 現在の折りたたみをすべて閉じる/すべて開く
+* `zM` / `zR` : すべての折りたたみを閉じる/開く
+* `za`        : 現在の折りたたみを開閉する
+* `zv`        : カーソル位置の折りたたみをすべて開く
+* `zf`        : 折りたたみを作成する
 
 
 file
@@ -143,8 +209,8 @@ grep
 * `:grep /G \.vim$ {pattern} .`   : カレントディレクトリ配下の `*.vim` から {pattern} を検索。pt 用
 
 
-Bookmark
-========
+vim-bookmarks
+=============
 
 * `mi` : 注釈の編集
 * `mx` : ブックマークをすべて削除
@@ -157,7 +223,7 @@ help
 ====
 
 `:help CTRL-]`             : (ノーマルモードの) コントロール文字コマンド CTRL-] のヘルプを表示
-`:help i_CTRL-`            : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
+`:help i_CTRL-]`            : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
 `:help 'number'`           : オプション number のヘルプを表示
 `:help :help`              : コマンドラインコマンド help のヘルプを表示
 `:helpgrep hoge`           : hoge をヘルプから検索
@@ -166,6 +232,9 @@ help
 `:help cmdline-special`    : Exコマンド用の特別な文字 の説明
 `:help filename-modifiers` : :p や :h などのファイル名修飾子
 `<C-CR>`                   : カーソル位置のハイライト名を表示
+`{nr}` 表記                : NumbeR?
+`{lhs}` 表記               : Left Hand Side
+`{rhs}` 表記               : Right Hand Side
 
 
 QuickFix
@@ -183,6 +252,33 @@ Macro
 * `<Space>Q a` : マクロ a へ記録。<Space>Q で記録を停止
 * `@a`         : マクロ a を実行
 
+Text Object
+===========
+
+* `ad`, `id` : /\#_-キャメルケースの文字列, で区切った文字列. feat. vim-textobj-delimited
+* `av`, `iv` : _キャメルケースの文字列 変数名の区切り。キャメルケースの場合、先頭を小文字にする. feat. vim-textobj-variable-segment
+* `ac`, `ic` : コメント
+* `ab`, `ib` : feat. sandwich
+
+
+rst
+===
+
+* `<Space><Space>n` : レベル n のセクションとして指定
+* `<C-CR>`          : 現在行の List bullet を次の行に挿入
+* `<S-CR>`          : 現在行の配下 List bullet を次の行に挿入
+* `<C-S-CR>`        : 現在行の親 List bullet を次の行に挿入
+
+snippet
+-------
+
+* `link_label`: `title <link>`_
+* `image`: .. image:: path
+* `fig`: 図にキャプションをつける場合に使用。alt の下に改行を空けて書いた内容がキャプションになる。
+* `lis`: list-table
+* `ref`: :ref:``
+* `attention`: attention
+
 
 CtrlP
 =====
@@ -194,8 +290,6 @@ CtrlP
 howm
 ========
 
-* `<Space>,u` : 最近編集した howm ファイル一覧. feat. denite, neomru
-* `<Space>,,` : howm ファイルから grep. feat. denite
 * `<Space>,c` : howm ファイルを新規作成. feat. vim-template
 
 golang
@@ -217,37 +311,49 @@ ALE
 * `<Space>aj` : Previous
 
 Gina.vim
-========
+==========
+
 * `<Leader>gs` : Gina status
 * `cc`         : (status) Gina commit
 * `s`          : (blame) Gina show
 
-riv.vim
-=======
-prefix を `<C-u>` に設定している。
+Git
+========
+* `<Leader>gl` : gl
+* `<Leader>gd` : diff
+* `<Leader>gs` : status
+* `<Leader>ga` : add -p
+* `<Leader>gu` : add -u
+* `<Leader>gc` : commit -v
+* `<Leader>gm` : commit -m
+* `<Leader>gn` : now
 
-* `<C-u>cdd`      : 今日の日付を挿入
-* `<C-u>cf`       : footnote 追加
-* `<C-u>cs`       : カーソル位置の単語を強調
-* `<` `>`         : インデント。リストも同じく
-* `<C-u>s1`       : レベル1の見出し追加。1 は 6 まで変えられる
-* `<C-u>hs`       : 現在のカレントを参照
-* `<C-u>cb`       : コードブロック（::）追加
-* `<C-u>cm`       : explicit mark (..) 追加
-* `<C-u>cr`       : -------- 追加
-* `<C-u>ck`       : リンク追加
-* `<C-u>cl`       : ```` 追加
-* `<C-u>l1`       : 現在行をリストアイテム化。1 - 6 でレベル指定
-* `<C-u>lx`       : 現在行を非リストアイテム化
-* `<C-Enter>`     : (i) リストアイテムを追加
-* `<S-Enter>`     : (i) 子のリストアイテムを追加
-* `<C-S-Enter>`   : (i) 親のリストアイテムを追加
-* `<C-u>ee`       : リストのときに TODO へ。TODO のときは [] -> [o] -> [x] に変更。
-* `<C-u>ep`       : TODO の優先度を追加 or 下げる
-* `<Enter>`       : リンクのターゲットへ移動
-* `<C-u>tc`       : テーブル追加
-* `<C-Enter>`     : (i) テーブルの行を追加
-* `|`             : (i) テーブルの列を追加
+:Gina blame の使い方
+-----------------------
+
+#. :Gina blame を起動して、Enter と BS で対象のコミットを表示
+#. :Gina show でコミットの説明を参照。これをすぐに忘れるので書いておく。
+#. :Gina blame で表示されるタブは :tabclose を実行したり C-q を二回押したりして閉じる。
+
+command
+-------
+
+* `git branch -m newbranchname`: change branchname
+* `git checkout -- .`: すべてのファイルの変更を stage の状態か HEAD に戻す。. の代わりにファイル名を入力すれば、そのファイルだけ
+* `git checkout <hash> -- .`: すべてのファイルの変更を <hash> に戻す。. の代わりにファイル名を入力すれば、そのファイルだけ
+* `git reset HEAD filename`: unstage filename
+* `git pull https://github.com/{upstream/project} refs/pull/{id}/head`: フォーク元のマージされていないプルリクをマージする。via https://stackoverflow.com/questions/55108304/how-to-merge-a-pull-request-or-commit-from-a-different-repository-using-git
+
+stash
+~~~~~
+
+* `git stash save "comment"`: stash
+* `git stash list`: list stash
+* `git stash show stash@{N}`: list file N's stash
+* `git stash show -p stash@{N}`: show diff N's stash
+* `git stash pop stash@{N}`: apply and delte N's stash
+* `git stash apply stash@{N}`: apply N's stash
+* `git stash drop stash@{N}`: delete N's stash
 
 Others
 ======
@@ -260,6 +366,12 @@ Others
 * `:Jq .obj`                : JSON の obj を抽出。引数なしなら整形のみ
 * `:Jj obj`                 : JSON の obj を抽出。引数なしなら整形のみ（Jq より高速。まだ若いのでバグがあるかも）
 * `/[\u3041-\u3096]`        : ひらがな検索 https://so-zou.jp/software/tech/programming/tech/regular-expression/meta-character/variable-width-encoding.htm
+* `vim --clean -u vimrcfile`: Clean な Vim で vimrcfile を vimrc の代わりに読み込む
+* `nnoremap [hoge] <Nop>`
+  `nmap C-t [hoge]`         : [hoge] をマッピングのプレフィクス（？）にする。C-t は例。
+* `<Space>rw`               : window resize mode(?) feat. submode
+* `gvim -c "profile start profile.log" -c "profile func *" -c "call timer_start(0, {->execute('quit')})"` : profile の取り方
+* `/[^\x01-\x7E]`           : 全角文字検索
 
 
 関数エラーからの Vim script の追い方
@@ -273,4 +385,17 @@ Others
 
 * `:verbose function gista#autocmd#call`
 * `:verbose function {157}`
+
+powershell
+----------
+
+* `Compare-Object (Get-Content fileA) (Get-Content fileB)` | Out-File -filepath diff.txt -width 4000 -Encoding UTF8: Output diff.txt to diff fileA fileB. =>: 右ファイルからなくなった行, <=: 左ファイルからなくなった行
+* `man commandlet` : ヘルプ表示。 -online: Web ブラウザで表示, alias: Get-Help, help
+* `Get-Content file`: ファイルの表示。 alias: cat, type
+* `New-Item -type file $profile`: PowerShell 設定ファイル作成
+
+該当するautocommandは存在しません を調べる
+-------------------------------------------
+
+set verbose=3 するとsourceしてるものが出る
 

@@ -1,18 +1,18 @@
-_vimrc.local	exe('edit ' . g:vimrc_local)
+instant.ini	exe('edit ' .. g:fenrir_dir .. '/data/instant.ini')
+autohotkey ahk	exe('edit ' .. g:ahk_path)
+_vimrc.local	exe('edit ' .. g:vimrc_local)
 plugins.tml	edit ~/vimfiles/rc/plugins.tml
-denite.tml	edit ~/vimfiles/rc/denite.tml
-ctrlp_both.tml	edit ~/vimfiles/rc/ctrlp_both.tml
-webschedule	edit C:/OLS/Network/webScheduler/webScheduler.exe.json
-scriptnames	Capture scriptnames
-changelog	exe('edit ' . g:howm_dir . '/changelogmemo')
+webschedule	exe('edit ' .. g:webschedule_path)
+changelog	exe('edit ' .. g:howm_dir .. '/changelogmemo')
 cheatsheet	edit ~/vimfiles/rc/cheatsheet.rst
-PPX.CFG	exe('edit ' . g:ppx_dir . '/PPX.CFG')
-Mercurial.ini	edit ~/mercurial.ini
+PPX.CFG	exe('edit ' .. g:ppx_dir .. '/PPX.CFG')
+gitconfig	edit ~/.gitconfig
 Gist	Gista list
-Zenfone Android - Gist	exe('Gista open ' . g:gist_zenfone . ' zenfone5.md')
-cVim - Gist	exe('Gista open ' . g:gist_cvim . ' gistfile1.txt')
-Gista twicli regexp	exe('Gista open ' . g:gist_twicli_regexp . ' twicli-regexp')
-MRU	CtrlPMRUFiles
-edit ft snippets	exe('edit ' . expand('~/vimfiles/snippets/' . &filetype . '.snippets'))
-edit ft ftplugin	exe('edit ' . expand('~/vimfiles/after/ftplugin/' . &filetype . '.vim'))
+cVim - Gist	exe('Gista open ' .. g:gist_cvim .. ' gistfile1.txt')
+twicli regexp - Gist	exe('Gista open ' .. g:gist_twicli_regexp .. ' twicli-regexp')
+edit ft snippets	exe('edit ' .. expand('~/vimfiles/snippets/' .. &filetype .. '.snippets'))
+edit ft ftplugin	exe('edit ' .. expand('~/vimfiles/after/ftplugin/' .. &filetype .. '.vim'))
 autoload vimrc	edit ~/vimfiles/autoload/vimrc.vim
+sphinx-autobuild	!start cmd /k "\%USERPROFILE\%\Documents\Sphinx\_venv\Scripts\activate.bat & sphinx-autobuild.exe %:p:h %:p:h\autobuild -B -i .git/* -i _build/* -i bakgit/* -i _image/* -i _static/*"
+sphinx-terminal	!start cmd /k "\%USERPROFILE\%\Documents\Sphinx\_venv\Scripts\activate.bat"
+jupyter-terminal	!start cmd /k "cd \%USERPROFILE\%\Documents\jupyter & \%USERPROFILE\%\Documents\jupyter\_venv\Scripts\activate.bat & jupyter notebook"

@@ -1,0 +1,5 @@
+\(\S\+\)\.plugin$
+	[[plugins]]
+	repo = '{{$1}}'
+	{{_cursor_}}
+

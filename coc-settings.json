@@ -1,0 +1,16 @@
+{
+  "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"]
+    },
+    "efm": {
+      "command": "efm-langserver",
+      "args": ["-c", "C:/Users/hokorobi/vimfiles/rc/efm-langserver.yaml"],
+      "filetypes": ["vim", "rst", "yaml"]
+    }
+  },
+  "coc.preferences.hoverTarget": "float",
+  "suggest.minTriggerInputLength": 2
+}

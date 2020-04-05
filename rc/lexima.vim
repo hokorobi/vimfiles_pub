@@ -7,57 +7,32 @@ call lexima#set_default_rules()
 call lexima#add_rule({
       \   'at'   : '^s\%#',
       \   'char' : '/',
-      \   'input': '<Left><Left>%<Right><Right>//g<Left><Left>',
+      \   'input': '<Left><Left>%<Right><Right>/',
+      \   'input_after': '/g',
+      \   'mode' : ':',
+      \})
+call lexima#add_rule({
+      \   'at'   : "^'<,'>s\\%#",
+      \   'char' : '/',
+      \   'input': '/',
+      \   'input_after': '/g',
       \   'mode' : ':',
       \})
 
 call lexima#add_rule({
       \   'at'   : '^s\%#',
       \   'char' : '@',
-      \   'input': '<Left><Left>%<Right><Right>@@g<Left><Left>',
+      \   'input': '<Left><Left>%<Right><Right>@',
+      \   'input_after': '@g',
       \   'mode' : ':',
       \})
-
-" 効かない。at の書き方が悪いんだろうけどわからず
-" call lexima#add_rule({
-"     \   'at'   : '^\'\<,\'>s\%#',
-"     \   'char' : '/',
-"     \   'input': '//g<Left><Left>',
-"     \   'mode' : ':',
-"     \})
-
-" }}}2 Hg {{{2
-
-"Hg cim -> Hg ci -m ""
 call lexima#add_rule({
-      \   'at'   : 'Hg ci\%#',
-      \   'char' : 'm',
-      \   'input': ' --encoding cp932 -m ""<Left>',
+      \   'at'   : "^'<,'>s\\%#",
+      \   'char' : '@',
+      \   'input': '@',
+      \   'input_after': '@g',
       \   'mode' : ':',
       \})
-
-"hgcim -> Hg ci -m ""
-call lexima#add_rule({
-      \   'at'   : 'hgci\%#',
-      \   'char' : 'm',
-      \   'input': '<BS><BS><BS><BS>Hg ci --encoding cp932 -m ""<Left>',
-      \   'mode' : ':',
-      \})
-
-call lexima#add_rule({
-      \   'at'   : 'Hg \%#',
-      \   'char' : 'n',
-      \   'input': 'now --encoding cp932 ""<Left>',
-      \   'mode' : ':',
-      \})
-
-call lexima#add_rule({
-      \   'at'   : 'Hg\%#',
-      \   'char' : 'n',
-      \   'input': ' now --encoding cp932 ""<Left>',
-      \   'mode' : ':',
-      \})
-
 " }}}2
 " }}}1 mode 'i' {{{1
 " docstring の改行 {{{2
@@ -73,12 +48,13 @@ endfor
 " http://qiita.com/yami_beta/items/26995a5c382bd83ac38f
 inoremap <C-f> <C-r>=lexima#insmode#leave(1, '<LT>C-G>U<LT>RIGHT>')<CR>
 
-" }}}2 空白を後ろに入れる {{{2
+" }}}2 空白を後方に入力 {{{2
 " https://github.com/awaman/dotfiles/blob/master/.vim/rc/lexima.vim
 for c in [',']
   " 後にスペースを入れる
+  " 末尾 \S だと行末尾でスペースが入らない様子
   call lexima#add_rule({
-        \   'at'   : '\%#',
+        \   'at'   : '\%#\_S',
         \   'char' : c,
         \   'input': c . '<Space>',
         \})
@@ -94,21 +70,34 @@ for c in [',']
         \   'char' : '<BS>',
         \   'input': '<BS><BS>',
         \})
-  " 改行時に末尾の空白削除
+  " [Volt] '(filetype|excmd)= の後ろなら空白なし
   call lexima#add_rule({
-        \   'at' : c . ' \%#',
-        \   'char' : '<CR>',
-        \   'input' : '<BS><CR>',
+        \   'at'   : '''\(filetype\|excmd\)=.*\%#',
+        \   'char' : c,
+        \   'filetype' : 'vim'
         \})
 endfor
+
+" 末尾に空白があれば改行でなく削除
+call lexima#add_rule({
+      \   'at' : '\S\s\+\%#$',
+      \   'char' : '<CR>',
+      \   'input' : '<BS>',
+      \})
 
 " }}}2 = {{{2
 
 " =の前後にスペースを入れる
 call lexima#add_rule({
-      \   'at'   : '\S\+\%#',
+      \   'at'   : '[^<>	 ]\%#',
       \   'char' : '=',
       \   'input': '<Space>=<Space>',
+      \})
+
+call lexima#add_rule({
+      \   'at'   : '[<>	 ]\%#',
+      \   'char' : '=',
+      \   'input': '=<Space>',
       \})
 
 " =入力前にスペースがあったら入力しない
@@ -134,7 +123,7 @@ call lexima#add_rule({
 
 " 演算子直後の=
 call lexima#add_rule({
-      \   'at'   : '\S\+[\!-+\\*/%=]\%#',
+      \   'at'   : '\S\+[\!\-+\\*/%=]\%#',
       \   'char' : '=',
       \   'input': '<Left><Space><Right>=<Space>',
       \})
@@ -148,9 +137,16 @@ call lexima#add_rule({
 
 " ' == ', ' += '等を一度に消す
 call lexima#add_rule({
-      \   'at'   : '\s[\!-+\\*/%=]=\s\%#',
+      \   'at'   : '\s[\!\-+\\*/%=:]=\s\%#',
       \   'char' : '<BS>',
       \   'input': '<BS><BS><BS><BS>',
+      \})
+
+" [Volt] '(filetype|excmd) の後ろなら空白なし
+call lexima#add_rule({
+      \   'at'   : '''\(filetype\|excmd\)\%#',
+      \   'char' : '=',
+      \   'filetype' : 'vim'
       \})
 
 " }}}2 filetype {{{2
@@ -158,7 +154,7 @@ call lexima#add_rule({
 
 " set 系コマンドでは = の間にスペースを入れない
 call lexima#add_rule({
-      \   'at'      : '^set.*\%#',
+      \   'at'      : '^\s*set.*\%#',
       \   'char'    : '=',
       \   'filetype': 'vim',
       \})
@@ -192,7 +188,7 @@ call lexima#add_rule({
       \   'filetype'   : 'vim',
       \})
 
-" Vim scriptで以下のようなインデントをする {{{3
+" Vim scriptで以下のようなインデントをする {{{4
 " NeoBundleLazy 'cohama/lexima.vim', {
 " \   'autoload': {
 " \       'insert': 1
@@ -267,7 +263,7 @@ for s:val in ['{:}', '\[:\]']
           \})
   endfor
 endfor
-"}}}3
+" }}}4
 
 " }}}3 go {{{3
 " == の場合は := にする
@@ -275,7 +271,7 @@ call lexima#add_rule({
       \   'at'      : '\w\+ == \%#',
       \   'char'    : '=',
       \   'input'   : '<BS><BS><BS>:=<Space>',
-      \   'filetype': 'go',
+      \   'filetype': ['go', 'autohotkey'],
       \})
 
 " := の場合は != にする
@@ -331,17 +327,19 @@ call lexima#add_rule({
 " http://qiita.com/hatchinee/items/c5bc19a656925ce33882
 " classとかの定義時に:までを入れる
 call lexima#add_rule({
-      \   'at'      : '^\s*\%(\<def\>\|\<if\>\|\<for\>\|\<while\>\|\<class\>\|\<with\>\)\s*\w\+.*\%#',
-      \   'char'    : '(',
-      \   'input'   : '():<Left><Left>',
-      \   'filetype': ['python'],
+      \   'at'          : '^\s*\%(\<def\>\|\<if\>\|\<for\>\|\<while\>\|\<class\>\|\<with\>\)\s*\w\+.*\%#',
+      \   'char'        : '(',
+      \   'input'       : '(',
+      \   'input_after' : '):',
+      \   'filetype'    : ['python'],
       \   })
 
 " すでに:がある場合は重複させない. (smartinputでは、atの定義が長いほど適用の優先度が高くなる)
 call lexima#add_rule({
       \   'at'      : '^\s*\%(\<def\>\|\<if\>\|\<for\>\|\<while\>\|\<class\>\|\<with\>\)\s*\w\+.*\%#.*:',
       \   'char'    : '(',
-      \   'input'   : '()<Left>',
+      \   'input'   : '(',
+      \   'input_after' : ')',
       \   'filetype': ['python'],
       \   })
 
@@ -364,7 +362,8 @@ call lexima#add_rule({
 call lexima#add_rule({
       \   'at'      : '^\s*\%(\<def\>\|\<if\>\|\<for\>\|\<while\>\|\<class\>\|\<with\>\)\s*\w\+(\%#):$',
       \   'char'    : '<BS>',
-      \   'input'   : '<BS><Del><Del>',
+      \   'input'   : '<BS>',
+      \   'delete'  : 2,
       \   'filetype': ['python'],
       \   })
 
