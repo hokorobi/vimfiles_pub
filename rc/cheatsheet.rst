@@ -1,26 +1,23 @@
-Command
-========
-
-* `M-i` : (c) コマンドラインウィンドウ表示
-
 Movement
 ========
 
-* `[z` `]z`  : 現在の折りたたみの先頭/末尾へ移動
-* `zj` `zk`  : 次/前の折りたたみの先頭/末尾へ移動。feat. submode 連続して j, k 入力で次、前へ移動
-* `gt` `gT`  : 前の／次のタブを表示。feat. submode 連続して t, T 入力で次、前へ移動
-* `g;` `g,`  : 変更した位置への移動。feat. submode 連続して ;, , 入力で次、前へ移動
-* `:jumps`   : ジャンプの履歴表示
-* `C-I`      : ジャンプの履歴を進む
-* `o`        : (v) 範囲開始指定をやり直し
-* `<Space>;` : 直前の f, F, t, F を繰り返す。 feat. easymotion
-* `<Space>,` : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
+* `[z` `]z`    : 現在の折りたたみの先頭/末尾へ移動
+* `zj` `zk`    : 次/前の折りたたみの先頭/末尾へ移動。feat. submode 連続して j, k 入力で次、前へ移動
+* `gt` `gT`    : 前の／次のタブを表示。feat. submode 連続して t, T 入力で次、前へ移動
+* `g;` `g,`    : 変更した位置への移動。feat. submode 連続して ;, , 入力で次、前へ移動
+* `:jumps`     : ジャンプの履歴表示
+* `C-I`        : ジャンプの履歴を進む
+* `o`          : (v) 範囲開始指定をやり直し
+* `<Space>;`   : 直前の f, F, t, F を繰り返す。 feat. easymotion
+* `<Space>,`   : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
+* `<C-w><C-]>` : ウィンドウを分割してタグにジャンプ
 
 
 Select
 =======
 
-* `gv` : 最後に使用したのと同じ範囲のビジュアルモードを開始する
+* `gv` : 最後に使用したのと同じ範囲を選択してのビジュアルモードを開始する
+* `gp` : 最後に paste したのと同じ範囲を選択してのビジュアルモードを開始する
 
 
 Edit
@@ -48,21 +45,20 @@ Edit
 * `cxc`                     : 入れ替え候補のキャンセル feat. vim-exchange
 * `X`                       : (v) 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
 * `cxx`                     : (v) X で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
-* `#`                       : (n: カーソル下の単語|v: 選択文字列) をハイライトしてから置換
+* `#`                       : (n: カーソル下の単語|v: 選択文字列) を置換。 feat. vim-asterisk
 * `^M などの入力`           : vim --clean filename で起動。Insert mode で Ctrl+v Ctrl+m など
 * `<C-R>"`                  : (i) 直前のレジスタから Paste
 * `<C-R>0`                  : (i) 一つ前のレジスタから Paste。cw<C-R>" だと変更前の単語が Paste されるので、こちらを使う。
 * `sdt`                     : HTML のタグだけを削除。 feat. sandwich
-* `M-i`                     : (c) コマンドラインウィンドウ表示
 * `dNib`                    : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
 
 複数ファイルに対する処理
 ------------------------
 
-* `:args {argument}`      : {argument} が対象のファイルリストとなる。{argument} は `./*.html` とか。
-* `:argsadd {argument}`   : {argument} を追加。
-* `:argdo %s/hoge/fuga/g` : args に続けて実行。 {argument} に対して置換が実行される
-* `:vim foo ##`           : args に続けて実行。## が {argument} に置換されて実行される
+* `:args {argument}`               : {argument} で処理対象のファイルリストを指定。{argument} は `./*.html` とか。
+* `:argsadd {argument}`            : 処理対象を追加したい場合。{argument} に追加対象を指定。
+* `:argdo %s/hoge/fuga/g | update` : args で指定した対象に対して置換、保存が実行される
+* `:vim foo ##`                    : args で指定した対象に対して foo を実行する。## が {argument} に置換される
 
 . で連続して置換
 -----------------
@@ -189,6 +185,7 @@ fold
 * `za`        : 現在の折りたたみを開閉する
 * `zv`        : カーソル位置の折りたたみをすべて開く
 * `zf`        : 折りたたみを作成する
+* `:set nofen`: 折り畳みの無効化。statusline で fold が有効になっていると意図しないタイミングで折りたたまれることがあるので無効にする。
 
 
 file
@@ -201,22 +198,12 @@ file
 grep
 ====
 
-* `<Space>*`                      : カーソルの単語をファイル内から
-* `:vim {pattern} %`              : カレントバッファを
-* `:vim {pattern} **`             : カレントディレクトリの全てのファイル, ディレクトリを対象に
-* `:vim {pattern} *`              : カレントディレクトリの全てのファイルを対象に
-* `:vim {pattern} `git ls-files`` : git の管理対象ファイルに対して
-* `:grep /G \.vim$ {pattern} .`   : カレントディレクトリ配下の `*.vim` から {pattern} を検索。pt 用
-
-
-vim-bookmarks
-=============
-
-* `mi` : 注釈の編集
-* `mx` : ブックマークをすべて削除
-* `ma` : ブックマークをすべて表示
-* `mn` : 次のブックマークへ移動
-* `mp` : 前のブックマークへ移動
+* `<Space>*`                        : カーソルの単語をファイル内から検索指定 Quickfix へ表示
+* `:vim /{pattern}/ %`              : カレントバッファを
+* `:vim /{pattern}/ **`             : カレントディレクトリの全てのファイル, ディレクトリを対象に
+* `:vim /{pattern}/ *`              : カレントディレクトリの全てのファイルを対象に
+* `:vim /{pattern}/ `git ls-files`` : git の管理対象ファイルに対して
+* `:grep /G \.vim$ {pattern} .`     : カレントディレクトリ配下の `*.vim` から {pattern} を検索。pt 用
 
 
 help
@@ -235,14 +222,18 @@ help
 `{nr}` 表記                : NumbeR?
 `{lhs}` 表記               : Left Hand Side
 `{rhs}` 表記               : Right Hand Side
+`:help index.txt`          : 各モードのデフォルトキーマップを表示
 
 
-QuickFix
+quickfix
 ========
 
-* `:colder`   : 古い QuickFix へ移動
-* `:cnewer`   : 新しい QuickFix へ移動
-* `:chistory` : quickfix の履歴を表示
+* `:cwindow`   : quickfix の表示
+* `:colder`    : 古い quickfix へ移動
+* `:cnewer`    : 新しい quickfix へ移動
+* `:chistory`  : quickfix の履歴を表示
+* `:4chistory` : 4番目の quickfix リストをカレントリストにする
+* `p`          : (quickfixi) quickfix のプレビューをトグル. feat. quickpeek.vim
 
 
 Macro
@@ -300,33 +291,37 @@ golang
 * `:GoDeclsDir` : ディレクトリ内の関数、変数の定義を CtrlP で表示 feat. vim-go
 * `C-t`         : GoDef のジャンプの前の位置に戻る feat. vim-go
 * `:GoFreeVars` : 選択範囲のコードで使用される変数がわかる feat. vim-go
-* `<Space>ge`   : 選択したコードを続けて入力する名前で関数化 feat. godoctor.vim
 
-ALE
+LSP
 ====
 
-* `<Space>al` : Lint
-* `<Space>af` : Fixer
-* `<Space>ak` : Next
-* `<Space>aj` : Previous
-
-Gina.vim
-==========
-
-* `<Leader>gs` : Gina status
-* `cc`         : (status) Gina commit
-* `s`          : (blame) Gina show
+* `<Space>al` : Show diagnostics list in quickfix. feat. vim-lsp
+* `<Space>ak` : Next diagnostics. feat. vim-lsp
+* `<Space>aj` : Previous diagnostics. feat. vim-lsp
 
 Git
 ========
-* `<Leader>gl` : gl
-* `<Leader>gd` : diff
-* `<Leader>gs` : status
-* `<Leader>ga` : add -p
-* `<Leader>gu` : add -u
-* `<Leader>gc` : commit -v
-* `<Leader>gm` : commit -m
-* `<Leader>gn` : now
+* `<Leader>gl`  : gl<CR>
+* `<Leader>gd`  : diff<CR>
+* `<Leader>gs`  : status<CR>
+* `<Leader>gg`  : log -p -G"|"
+* `<Leader>ga`  : add -p<CR> in popup window
+* `<Leader>gu`  : add -u<CR>
+* `<Leader>gc`  : commit -v<CR>
+* `<Leader>gm`  : Show the history of commits under the cursor. feat. git-messenger.vim
+* `<Leader>gn`  : commit -a -m "|"
+* `<Leader>gbb` : Show branches
+* `<Leader>gbr` : Rename current branch
+* `<Leader>gbl` : Gina blame. feat. gina.vim
+* `<Leader>g-`  : Switch last commit and new branch name
+
+Gina.vim
+----------
+
+* `<Leader>gs`  : Gina status
+* `cc`          : (status) Gina commit
+* `s`           : (blame) Gina show
+* `:Gina log :` : current buffer history
 
 :Gina blame の使い方
 -----------------------
@@ -338,14 +333,18 @@ Git
 command
 -------
 
-* `git branch -m newbranchname`: change branchname
-* `git checkout -- .`: すべてのファイルの変更を stage の状態か HEAD に戻す。. の代わりにファイル名を入力すれば、そのファイルだけ
-* `git checkout <hash> -- .`: すべてのファイルの変更を <hash> に戻す。. の代わりにファイル名を入力すれば、そのファイルだけ
-* `git reset HEAD filename`: unstage filename
-* `git pull https://github.com/{upstream/project} refs/pull/{id}/head`: フォーク元のマージされていないプルリクをマージする。via https://stackoverflow.com/questions/55108304/how-to-merge-a-pull-request-or-commit-from-a-different-repository-using-git
+* `git branch -m newbranchname`: change current branchname
+* `git switch -c newbranchname`: newbranchname を作って切り替える
+* `git switch -`: 一つ前のブランチに戻る
+* `git restore -s ${HASH} .`: すべてのファイルを ${HASH} の内容に戻す。ステージングはされていない状態。
+* `git restore filename`: ステージングされていないファイルを直前のコミットの状態に戻す。
+* `git restore --staged filename`: Unstage filename. Unstage everything is ".".
+* `git pull https://github.com/{upstream/project} refs/pull/{id}/head`: フォーク元のマージされていないプルリクをマージする。
+  via https://stackoverflow.com/questions/55108304/how-to-merge-a-pull-request-or-commit-from-a-different-repository-using-git
+* `git log -G"hoge" -p`: 履歴の差分から hoge を検索する。 --pickaxe-all も指定すると、検索されたコミットで変更のあったファイルすべてを表示する。
 
-stash
-~~~~~
+git stash
+----------
 
 * `git stash save "comment"`: stash
 * `git stash list`: list stash
@@ -355,9 +354,23 @@ stash
 * `git stash apply stash@{N}`: apply N's stash
 * `git stash drop stash@{N}`: delete N's stash
 
+
+PR をマージ
+-----------
+
+#. git fetch https://github.com/prabirshrestha/asyncomplete.vim refs/pull/135/head:pr135
+#. git merge pr135
+
+* `https://github.com/prabirshrestha/asyncomplete.vim refs/pull/135` は任意の PR
+* `head` で PR の最新コミットまでを対象にする
+* `pr135` はブランチ名
+
+
+
 Others
 ======
 
+* `<M-i>`                   : (c) コマンドラインウィンドウ表示
 * `<C-CR>`                  : カーソル位置のハイライトグループ名表示
 * `gv`                      : 前回の選択範囲を再度選択
 * `:verbose inoremap <C-l>` : <C-l> を最後に inoremap したファイルを表示
@@ -370,8 +383,10 @@ Others
 * `nnoremap [hoge] <Nop>`
   `nmap C-t [hoge]`         : [hoge] をマッピングのプレフィクス（？）にする。C-t は例。
 * `<Space>rw`               : window resize mode(?) feat. submode
-* `gvim -c "profile start profile.log" -c "profile func *" -c "call timer_start(0, {->execute('quit')})"` : profile の取り方
 * `/[^\x01-\x7E]`           : 全角文字検索
+* `<Space>y%`               : バッファのファイル名をクリップボードへコピー
+* `:set nomodeline`         : " vim:fen などのモードラインがファイルに記載されていても、これを反映しない。vim-lsp ポップアップ時に fen が反映されることがあったので
+* `gvim -c "profile start profile.log" -c "profile func *" -c "call timer_start(0, {->execute('quit')})"` : profile の取り方
 
 
 関数エラーからの Vim script の追い方

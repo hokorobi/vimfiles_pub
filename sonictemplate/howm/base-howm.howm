@@ -1,0 +1,5 @@
+= {{_cursor_}}
+[{{_expr_:strftime('%Y-%m-%d %H:%M')}}]
+
+# vim: ff=dos fenc=cp932
+

@@ -1,6 +1,3 @@
-:if search('<+CURSOR+>')
-:  normal! "_da>
-:endif
 package main
 
 import (
@@ -16,7 +13,7 @@ func main() {
 }
 
 func _main() error {
-	<+CURSOR+>
+	{{_cursor_}}
 	return nil
 }
 

@@ -2,7 +2,19 @@ scriptencoding utf-8
 
 call lexima#set_default_rules()
 
-" mode ':' {{{1
+" mode '/' {{{1
+call lexima#add_rule({
+      \   'char' : '/',
+      \   'input': '\/',
+      \   'mode' : '/',
+      \})
+" }}}1 mode '?' {{{1
+call lexima#add_rule({
+      \   'char' : '?',
+      \   'input': '\?',
+      \   'mode' : '?',
+      \})
+" }}}1 mode ':' {{{1
 " :s/ -> :%s//g {{{2
 call lexima#add_rule({
       \   'at'   : '^s\%#',
@@ -46,7 +58,7 @@ endfor
 
 " }}}2 括弧補完を cgn で使う {{{2
 " http://qiita.com/yami_beta/items/26995a5c382bd83ac38f
-inoremap <C-f> <C-r>=lexima#insmode#leave(1, '<LT>C-G>U<LT>RIGHT>')<CR>
+inoremap <silent> <C-f> <C-r>=lexima#insmode#leave(1, '<LT>C-G>U<LT>RIGHT>')<CR>
 
 " }}}2 空白を後方に入力 {{{2
 " https://github.com/awaman/dotfiles/blob/master/.vim/rc/lexima.vim
@@ -142,19 +154,12 @@ call lexima#add_rule({
       \   'input': '<BS><BS><BS><BS>',
       \})
 
-" [Volt] '(filetype|excmd) の後ろなら空白なし
-call lexima#add_rule({
-      \   'at'   : '''\(filetype\|excmd\)\%#',
-      \   'char' : '=',
-      \   'filetype' : 'vim'
-      \})
-
 " }}}2 filetype {{{2
 " vim {{{3
 
 " set 系コマンドでは = の間にスペースを入れない
 call lexima#add_rule({
-      \   'at'      : '^\s*set.*\%#',
+      \   'at'      : '\%(^\||\|\\\)\s*set.*\%#',
       \   'char'    : '=',
       \   'filetype': 'vim',
       \})
@@ -196,9 +201,9 @@ call lexima#add_rule({
 " \}
 
 if &l:shiftwidth == 0
-    let s:indent = &l:tabstop
+  let s:indent = &l:tabstop
 else
-    let s:indent = &l:shiftwidth
+  let s:indent = &l:shiftwidth
 endif
 
 " 改行時に \ 入力
@@ -243,6 +248,7 @@ for s:val in ['{:}', '\[:\]']
           \   'input_after': '<CR><Bslash>' . s:space_after,
           \   'filetype'   : 'vim',
           \})
+
     " \   hoge, \%#
     " ^^^^ shiftwidthの倍数 - 1の長さ
     " ↓
@@ -438,6 +444,14 @@ call lexima#add_rule({
       \})
 
 " }}}3 others {{{3
+call lexima#add_rule({
+      \   'at'          : '``\%#',
+      \   'char'        : '`',
+      \   'input'       : '',
+      \   'input_after' : '``',
+      \   'filetype'    : ['rst']
+      \})
+
 " =の前後にスペースを入れない
 call lexima#add_rule({
       \   'at'   : '.\%#',

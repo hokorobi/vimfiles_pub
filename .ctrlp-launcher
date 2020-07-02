@@ -1,15 +1,15 @@
 instant.ini	exe('edit ' .. g:fenrir_dir .. '/data/instant.ini')
 autohotkey ahk	exe('edit ' .. g:ahk_path)
 _vimrc.local	exe('edit ' .. g:vimrc_local)
+vimplugins.rst	edit ~/Documents/Sphinx/github.io/vimplugins.rst
 plugins.tml	edit ~/vimfiles/rc/plugins.tml
-webschedule	exe('edit ' .. g:webschedule_path)
-changelog	exe('edit ' .. g:howm_dir .. '/changelogmemo')
 cheatsheet	edit ~/vimfiles/rc/cheatsheet.rst
 PPX.CFG	exe('edit ' .. g:ppx_dir .. '/PPX.CFG')
 gitconfig	edit ~/.gitconfig
+lexima.vim vimrc	edit ~/vimfiles/rc/lexima.vim
 edit ft snippets	exe('edit ' .. expand('~/vimfiles/snippets/' .. &filetype .. '.snippets'))
 edit ft ftplugin	exe('edit ' .. expand('~/vimfiles/after/ftplugin/' .. &filetype .. '.vim'))
 autoload vimrc	edit ~/vimfiles/autoload/vimrc.vim
-sphinx-autobuild	!start cmd /k "\%USERPROFILE\%\Documents\Sphinx\_venv\Scripts\activate.bat & sphinx-autobuild.exe %:p:h %:p:h\autobuild -B -i .git/* -i _build/* -i bakgit/* -i _image/* -i _static/*"
 sphinx-terminal	!start cmd /k "\%USERPROFILE\%\Documents\Sphinx\_venv\Scripts\activate.bat"
+sphinx-autobuild	!start cmd /k "\%USERPROFILE\%\Documents\Sphinx\_venv\Scripts\activate.bat & sphinx-autobuild.exe %:p:h %:p:h\autobuild -B -i .git/* -i _build/* -i bakgit/* -i _image/* -i _static/*"
 jupyter-terminal	!start cmd /k "cd \%USERPROFILE\%\Documents\jupyter & \%USERPROFILE\%\Documents\jupyter\_venv\Scripts\activate.bat & jupyter notebook"

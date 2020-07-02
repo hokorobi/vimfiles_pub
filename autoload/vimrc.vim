@@ -1,5 +1,43 @@
 scriptencoding utf-8
 
+
+" Show cursor info / buffer info in popup
+" https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
+function! vimrc#popup_cursor_info()
+  " get cursor position informations
+  " let l:pos = getpos('.')
+  " get charcode informations
+  let l:char = strcharpart(strpart(getline('.'), col('.') - 1), 0, 1)
+  let l:charnr = char2nr(l:char)
+  " get encoding
+  let l:fenc = &fileencoding == '' ? &encoding : &fileencoding
+  let l:fenc = l:fenc !=# 'utf-8' ? fenc : &bomb ? fenc .. ' (BOM)' : fenc
+  " カーソル位置のハイライト名を表示
+  " https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
+  let l:highlight = join(map(synstack(line('.'), col('.')),'synIDattr(v:val, "name") .. "(" .. synIDattr(synIDtrans(v:val), "name") .. ")"'), ',')
+  " format output
+  let l:lines = [
+        "\ 'Cursor Info',
+        "\ '  Line:       ' .. l:pos[1],
+        "\ '  Column:     ' .. l:pos[2],
+        \ '  Highlight:  ' .. l:highlight,
+        \ '  Char:       ' .. printf('"%s" -- (%d)10 (%X)16', l:char, l:charnr, l:charnr),
+        \ '',
+        "\ 'Buffer Info',
+        \ '  filetype:   ' .. &filetype,
+        \ '  encoding:   ' .. l:fenc,
+        \ '  fileformat: ' .. &fileformat,
+        "\ '  syntax:     ' .. &syntax,
+        \ ]
+  " open temporary popup
+  call popup_atcursor(l:lines, #{
+        \ pos: 'topleft',
+        \ moved: 'any',
+        \ padding: [0, 1, 0, 1],
+        \ wrap: v:false,
+        \ })
+endfunction
+
 " ウィンドウが複数開いていたら新しいタブで開く
 " 外部からファイルを渡して呼び出すことはできないのか？
 function! vimrc#YetAnotherEdit(file) abort
@@ -177,15 +215,6 @@ function! vimrc#QfStrCmp(e1, e2) abort
   return t1 <? t2 ? -1 : t1 ==? t2 ? 0 : 1
 endfunction
 
-" smart indent when entering insert mode with i on empty lines
-function! vimrc#IndentWithI() abort
-  if len(getline('.')) == 0
-    return 'cc'
-  else
-    return 'i'
-  endif
-endfunction
-
 " split and go
 function! vimrc#SplitAndGo(cmd) abort
   execute a:cmd
@@ -312,8 +341,8 @@ function! vimrc#EditHowmNew(dir) abort
     call mkdir(dir, 'p')
   endif
   let file = strftime('/%Y%m%d%H%M%S.howm')
-  execute 'edit ' . dir . file
-  TemplateLoad
+  execute 'edit ' .. dir .. file
+  Template howm
   " 行末尾追加でインサートモードへ
   startinsert!
 endfunction
@@ -327,6 +356,42 @@ function! vimrc#DeniteGrepHowm() abort
   Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s
 endfunction
 
+" }}}2 open-browser {{{2
+function! vimrc#openGithubRepository(mode) abort
+  " get repository name
+  let backup_z = @z
+  let @z = ''
+  if a:mode ==# 'n'
+    normal! "zyi'
+    if @z ==# ''
+      normal! "zyi"
+    endif
+  else
+    normal! gv"zy
+  endif
+  let repo = @z
+  let @z = backup_z
+
+  if repo ==# '' || stridx(repo, '/') == -1
+    return
+  endif
+
+  call openbrowser#open('https://github.com/' . repo)
+endfunction
+
+" }}}2 CtrlP {{{2
+" CtrlP のコマンドと初期入力値を指定して実行
+function! vimrc#CtrlPDefaultInput(cmd, input)
+  try
+    let l:default_input_save = get(g:, 'ctrlp_default_input', '')
+    let g:ctrlp_default_input = a:input
+    execute a:cmd
+  finally
+    if exists('l:default_input_save')
+      let g:ctrlp_default_input = l:default_input_save
+    endif
+  endtry
+endfunction
 " }}}2
 
 " }}}1
