@@ -1,15 +1,13 @@
-snippet     for
-options     head, indent
+snippet for;
+options head, indent
+abbr    for 1; 2; 3 {...}
 	for ${1}; ${2}; ${3} {
-		${4}
+		${0}
 	}
 
-snippet     close
-	defer ${1}.Close()
-	${2}
-
-snippet     fatal
-options     head
+snippet fatal
+options head
+abbr    if err != nil { log.Fatal(err) }
 	if ${1:err} != nil {
 	  log.Fatal($1)
 	}

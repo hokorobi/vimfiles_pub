@@ -15,22 +15,23 @@ scriptencoding utf-8
 " vimrc 全体で使う augroup を初期化
 augroup vimrc | autocmd! | augroup END
 
-" AlterCommand
-" https://github.com/DeaR/dotfiles/blob/master/.vimrc
-"   dt:ウィンドウで表示しているバッファで diffthis
-"
+" vim-altercmd
+" https://github.com/tyru/vim-altercmd
 "   TODO: 再読み込みの場合も考慮する（？）
+
+" https://github.com/DeaR/dotfiles/blob/7c021c276903d93e413bf0b4c7b134b1e0c8f946/.vimrc#L1421-L1436
+"   dt:ウィンドウで表示しているバッファで diffthis
 let g:vimrc_altercmd_dic = {
       \   'tagsg[en]': '!ctags -R',
       \   'dt': 'windo diffthis',
       \}
 
-" Sayonara
+" vim-sayonara
 " https://github.com/mhinz/vim-sayonara
 let g:sayonara_filetypes = {}
 
 " Cached executable
-" https://github.com/DeaR/dotfiles/blob/master/.vimrc
+" https://github.com/DeaR/dotfiles/blob/7c021c276903d93e413bf0b4c7b134b1e0c8f946/.vimrc#L119-L126
 let g:vimrc_executable = get(g:, 'vimrc_executable', {})
 function! Vimrc_executable(expr)
   if !has_key(g:vimrc_executable, a:expr)
@@ -55,59 +56,35 @@ command! ToUtf8 :set fileencoding=utf-8
 command! ToUtf8bom :set fileencoding=utf-8 bomb
 command! ToSjis :set fileencoding=cp932
 
+" 改行コード変換
+command! ToDos :set fileformat=dos
+command! ToCRLF :set fileformat=dos
+command! ToUnix :set fileformat=unix
+command! ToLF :set fileformat=unix
+
 " / と :s///g をトグル
 " 8.1.0271 あたりから :s でハイライトされるようになったけどまだ使ってる
 " https://raw.githubusercontent.com/cohama/.vim/master/.vimrc
 cnoremap <expr> <C-t> vimrc#ToggleSubstituteSearch(getcmdtype(), getcmdline())
 
-" https://github.com/DeaR/dotfiles/blob/master/.vimrc
-" Multi Mode Mapping: {{{
-" map
-command! -nargs=*
-      \ NVmap
-      \ nmap <args>| vmap <args>
-command! -nargs=*
-      \ NXmap
-      \ nmap <args>| xmap <args>
-command! -nargs=*
-      \ NOmap
-      \ nmap <args>| omap <args>
-command! -nargs=*
-      \ VOmap
-      \ vmap <args>| omap <args>
-command! -nargs=*
-      \ XOmap
-      \ xmap <args>| omap <args>
-command! -nargs=*
-      \ NXOmap
-      \ nmap <args>| xmap <args>| omap <args>
-command! -nargs=*
-      \ NXImap
-      \ nmap <args>| xmap <args>| imap <args>
-
-" noremap
-command! -nargs=*
-      \ ICnoremap
-      \ inoremap <args>| cnoremap <args>
-command! -nargs=*
-      \ NVnoremap
-      \ nnoremap <args>| vnoremap <args>
-command! -nargs=*
-      \ NXnoremap
-      \ nnoremap <args>| xnoremap <args>
-command! -nargs=*
-      \ NOnoremap
-      \ nnoremap <args>| onoremap <args>
-command! -nargs=*
-      \ VOnoremap
-      \ vnoremap <args>| onoremap <args>
-command! -nargs=*
-      \ XOnoremap
-      \ xnoremap <args>| onoremap <args>
-command! -nargs=*
-      \ NXOnoremap
-      \ nnoremap <args>| xnoremap <args>| onoremap <args>
-"}}}
+" https://github.com/tyru/config/blob/01b2f0b73fb599995d642ebfb50096faf611fdb7/home/volt/rc/default/vimrc.vim
+command! -nargs=* BulkMap call s:cmd_map(<q-args>)
+function! s:cmd_map(args) abort
+  let m = matchlist(a:args, '^\(.*\)\[\([nvxsoiclt]\+\)\]\(.*\)$')
+  if empty(m)
+    throw 'BulkMap: invalid arguments: ' . a:args
+  endif
+  let [l, modes, r] = m[1:3]
+  let l = substitute(l, '<noremap>', '', 'g')
+  let nore = l is# m[1] ? '' : 'nore'
+  let l = trim(l, " \t")
+  let r = trim(r, " \t")
+  for m in split(modes, '\zs')
+    let cmd = printf('%s%smap %s %s', m, nore, l, r)
+    " echom cmd
+    execute cmd
+  endfor
+endfunction
 
 " My retab
 " https://github.com/cohama/.vim/blob/master/.vimrc
@@ -151,31 +128,31 @@ call extend(g:vimrc_altercmd_dic, {
       \ 'gw': 'GrepWrap',
       \ 'grepw[rap]': 'GrepWrap'})
 
+" コマンドの結果をスクラッチバッファに表示
+command! -bar ToScratch
+      \ setlocal buftype=nofile bufhidden=delete noswapfile |
+      \ nnoremap <buffer> qq :close<CR>
+command! -nargs=1 -complete=command L
+      \ <mods> new | ToScratch |
+      \ call setline(1, split(execute(<q-args>), '\n'))
+command! MessL :L messages
+command! Map :L map
+command! Nmap :L nmap
+command! Vmap :L vmap
+command! Xmap :L xmap
+command! Smap :L smap
+command! Tmap :L tmap
+command! Omap :L omap
+command! Imap :L imap
+command! Lmap :L lmap
+command! Cmap :L cmap
+call extend(g:vimrc_altercmd_dic, {
+      \   'scriptn[ames]': 'L scriptnames',
+      \ })
+
 " }}}1 Option {{{1
 
-" kaoriya {{{2
-
-"Kaoriya版に添付されているプラグインの無効化
-if has('kaoriya')
-  " https://sites.google.com/site/fudist/Home/vim-nihongo-ban/kaoriya-trouble#TOC-Kaoriya-
-  "$VIM/plugins/kaoriya/autodate.vim
-  let g:plugin_autodate_disable = 1
-  "$VIM/plugins/kaoriya/plugin/cmdex.vim
-  " :Tutorial を使うなら 0
-  let g:plugin_cmdex_disable = 1
-  "$VIM/plugins/kaoriya/plugin/dicwin.vim
-  let g:plugin_dicwin_disable = 1
-  "$VIMRUNTIME/plugin/format.vim
-  let g:plugin_format_disable = 1
-  "$VIM/plugins/kaoriya/plugin/hz_ja.vim
-  let g:plugin_hz_ja_disable = 1
-  "$VIM/plugins/kaoriya/plugin/scrnmode.vim
-  let g:plugin_scrnmode_disable = 1
-  "$VIM/plugins/kaoriya/plugin/verifyenc.vim
-  let g:plugin_verifyenc_disable = 1
-endif
-
-" }}}2 Move {{{2
+" Move {{{2
 " カーソル移動を行頭、行末で止めない
 set whichwrap=b,s,h,l,<,>,[,]
 
@@ -204,6 +181,9 @@ set nobackup backupdir=$temp//
 
 " 編集中でも他のファイルを開く
 set hidden
+
+" 改行コード LF
+set fileformat=unix
 
 " undo-persistence {{{
 " undoファイルを保存するディレクトリの設定
@@ -268,8 +248,8 @@ set showmatch
 " モードの表示をしない。lightline で表示しているため
 set noshowmode
 
-" 常にタブラインを表示
-set showtabline=2
+" 常にタブラインを非表示
+set showtabline=0
 
 " コマンド行の高さ
 set cmdheight=2
@@ -325,6 +305,9 @@ autocmd vimrc CmdwinEnter [:\/\?=] setlocal nonumber norelativenumber
 " signcolumn を非表示
 autocmd vimrc CmdwinEnter [:\/\?=] setlocal signcolumn=no
 
+" タブ文字などを表示
+set list listchars=eol:↲,tab:«-»,trail:_,extends:\
+
 " }}}2 edit {{{2
 
 " バックスペースでインデントや改行を削除できるようにする
@@ -339,10 +322,10 @@ set formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
 " ファイル末尾に改行を追加しない
 set nofixendofline
 
-" インサートモード、コマンドラインモードから抜けるときに IME をオフ
-" r などで IME がオンになっているのを防ぐため
-autocmd vimrc InsertLeave * set iminsert=0
-autocmd vimrc CmdlineLeave * call timer_start(0, { -> execute('set iminsert=0') })
+" insert mode で IME をオンにした状態から normal mode で r や R で IME をオフ
+let s:lastiminsert = 0
+autocmd vimrc InsertLeave * if v:insertmode !=# 'r' | let s:lastiminsert = &iminsert | set iminsert=0 | endif
+autocmd vimrc InsertEnter * if v:insertmode ==# 'i' | let &iminsert = s:lastiminsert | endif
 
 " }}}2 complete {{{2
 
@@ -404,16 +387,12 @@ let &grepprg = 'pt /nogroup /nocolor /column /hidden /home-ptignore /S /U'
 " /column で桁を表示しているので %c も使うパターンを追加
 set grepformat^=%f:%l:%c:%m
 
-" http://stackoverflow.com/questions/15393301/automatically-sort-quickfix-entries-by-line-text-in-vim
-" pt で grep を実行した後に結果をパス順にしたかったので sort
-autocmd vimrc QuickFixCmdPost *grep* call vimrc#SortQuickfix('vimrc#QfStrCmp')
-
 " grep 後に quickfix-window を表示
 autocmd vimrc QuickFixCmdPost *grep* cwindow
 
 " }}}2 others {{{2
 
-" 印刷設定: 余白を狭く、シンタックスハイライトなし、行番号あり
+" 印刷設定: 余白を狭く、シンタックスハイライトなし syntax:n、行番号あり number:y
 set printoptions=left:2pc,right:3pc,top:3pc,bottom:2pc,syntax:n,number:y
 
 
@@ -421,14 +400,40 @@ set printoptions=left:2pc,right:3pc,top:3pc,bottom:2pc,syntax:n,number:y
 " https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L651-L687
 setglobal swapfile
 autocmd vimrc SwapExists * call vimrc#on_SwapExists()
+" swapfile からリカバリー
 command! SwapfileRecovery call vimrc#swapfile_recovery()
+" swapfile を削除
 command! SwapfileDelete call vimrc#swapfile_delete()
 
 " Improve diff
 set diffopt& diffopt+=algorithm:histogram,indent-heuristic
 
+" FIXME: temporary plugin {{{3
+set packpath& packpath+=~/_vim
+let s:jobs = {}
+let s:plugdir = expand('~/_vim/pack/temp/opt')
+function! s:gitclone_end(ch) abort
+  let j = ch_getjob(a:ch)
+  echomsg s:jobs[j] .. ' installed.'
+endfunction
+
+function! s:echo(_, msg) abort
+  echo a:msg
+endfunction
+
+function! s:gitclone_temp(url) abort
+  let cmd = printf('git clone --depth=1 %s', a:url)
+  let j = job_start(['cmd', '-c', cmd], {
+        \ 'out_cb': funcref('s:echo'),
+        \ 'close_cb': funcref('s:gitclone_end'),
+        \ })
+  let s:jobs[j] = a:url
+endfunction
+
+command! -nargs=1 Templug call s:gitclone_temp(<f-args>)
+" }}}3
+
 " }}}2
-" }}}1
 
 " }}}1 Plugin {{{1
 
@@ -492,7 +497,7 @@ let g:changelog_new_date_format="%d\n\n%c\n"
 
 " }}}2  dein {{{2
 let s:dein_home = expand('~/_vim/dein')
-execute 'set runtimepath+=' .. s:dein_home .. '/repos/github.com/Shougo/dein.vim'
+execute 'set runtimepath& runtimepath+=' .. s:dein_home .. '/repos/github.com/Shougo/dein.vim'
 let g:dein#install_log_filename = s:dein_home .. '/dein.log'
 let g:dein#auto_recache = 0
 
@@ -517,24 +522,10 @@ filetype plugin indent on
 
 " }}}1 Filetype {{{1
 
-" Restore cursor position. {{{
-autocmd vimrc BufReadPost * call s:restore_cursor_position()
-function! s:restore_cursor_position()
-  let ignore_filetypes = ['gitcommit', 'hgcommit', 'changelog', 'J6uil']
-  if index(ignore_filetypes, &l:filetype) >= 0
-    return
-  endif
-
-  if line("'\"") > 1 && line("'\"") <= line('$')
-    execute 'normal! g`"'
-  endif
-endfunction
-" }}}
-
 " バイナリファイルのテキスト化 {{{
+" xlsx などが zip として表示されることを避ける
 " https://vim.fandom.com/wiki/Open_PDF_files?oldid=16226
 autocmd vimrc BufReadPost *.{doc,docx,pdf,ppt,pptx,xls,xlsx} setlocal readonly buftype=nofile noswapfile
-" xlsx などが zip として表示されることを避ける
 
 " デフォルトプラグインの停止で設定済みになっているのでここでは不要
 " let g:loaded_zipPlugin= 1
@@ -596,11 +587,9 @@ nnoremap ZQ <Nop>
 " さらに v でノーマルモード
 xnoremap v <C-v>
 
-" カーソル位置のハイライト名を表示
-" https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
-nmap <silent> <C-CR> <Plug>(vimrc-show-current-syntax)
-nnoremap <silent> <Plug>(vimrc-show-current-syntax)
-      \ :<C-u>echo join(map(synstack(line('.'), col('.')),'synIDattr(v:val, "name") .. "(" .. synIDattr(synIDtrans(v:val), "name") .. ")"'), ',')<CR>
+" Show cursor info / buffer info in popup
+" https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
+nnoremap <silent> <C-CR> :<C-u>call vimrc#popup_cursor_info()<CR>
 
 " Buffer {{{2
 
@@ -626,18 +615,25 @@ endfunction
 " :b でバッファリストを表示
 cnoreabbrev <expr>b getcmdtype()==':' && getcmdline()=~'^b' ? 'ls<CR>:b' : 'b'
 
-" 新規作成
 noremap <C-n> :<C-u>enew<CR>
 
-" vimrc 開く
+" open vimrc
 noremap <F4> :<C-u>edit $MYVIMRC<CR>
+noremap <S-F4> :<C-u>edit ~/vimfiles/rc/plugins.tml<CR>
 
 " Open cheatsheet
-nnoremap <Leader>fc :split<CR>:edit ~/vimfiles/rc/cheatsheet.rst<CR>
+nnoremap <Leader>c :split<CR>:edit ~/vimfiles/rc/cheatsheet.rst<CR>
 
 " バッファの切り替え
 nnoremap b :bn<CR>
 nnoremap B :bN<CR>
+
+" http://stackoverflow.com/questions/15393301/automatically-sort-quickfix-entries-by-line-text-in-vim
+" pt で grep を実行した後に結果をパス順にしたかったので sort
+" QuickFixCmdPost で実行していたけど w:quickfix_title が常に setqflist() になってしまうのでやめ。
+nnoremap <Leader>s :call vimrc#SortQuickfix('vimrc#QfStrCmp')<CR>
+
+nnoremap qt :tabclose<CR>
 
 " }}}2 Window {{{2
 
@@ -666,6 +662,7 @@ command! -count=1 -nargs=1 SplitAndGo call vimrc#SplitAndGo(<q-args>)
 nnoremap <silent> [toggle]q :<C-u>call vimrc#toggle_quickfix_window()<CR>
 
 " コマンドラインウィンドウを開く
+" cedit に <M-i> が設定できない？
 cnoremap <M-i> <C-f>
 
 " }}}2 Motion {{{2
@@ -675,21 +672,22 @@ cnoremap <M-i> <C-f>
 nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
 nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
 
-" カーソル移動 {{{
+" スクロールしていくと最後一行になってしまうのを直す設定
 " http://itchyny.hatenablog.com/entry/2016/02/02/210000
 noremap! <M-j> <PageDown>
 noremap <expr> <M-j> max([winheight(0) - 2, 1]) .. "\<C-d>" .. (line('.') > line('$') - winheight(0) ? 'L' : 'H')
 noremap! <M-k> <PageUp>
 noremap <expr> <M-k> max([winheight(0) - 2, 1]) .. "\<C-u>" .. (line('.') < 1         + winheight(0) ? 'H' : 'L')
 
+" mode nv は smarthome でマッピング
+" smarthome は insert mode で動作するとき一度 normal mode に移行しているので自分の設定では IME がオフになってしまうから除外
+BulkMap <noremap> [ci] <C-a> <Home>
+BulkMap <noremap> [ci] <M-h> <Home>
+BulkMap <noremap> [ci] <C-e> <End>
+BulkMap <noremap> [ci] <M-l> <End>
 onoremap <Leader>h ^
 onoremap <Leader>l $
 
-" mode nvi は smarthome でマッピング
-cnoremap <C-a> <Home>
-cnoremap <M-h> <Home>
-cnoremap <C-e> <End>
-cnoremap <M-l> <End>
 
 noremap! <C-n> <Down>
 " noremap  <C-n> <Down>
@@ -707,11 +705,6 @@ noremap  <C-b> h
 " dw で dW になるのでやめ
 " noremap w W
 " noremap W B
-
-" }}}
-
-" don't use noremap because want to map to matchit plugin
-NXOmap <Leader><Space> %
 
 " タブ間移動
 noremap <C-Tab> :<C-u>tabnext<CR>
@@ -735,32 +728,27 @@ inoremap <expr> <Tab> pumvisible() ? '<C-n>' : '<Tab>'
 
 " }}}2 Yank, Paste {{{2
 
-" クリップボード コピー・切り取り・貼り付け
-xnoremap <Leader>y "+y
-
+" OS クリップボード {{{3
+" 切り取り
 xnoremap <Leader>d "+d
 
+" 貼り付け
 noremap! <C-v> <MiddleMouse>
 nnoremap <C-v> "+gP
 
-" バッファのフルパスをクリップボードへコピー
+" コピー
+BulkMap <noremap> [nx] <Leader>y "+y
+
+" バッファのフルパス
 nnoremap <silent><expr> <Leader>y% ':let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
 
-" バッファ全体をクリップボードへコピー
+" バッファ全体
 nnoremap <Leader>ye :<C-u>%y+<CR>
 
-" keep cursor position when yanking in visual mode
-" https://raw.githubusercontent.com/aoyama-val/dot/6d5143a2e62c28d60c775f0414ec00f51bee069f/etc/.vim/.vimrc
-xnoremap <silent> y y`>
+nnoremap <Leader>Y "+y$
+"}}}3
 
-nmap Y y$
-
-nnoremap <silent> <Leader>yy :call <SID>Linecopy()<CR>
-function! s:Linecopy() abort
-  let view = winsaveview()
-  execute 'normal' "0vg_\"+y"
-  silent call winrestview(view)
-endfunction
+nnoremap Y y$
 
 " ペーストした内容を選択
 " インデント以外に何か使い道あるのかな？
@@ -772,7 +760,9 @@ map! <C-h> <BS>
 
 " Del
 noremap! <C-d> <Del>
+noremap! <C-l> <Del>
 snoremap <C-d> a<BS>
+snoremap <C-l> a<BS>
 
 " 行頭まで削除
 inoremap <C-BS> <C-u>
@@ -784,22 +774,15 @@ nnoremap <M-O> :<C-U>call append(line('.') - 1, repeat([''], v:count1))<CR>
 
 " 日付入力
 nnoremap <F6> <ESC>i<C-R>=strftime("%Y-%m-%d")<CR><ESC>
-inoremap <F6> <C-R>=strftime("%Y-%m-%d")<CR>
+inoremap <C-r><C-d> <C-R>=strftime("%Y-%m-%d")<CR>
 inoremap <S-F6> [<C-R>=strftime("%Y-%m-%d")<CR>]!<SPACE>
 nnoremap <S-F6> <ESC>i[<C-R>=strftime("%Y-%m-%d")<CR>]!<SPACE><ESC>
 
 " smart indent when entering insert mode with i on empty lines
-" http://qiita.com/Qureana/items/4790be39e04add101ee2
-nnoremap <expr> i vimrc#IndentWithI()
-
-" ハイライトしてから置換する
-" http://qiita.com/itmammoth/items/312246b4b7688875d023
-nnoremap # "zyiw:let @/ = '\<' .. @z .. '\>'<CR>:set hlsearch<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
-xnoremap # mz:call <SID>set_vsearch()<CR>:set hlsearch<CR>`z:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
-function! s:set_vsearch()
-  silent normal! gv"zy
-  let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
-endfunction
+" https://github.com/yukiycino-dotfiles/dotfiles/blob/ff76abc26557f3158b10cf5bedc92767fad4877d/.vimrc#L246-L248
+nnoremap <expr> i len(getline('.')) ? 'i' : 'cc'
+nnoremap <expr> a len(getline('.')) ? 'a' : 'cc'
+nnoremap <expr> A len(getline('.')) ? 'A' : 'cc'
 
 " https://www.key-p.com/blog/staff/archives/104879
 " コメント開始文字列を挿入せずに改行
@@ -810,31 +793,27 @@ nnoremap <S-CR> o<C-u>
 " http://vim.wikia.com/wiki/Repeat_command_on_each_line_in_visual_block
 vnoremap . :normal .<CR>
 
-" http://qiita.com/itmammoth/items/312246b4b7688875d023
-" 行を移動
-nnoremap <C-Up> "zdd<Up>"zP
-nnoremap <C-Down> "zdd"zp
-" 複数行を移動
-vnoremap <C-Up> "zx<Up>"zP`[V`]
-vnoremap <C-Down> "zx"zp`[V`]
-
-" 選択範囲を置換
-vnoremap <C-R> "hy:%s/\V<C-R>h//g<left><left>
-
 " Visual 選択状態でインデント後も選択状態のままにする
 " https://twitter.com/mattn_jp/status/1202603537521401856
-vnoremap < <gv
-vnoremap > >gv
+xnoremap < <gv
+xnoremap <S-Tab> <gv
+xnoremap > >gv
+xnoremap <Tab> >gv
 
 " @r に置換マクロ登録
 let @r = ';%s/[^\\]*\./00001./ggnvveGg'
 
-" }}}2 Search {{{2
+" 選択範囲を置換する
+" http://qiita.com/itmammoth/items/312246b4b7688875d023
+nnoremap <Leader># "zyiw:%s/\<<C-R>z\>/<C-R>z/gc<left><left>
+" xnoremap <Leader># "zy:%s/\V<C-R>z/<C-R>z/g<left><left>
+xnoremap <Leader># :call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
+function! s:set_vsearch()
+  silent normal! gv"zy
+  let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
+endfunction
 
-" インクリメンタルサーチで /, ? を簡単に検索できるようにする
-" http://vim-jp.org/vim-users-jp/2009/10/22/Hack-91.html
-cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
-cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
+" }}}2 Search {{{2
 
 " clear hlsearch
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
@@ -843,8 +822,8 @@ nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
 cnoremap <C-j> <C-g>
 cnoremap <C-k> <C-t>
 
-" 選択範囲内を検索
-vnoremap / <Esc>/\%V
+" 現在のバッファから grep
+nnoremap <Leader>gr :<C-u>vimgrep // %<Left><Left><Left>
 
 " }}}2
 
@@ -854,18 +833,26 @@ call extend(g:vimrc_altercmd_dic, {'git': '!git'})
 " Suppress git add -p message
 let $LANG = 'ja_JP.UTF-8'
 
-nnoremap <silent> <Leader>ga :silent !git add -p<CR>
-" E863 になる
-"nnoremap <Leader>ga :call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: winwidth(0)/2, minheight: &lines/2 })<CR>
+nnoremap <silent> <Leader>gl :!git gl -100<CR>
 nnoremap <silent> <Leader>gd :!git diff<CR>
 nnoremap <silent> <Leader>gs :!git status<CR>
-nnoremap <silent> <Leader>gl :!git gl<CR>
-nnoremap <silent> <Leader>gc :!git commit -v<CR>
-nnoremap <Leader>gn :!git cn ""<Left>
+" nnoremap <silent> <Leader>gbb :!git branch<CR>
+nnoremap <Leader>gbb :call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
+nnoremap <Leader>gp :!git push origin master
+
+" コミット対象の hunk を選択する場合: ga -> gc
+" コミットメッセージに詳細を書く場合: gu -> gc
+nnoremap <silent> <Leader>ga :call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
 nnoremap <silent> <Leader>gu :silent !git add -u<CR>
-nnoremap <Leader>gm :!git commit -m ""<Left>
-" 貼り付けだとトークンの入力に失敗する様子
-" nnoremap <Leader>gp :!git push origin master
+nnoremap <silent> <Leader>gc :!git commit -v<CR>
+" 単純なコミットメッセージの場合: gn
+nnoremap <Leader>gn :!git commit -a -m ""<Left>
+
+" 直前のコミットを master にする場合: gbr -> g-
+" rename current branch
+nnoremap <Leader>gbr :!git branch -m<Space>
+" switch new branch (default: master) from last commit (default: master)
+nnoremap <Leader>g- :!git switch -c master HEAD~<Left><Left><Left><Left><Left><Left>
 
 
 " }}}1 Terminal {{{1
@@ -886,10 +873,11 @@ if has('gui_running')
   " font {{{
   " set guifont=BDF_M+:h9
   " set guifont=Cica:h12:qANTIALIASED
-  set guifont=Cica:h11
   " set guifont=HackGen:h11:cSHIFTJIS:qDRAFT
   " set guifont=MyricaM_M:h11
   " set guifont=UD_デジタル_教科書体_N-R:h11
+  " set guifont=Cica:h11
+  set guifont=HackGenNerd_Console:h11:cSHIFTJIS:qDRAFT
 
   " 行間隔の設定
   set linespace=1
@@ -898,11 +886,8 @@ if has('gui_running')
   set ambiwidth=double
 
   " Use colored emoji
-    set renderoptions=type:directx,renmode:5,scrlines:1
+  set renderoptions=type:directx,renmode:5,scrlines:1
   " }}}
-
-  " タブ文字などを表示
-  set list listchars=eol:↲,tab:»-,trail:_,extends:\
 
   " 最大化で起動
   autocmd vimrc GUIEnter * simalt ~x

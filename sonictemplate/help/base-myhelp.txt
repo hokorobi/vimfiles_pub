@@ -1,26 +1,25 @@
-:% s/PLUGIN/\=expand('%:t:r')/ge
-*PLUGIN.txt*	Dark powered Vim/Neovim plugin manager
+*{{_name_}}.txt*	explain plugin
 
 Author:  hokorobi <hokorobi.hokorobi at gmail.com>
 License: MIT license
 
 ==============================================================================
-CONTENTS 						*PLUGIN-contents*
+CONTENTS 						*{{_name_}}-contents*
 
-Introduction		|PLUGIN-introduction|
-Usage			|PLUGIN-usage|
-Install			|PLUGIN-install|
-Interface		|PLUGIN-interface|
-  Functions		  |PLUGIN-functions|
-  Variables		  |PLUGIN-variables|
-  Options		  |PLUGIN-options|
-Configuration Examples	|PLUGIN-examples|
+Introduction		|{{_name_}}-introduction|
+Usage			|{{_name_}}-usage|
+Install			|{{_name_}}-install|
+Interface		|{{_name_}}-interface|
+  Functions		  |{{_name_}}-functions|
+  Variables		  |{{_name_}}-variables|
+  Options		  |{{_name_}}-options|
+Configuration Examples	|{{_name_}}-examples|
 
 
 ==============================================================================
-INTRODUCTION						*PLUGIN-introduction*
+INTRODUCTION						*{{_name_}}-introduction*
 
-*PLUGIN* is.
+*{{_name_}}* is.
 
 Concepts are:
 
@@ -30,18 +29,18 @@ Concepts are:
 
 
 ==============================================================================
-USAGE							*PLUGIN-usage*
+USAGE							*{{_name_}}-usage*
 
 Refer to the example:
-|PLUGIN-examples|
+|{{_name_}}-examples|
 
 Run this command to update your plugins:
 >
-	:call PLUGIN#update()
+	:call {{_name_}}#update()
 <
 
 ==============================================================================
-INSTALL							*PLUGIN-install*
+INSTALL							*{{_name_}}-install*
 
 Requirements:
 * Vim 8.0 or above or NeoVim.
@@ -49,28 +48,28 @@ Requirements:
 
 
 ==============================================================================
-INTERFACE						*PLUGIN-interface*
+INTERFACE						*{{_name_}}-interface*
 
 
 ------------------------------------------------------------------------------
-FUNCTIONS						*PLUGIN-functions*
+FUNCTIONS						*{{_name_}}-functions*
 
-							*PLUGIN#add()*
-PLUGIN#add({repo}[, {options}])
+							*{{_name_}}#add()*
+{{_name_}}#add({repo}[, {options}])
 		Initialize a plugin.
 		{repo} is the repository URI or local repository directory
 		path.  If {repo} starts with github user name (ex:
-		"Shougo/PLUGIN.vim"), PLUGIN will install github plugins.
-		See |PLUGIN-options| for what to set in {options}.
-		Note: You must call it in |PLUGIN#begin()| block.
+		"Shougo/{{_name_}}.vim"), {{_name_}} will install github plugins.
+		See |{{_name_}}-options| for what to set in {options}.
+		Note: You must call it in |{{_name_}}#begin()| block.
 
-							*PLUGIN#begin()*
+							*{{_name_}}#begin()*
 
 ------------------------------------------------------------------------------
-VARIABLES						*PLUGIN-variables*
+VARIABLES						*{{_name_}}-variables*
 
-						*g:PLUGIN#auto_recache*
-g:PLUGIN#auto_recache
+						*g:{{_name_}}#auto_recache*
+g:{{_name_}}#auto_recache
 		If you set it to 1, recache automatically if necessary when
 		saving the vimrc, toml file.
 		Note: It reloads your $MYVIMRC.
@@ -79,12 +78,12 @@ g:PLUGIN#auto_recache
 
 
 ==============================================================================
-EXAMPLES						*PLUGIN-examples*
+EXAMPLES						*{{_name_}}-examples*
 >
 	if &compatible
 	  set nocompatible
 	endif
-	set runtimepath+={path to PLUGIN.vim directory}
+	set runtimepath+={path to {{_name_}}.vim directory}
 <
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:

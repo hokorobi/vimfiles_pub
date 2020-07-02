@@ -1,6 +1,7 @@
----
-languages:
-  rst:
+version: 2
+
+tools:
+  rst-restructuredtext-lint: &rst-restructuredtext-lint
     lint-command: 'restructuredtext-lint --encoding utf-8 --level warning --format text ${INPUT}'
     lint-stdin: false
     lint-ignore-exit-code: true
@@ -8,13 +9,20 @@ languages:
       - '%tARNING %f:%l %m'
       - '%tRROR %f:%l %m'
 
-  vim:
+  # https://www.getto.systems/entry/2020/01/31/003734
+  rst-textlint: &rst-textlint
+    lint-command: 'textlint --format unix ${INPUT}'
+    lint-stdin: false
+    lint-formats:
+      - '%f:%l:%n: %m'
+
+  vim-vint: &vim-vint
     lint-command: 'vint -'
     lint-stdin: true
     lint-formats:
       - '%f:%l:%c:%m'
 
-  yaml:
+  yaml-yamllint: &yaml-yamllint
     lint-command: 'yamllint --strict --format parsable ${INPUT}'
     lint-stdin: false
     lint-formats:
@@ -22,3 +30,16 @@ languages:
       - '%f:%l:%c: [%tarning] %m'
     env:
       - 'PYTHONIOENCODING=UTF-8'
+
+languages:
+  rst:
+    - <<: *rst-restructuredtext-lint
+    # まだ動かせていない
+    #- <<: *rst-textlint
+
+  vim:
+    - <<: *vim-vint
+
+  yaml:
+    - <<: *yaml-yamllint
+

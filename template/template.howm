@@ -1,9 +1,0 @@
-:% s/<+DATETIME+>/\=strftime('%Y-%m-%d %H:%M')/g
-:if search('<+CURSOR+>')
-:  normal! "_da>
-:endif
-= <+CURSOR+>
-[<+DATETIME+>]
-
-# vim: ff=dos fenc=cp932
-
