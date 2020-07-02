@@ -26,7 +26,6 @@ hook_add = '''
 
 [[plugins]]
 repo = 'hokorobi/asyncomplete-buffer.vim'
-frozen = 1
 on_ft = ['autohotkey', 'cfg', 'git', 'javascript', 'plantuml', 'rst', 'snippet', 'toml', 'vb', 'vim', 'xsl']
 hook_source = '''
   let g:asyncomplete_buffer_match_pattern = '\k\+$'
@@ -76,7 +75,6 @@ lazy = 1
 
 [[plugins]]
 repo = 'hokorobi/asyncomplete-neosnippet.vim'
-frozen = 1
 on_ft = ['go', 'rst', 'snippet', 'vim']
 depends = ['neosnippet.vim']
 hook_source = '''
@@ -387,7 +385,6 @@ hook_source = '''
 [[plugins]]
 repo = 'hokorobi/vim-restructuredtext'
 on_ft = 'rst'
-frozen = 1
 hook_add = '''
   let g:rst_fold_enabled = 1
 
@@ -445,7 +442,6 @@ hook_source = '''
 
 [[plugins]]
 repo = 'hokorobi/plantuml-syntax'
-frozen = 1
 merged = 0
 
 [[plugins]]
@@ -960,7 +956,6 @@ hook_add = '''
 [[plugins]]
 repo = 'hokorobi/vim-smarthome'
 on_map = [['nxi', '<Plug>']]
-frozen = 1
 hook_add = '''
   BulkMap [nx] <silent> <Home> <Plug>(smarthome-home)
   BulkMap [nx] <silent> <C-a> <Plug>(smarthome-home)
@@ -986,7 +981,6 @@ hook_add = '''
 [[plugins]]
 repo = 'hokorobi/vim-bookmarks'
 #rev = 'hokorobi'
-frozen = 1
 hook_add = '''
   " bookmark_auto_save_file が無効になるので g:bookmark_manage_per_buffer は 1 にしない
   let g:bookmark_auto_save_file = expand('~/_vim/.vim-bookmarks')
@@ -1415,7 +1409,6 @@ on_map = ['n', '<Space>gm']
 
 [[plugins]]
 repo = 'hokorobi/vim-howm-syntax-mini'
-frozen = 1
 
 # [[plugins]]
 # repo = 'vim-jp/vital.vim'
