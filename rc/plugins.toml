@@ -45,6 +45,7 @@ depends = ['asyncomplete.vim', 'vim-vsnip']
 
 [[plugins]]
 repo = 'hokorobi/asyncomplete-buffer.vim'
+# rev = 'suppress-suggest-behind-japanese'
 frozen = 1
 on_ft = ['autohotkey', 'cfg', 'git', 'javascript', 'plantuml', 'rst', 'snippet', 'toml', 'vb', 'vim', 'xsl']
 hook_source = '''
@@ -146,11 +147,6 @@ hook_add = '''
       \}
   let g:lsp_settings_enable_suggestions = 0
 '''
-
-# [[plugins]]
-# repo = 'hokorobi/vim-efm-langserver-settings'
-# depends = 'vim-lsp'
-# frozen = 1
 
 [[plugins]]
 repo = 'tsuyoshicho/vim-efm-langserver-settings'
@@ -444,6 +440,7 @@ hook_source = '''
 
 [[plugins]]
 repo = 'hokorobi/plantuml-syntax'
+# rev = 'dev'
 frozen = 1
 merged = 0
 
@@ -505,6 +502,7 @@ hook_add = '''
 [[plugins]]
 repo = 'hokorobi/vim-hitspop'
 on_event = 'CmdlineEnter'
+# rev = 'hokorobi'
 frozen = 1
 hook_source = '''
   let g:hitspop_popup_pos_top = v:false
