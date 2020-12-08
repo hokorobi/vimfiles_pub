@@ -32,8 +32,8 @@ tools:
       - 'PYTHONIOENCODING=UTF-8'
 
 languages:
-  rst:
-    - <<: *rst-restructuredtext-lint
+  # rst:
+    # - <<: *rst-restructuredtext-lint
     # まだ動かせていない
     #- <<: *rst-textlint
 

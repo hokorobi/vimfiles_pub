@@ -4,31 +4,32 @@ scriptencoding utf-8
 " Show cursor info / buffer info in popup
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
 function! vimrc#popup_cursor_info()
+  let l:ro = &readonly ? 'RO' : ''
+  let l:swap = get(b:, 'swapfile_exists', 0) ? 'swp' : ''
+  let l:fname = &buftype ==# 'quickfix' ? get(w:, 'quickfix_title', '') : fnamemodify(bufname('%'), ':.')
+  let l:modified = &modified ? '+' : ''
+  let l:line2 = s:genLine([l:modified, l:ro, l:swap, l:fname, getcwd()], ' | ')
+
+  let l:ftype = &filetype ==# '' ? '' : &filetype
   " get cursor position informations
-  " let l:pos = getpos('.')
+  let l:pos = getpos('.')
   " get charcode informations
   let l:char = strcharpart(strpart(getline('.'), col('.') - 1), 0, 1)
   let l:charnr = char2nr(l:char)
   " get encoding
   let l:fenc = &fileencoding == '' ? &encoding : &fileencoding
   let l:fenc = l:fenc !=# 'utf-8' ? fenc : &bomb ? fenc .. ' (BOM)' : fenc
+
+  let l:line3 = s:genLine([l:ftype, l:fenc, &fileformat, 'Col: ' .. l:pos[2]], ' | ')
+
   " カーソル位置のハイライト名を表示
   " https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
-  let l:highlight = join(map(synstack(line('.'), col('.')),'synIDattr(v:val, "name") .. "(" .. synIDattr(synIDtrans(v:val), "name") .. ")"'), ',')
+  let l:highlight = join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name") .. "(" .. synIDattr(synIDtrans(v:val), "name") .. ")"'), ',')
+
+  let l:vsep = '--------------------------------'
+
   " format output
-  let l:lines = [
-        "\ 'Cursor Info',
-        "\ '  Line:       ' .. l:pos[1],
-        "\ '  Column:     ' .. l:pos[2],
-        \ '  Highlight:  ' .. l:highlight,
-        \ '  Char:       ' .. printf('"%s" -- (%d)10 (%X)16', l:char, l:charnr, l:charnr),
-        \ '',
-        "\ 'Buffer Info',
-        \ '  filetype:   ' .. &filetype,
-        \ '  encoding:   ' .. l:fenc,
-        \ '  fileformat: ' .. &fileformat,
-        "\ '  syntax:     ' .. &syntax,
-        \ ]
+  let l:lines = ['hl: ' .. l:highlight, l:vsep, l:line2, l:vsep, l:line3]
   " open temporary popup
   call popup_atcursor(l:lines, #{
         \ pos: 'topleft',
@@ -37,15 +38,22 @@ function! vimrc#popup_cursor_info()
         \ wrap: v:false,
         \ })
 endfunction
+function! s:genLine(list, sep) abort
+  let l:line = ''
+  for l:s in a:list
+    let l:line = l:s ==# '' ? l:line : l:line .. l:s .. a:sep
+  endfor
+  return l:line[0:-strlen(a:sep)]
+endfunction
 
 " ウィンドウが複数開いていたら新しいタブで開く
 " 外部からファイルを渡して呼び出すことはできないのか？
 function! vimrc#YetAnotherEdit(file) abort
   if winnr('$') > 1
-    execute 'tabnew ' . fnameescape(a:file)
+    execute 'tabnew ' .. fnameescape(a:file)
     return
   endif
-  execute 'e ' . fnameescape(a:file)
+  execute 'e ' .. fnameescape(a:file)
 endfunction
 
 
@@ -53,14 +61,14 @@ endfunction
 function! vimrc#ToggleSubstituteSearch(type, line) abort
   if a:type ==# '/' || a:type ==# '?'
     let range = s:GetOnetime('s:range', '%')
-    return "\<End>\<C-U>\<BS>" . substitute(a:line, '^\(.*\)', ':' . range . 's/\1', '')
+    return "\<End>\<C-U>\<BS>" .. substitute(a:line, '^\(.*\)', ':' .. range .. 's/\1', '')
   elseif a:type ==# ':'
     let g:line = a:line
     let [s:range, expr] = matchlist(a:line, '^\(.*\)s\%[ubstitute]\/\(.*\)$')[1:2]
     if s:range ==# '''<,''>'
       call setpos('.', getpos('''<'))
     endif
-    return "\<End>\<C-U>\<BS>" . '/' . expr
+    return "\<End>\<C-U>\<BS>" .. '/' .. expr
   endif
 endfunction
 function! s:GetOnetime(varname, defaultValue) abort
@@ -69,7 +77,7 @@ function! s:GetOnetime(varname, defaultValue) abort
   endif
 
   let varValue = eval(a:varname)
-  execute 'unlet ' . a:varname
+  execute 'unlet ' .. a:varname
   return varValue
 endfunction
 
@@ -78,7 +86,7 @@ endfunction
 function! vimrc#Retab(old_tabstop) abort
   let pos = getpos('.')
   let new_indent = &l:expandtab ? repeat(' ', &l:tabstop) : '\t'
-  silent execute '%s/\v%(^ *)@<= {' . a:old_tabstop . '}/' . new_indent . '/ge'
+  silent execute '%s/\v%(^ *)@<= {' .. a:old_tabstop .. '}/' .. new_indent .. '/ge'
   silent retab
   call setpos('.', pos)
 endfunction
@@ -86,7 +94,7 @@ endfunction
 " インデントを簡単に設定
 function! vimrc#ISetting(setting, force_retab) abort
   if empty(a:setting)
-    echo 'indent: ' . ((&l:expandtab) ? 'space' : 'tab') . ' ' . &l:shiftwidth
+    echo 'indent: ' .. ((&l:expandtab) ? 'space' : 'tab') .. ' ' .. &l:shiftwidth
     return
   endif
 
@@ -110,7 +118,7 @@ function! vimrc#ISetting(setting, force_retab) abort
 
   " 強制的に Retab をかける
   if a:force_retab
-    execute 'Retab ' . bk_tabstop
+    execute 'Retab ' .. bk_tabstop
   endif
 
   " IndentGuides を再描画させるため
@@ -133,7 +141,7 @@ endfunction
 " 今開いているファイルをリネーム
 function! vimrc#RenameMe(newFileName) abort
   let currentFileName = expand('%')
-  execute 'saveas ' . a:newFileName
+  execute 'saveas ' .. a:newFileName
   call delete(currentFileName)
 endfunction
 
@@ -142,7 +150,7 @@ function! vimrc#ChangeCurrentDir(directory, bang) abort
   if a:directory ==# ''
     lcd %:p:h
   else
-    execute 'lcd ' . a:directory
+    execute 'lcd ' .. a:directory
   endif
 
   if a:bang ==# ''
@@ -166,7 +174,7 @@ endfunction
 
 " toggle option
 function! vimrc#toggle_option(option_name) abort
-  execute 'setlocal' a:option_name . '!' a:option_name . '?'
+  execute 'setlocal' a:option_name .. '!' a:option_name .. '?'
 endfunction
 
 " json processor
@@ -185,14 +193,14 @@ function! vimrc#Jq(...) abort
   endif
 
   if 0 ==# a:0
-    execute '%!' . l:cmd . ' ' . l:arg0
+    execute '%!' .. l:cmd .. ' ' .. l:arg0
     return
   endif
   if l:cmd ==# 'python'
     echom 'jj, jq コマンドが見つからないため式は評価できません。'
     return
   endif
-  execute '%!' . l:cmd ' "' . a:1 . '"'
+  execute '%!' .. l:cmd ' "' .. a:1 .. '"'
 endfunction
 
 
@@ -203,7 +211,7 @@ function! vimrc#GrepWrap(...) abort
   if len(str) == 0
     return 1
   endif
-  execute 'grep "' . str . '" ' . path
+  execute 'grep "' .. str .. '" ' .. path
 endfunction
 
 " pt で grep を実行した後に結果をパス順にしたかったので sort
@@ -221,7 +229,7 @@ function! vimrc#SplitAndGo(cmd) abort
   if !v:count
     return
   endif
-  execute 'normal! ' . v:count . 'G'
+  execute 'normal! ' .. v:count .. 'G'
 endfunction
 
 function! vimrc#toggle_quickfix_window() abort
@@ -323,7 +331,7 @@ function! vimrc#GfFile() abort
     let line = matchstr(path, '\d\+:\?$')
     let path = matchstr(path, '.*\ze:\d\+:\?$')
   endif
-  let path = findfile(path, getcwd() . ';')  " 追加
+  let path = findfile(path, getcwd() .. ';')  " 追加
   if !filereadable(path)
     return 0
   endif
@@ -336,7 +344,7 @@ endfunction
 
 " }}}2 template {{{2
 function! vimrc#EditHowmNew(dir) abort
-  let dir = a:dir . strftime('/%Y/%m')
+  let dir = a:dir .. strftime('/%Y/%m')
   if isdirectory(dir) == 0
     call mkdir(dir, 'p')
   endif
@@ -352,7 +360,7 @@ endfunction
 " 2017-03-30 現在の Denite では Windows で grep にディレクトリを渡すとエラーになる場合があるので cd する
 " 最近の更新で grep:'C:\path\to\dir'::^=\\s が使えるようになったかと思ったが、カレントディレクトリが C ドライブでないとエラーになる
 function! vimrc#DeniteGrepHowm() abort
-  execute 'cd ' . g:howm_dir
+  execute 'cd ' .. g:howm_dir
   Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s
 endfunction
 
@@ -376,7 +384,7 @@ function! vimrc#openGithubRepository(mode) abort
     return
   endif
 
-  call openbrowser#open('https://github.com/' . repo)
+  call openbrowser#open('https://github.com/' .. repo)
 endfunction
 
 " }}}2 CtrlP {{{2

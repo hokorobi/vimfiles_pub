@@ -1,0 +1,4 @@
+set nocompatible
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\rhysd\git-messenger.vim
+filetype plugin indent on
+syntax enable
