@@ -1,0 +1,24 @@
+" vim -N -u ~/vimfiles/vimrc-min-dein-fastgit -U NONE -i NONE
+set nocompatible
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\dein.vim
+call dein#begin('~/_vim/dein/.cachetest')
+call dein#add('~/_vim/dein/repos/github.com/Shougo/dein.vim')
+call dein#add('tsuyoshicho/plantuml-previewer.vim', {'rev': '1b2f9c6'})
+call dein#end()
+filetype plugin indent on
+syntax enable
+
+"[dein] Update started: (2020/08/23 12:00:27)
+"[dein] C:/Users/hokorobi/_vim/dein/.cachetest/repos/github.com/tsuyoshicho/plantuml-previewer.vim_1b2f9c6
+"[dein] You are not currently on a branch.
+"[dein] Please specify which branch you want to merge with.
+"[dein] See git-pull(1) for details.
+"[dein]     git pull <remote> <branch>
+"[dein] You are not currently on a branch.
+"[dein] Please specify which branch you want to merge with.
+"[dein] See git-pull(1) for details.
+"[dein]     git pull <remote> <branch>
+"[dein] Error installing plugins:
+"[dein]   plantuml-previewer.vim
+"[dein] Please read the error message log with the :message command.
+"[dein] Done: (2020/08/23 12:00:29)

@@ -1,3 +1,6 @@
+" CtrlP
+nnoremap <Leader>fo :<C-u>call vimrc#CtrlPDefaultInput('CtrlPLine %', 'list-table ')<CR>
+
 " vim-restructuredtext
 nmap <buffer> <Leader><Leader>1 <Plug>(rst-section1)
 nmap <buffer> <Leader><Leader>2 <Plug>(rst-section2)

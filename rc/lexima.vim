@@ -50,7 +50,7 @@ call lexima#add_rule({
 " docstring の改行 {{{2
 for c in ["'", '"']
   call lexima#add_rule({
-        \   'at'         : c . '\{3}.*\%#' . c . '\{3}',
+        \   'at'         : c .. '\{3}.*\%#' .. c .. '\{3}',
         \   'char'       : '<CR>',
         \   'input_after': '<CR>',
         \})
@@ -68,17 +68,17 @@ for c in [',']
   call lexima#add_rule({
         \   'at'   : '\%#\_S',
         \   'char' : c,
-        \   'input': c . '<Space>',
+        \   'input': c .. '<Space>',
         \})
   " 後にスペースを続けられないようにする
   call lexima#add_rule({
-        \   'at'   : c . ' \%#',
+        \   'at'   : c .. ' \%#',
         \   'char' : '<Space>',
         \   'input': '',
         \})
   " 一度に削除する
   call lexima#add_rule({
-        \   'at'   : '\S\+' . c . ' \%#',
+        \   'at'   : '\S\+' .. c .. ' \%#',
         \   'char' : '<BS>',
         \   'input': '<BS><BS>',
         \})
@@ -216,7 +216,7 @@ for s:val in ['{:}', '\[:\]']
   " \   \%#
   " \}
   call lexima#add_rule({
-        \   'at'         : s:pair[0] . '\%#' . s:pair[1],
+        \   'at'         : s:pair[0] .. '\%#' .. s:pair[1],
         \   'char'       : '<CR>',
         \   'input'      : '<CR><Bslash>   ',
         \   'input_after': '<CR><Bslash>',
@@ -228,11 +228,11 @@ for s:val in ['{:}', '\[:\]']
     let s:space_num = s:indent * s:i - 1
     let s:space = ''
     for s:j in range(s:space_num + s:indent)
-      let s:space = s:space . ' '
+      let s:space = s:space .. ' '
     endfor
     let s:space_after = ''
     for s:j in range(s:space_num)
-      let s:space_after = s:space_after . ' '
+      let s:space_after = s:space_after .. ' '
     endfor
 
     " \   {\%#}
@@ -242,10 +242,10 @@ for s:val in ['{:}', '\[:\]']
     " \       \%#
     " \   }
     call lexima#add_rule({
-          \   'at'         : '^\s*\\\s\{' . s:space_num . '\}.*' . s:pair[0] . '\%#' . s:pair[1],
+          \   'at'         : '^\s*\\\s\{' .. s:space_num .. '\}.*' .. s:pair[0] .. '\%#' .. s:pair[1],
           \   'char'       : '<CR>',
-          \   'input'      : '<CR><Bslash>' . s:space,
-          \   'input_after': '<CR><Bslash>' . s:space_after,
+          \   'input'      : '<CR><Bslash>' .. s:space,
+          \   'input_after': '<CR><Bslash>' .. s:space_after,
           \   'filetype'   : 'vim',
           \})
 
@@ -255,16 +255,16 @@ for s:val in ['{:}', '\[:\]']
     " \   hoge,
     " \   \%#
     call lexima#add_rule({
-          \   'at'         : '^\s*\\\s\{' . s:space_num . '\}.*\%#',
+          \   'at'         : '^\s*\\\s\{' .. s:space_num .. '\}.*\%#',
           \   'char'       : '<CR>',
-          \   'input'      : '<CR><Bslash>' . s:space_after,
+          \   'input'      : '<CR><Bslash>' .. s:space_after,
           \   'filetype'   : 'vim',
           \})
     " 末尾スペース削除
     call lexima#add_rule({
-          \   'at'         : '^\s*\\\s\{' . s:space_num . '\}.*\s\+\%#',
+          \   'at'         : '^\s*\\\s\{' .. s:space_num .. '\}.*\s\+\%#',
           \   'char'       : '<CR>',
-          \   'input'      : '<Esc>diwo<Bslash>' . s:space_after,
+          \   'input'      : '<Esc>diwo<Bslash>' .. s:space_after,
           \   'filetype'   : 'vim',
           \})
   endfor

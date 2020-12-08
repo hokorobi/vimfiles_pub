@@ -80,7 +80,7 @@ Easy Align
 ----------
 
 * `<Space>`    : Around 1st whitespaces
-* `3<Space>`   : Around 2nd whitespaces
+* `2<Space>`   : Around 2nd whitespaces
 * `-<Space>`   : Around the last whitespaces
 * `-1<Space>`  : Around the 2nd to last whitespaces
 * `:`          : Around 1st colon (key: value)
@@ -97,7 +97,7 @@ Easy Align
 Surround (feat. sandwich)
 -------------------------
 
-* `sa{TextObject}"` : TextObject を " で括る
+* `sa{Text Object}"`: Text Object を " で括る
 * `sa"`             : (v) 選択範囲を " で括る
 * `sai"f`           : "" 括りを、このあと入力する function と () で括る
 * `sai"i`           : "" 括りを、このあと入力する head と tail で括る
@@ -239,17 +239,17 @@ quickfix
 Macro
 =====
 
-* `A-m`        : マクロ m へ記録。A-m で記録を停止
-* `<Space>Q a` : マクロ a へ記録。<Space>Q で記録を停止
-* `@a`         : マクロ a を実行
+* `A-m`       : マクロ m へ記録。A-m で記録を停止。. で @m を繰り返し実行。「対象の文字列を含むファイルを全置換する」の場合にカウントが使えなかった。
+* `<Space>Qa` : マクロ a へ記録。<Space>Q で記録を停止
+* `@a`        : マクロ a を実行
 
 Text Object
 ===========
 
-* `ad`, `id` : /\#_-キャメルケースの文字列, で区切った文字列. feat. vim-textobj-delimited
-* `av`, `iv` : _キャメルケースの文字列 変数名の区切り。キャメルケースの場合、先頭を小文字にする. feat. vim-textobj-variable-segment
+* `ad`, `id` : /\#_-キャメルケースの文字列で区切った文字列. feat. vim-textobj-delimited
 * `ac`, `ic` : コメント
 * `ab`, `ib` : feat. sandwich
+* `a,`, `i,` : , 区切りの要素。feat. swap
 
 
 rst
@@ -286,11 +286,8 @@ howm
 golang
 =======
 
-* `]]` `[[`     : 次、前の関数へ feat. vim-go
-* `:GoDecls`    : ファイル内の関数、変数の定義を CtrlP で表示 feat. vim-go
-* `:GoDeclsDir` : ディレクトリ内の関数、変数の定義を CtrlP で表示 feat. vim-go
-* `C-t`         : GoDef のジャンプの前の位置に戻る feat. vim-go
-* `:GoFreeVars` : 選択範囲のコードで使用される変数がわかる feat. vim-go
+* `GoRun`          : feat. vim-gorun
+* `GoAddTags json` : struct に json tag を追加。feat. vim-goaddtags
 
 LSP
 ====
@@ -302,8 +299,10 @@ LSP
 Git
 ========
 * `<Leader>gl`  : gl<CR>
+* `<Leader>gL`  : :Gina log --graph -100<CR> feat. gina.vim
 * `<Leader>gd`  : diff<CR>
 * `<Leader>gs`  : status<CR>
+* `<Leader>gS`  : Gina status -S. feat. gina.vim
 * `<Leader>gg`  : log -p -G"|"
 * `<Leader>ga`  : add -p<CR> in popup window
 * `<Leader>gu`  : add -u<CR>
@@ -315,10 +314,9 @@ Git
 * `<Leader>gbl` : Gina blame. feat. gina.vim
 * `<Leader>g-`  : Switch last commit and new branch name
 
-Gina.vim
+gina.vim
 ----------
 
-* `<Leader>gs`  : Gina status
 * `cc`          : (status) Gina commit
 * `s`           : (blame) Gina show
 * `:Gina log :` : current buffer history
@@ -342,6 +340,7 @@ command
 * `git pull https://github.com/{upstream/project} refs/pull/{id}/head`: フォーク元のマージされていないプルリクをマージする。
   via https://stackoverflow.com/questions/55108304/how-to-merge-a-pull-request-or-commit-from-a-different-repository-using-git
 * `git log -G"hoge" -p`: 履歴の差分から hoge を検索する。 --pickaxe-all も指定すると、検索されたコミットで変更のあったファイルすべてを表示する。
+* `git submodule update --remote` : 配下の submodule を更新
 
 git stash
 ----------
@@ -413,4 +412,20 @@ powershell
 -------------------------------------------
 
 set verbose=3 するとsourceしてるものが出る
+
+対象の文字列を含むファイルを全置換する
+--------------------------------------
+
+参考: `編集を加速するVimのquickfix機能 - daisuzu's notes <https://daisuzu.hatenablog.com/entry/2020/12/03/003629>`_
+
+1. `:enew`: 新しいバッファを開く
+2. `:r !pt -l hogefuga .`: バッファに hogefuga を含むファイルのファイル名を一覧表示
+3. 各行の末尾に :1:a を追加。quickfix でファイルを開けるようにするため
+4. `:cbuffer` バッファの内容を quickfix に読み込み
+5. `<Space>Qa`: @a へマクロの記録開始
+5. `:%s/hogefuga/fugafuga/g`: 置換
+6. `:w`: 保存
+7. `:cnext`: 次のバッファを表示
+8. `<Space>Q`: マクロの保存
+9. `100@a`: ファイルの数だけマクロを繰り返し実行
 

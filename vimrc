@@ -4,7 +4,7 @@
 " Platform: Windows
 " Vim:      https://github.com/vim/vim-win32-installer/releases gVim
 " CAUTION:  other platform, old version no compatibility
-" REQUIRE:  mattn/files, xdoc2txt, pt (monochromegane/the_platinum_searcher),
+" REQUIRE:  xdoc2txt, pt (monochromegane/the_platinum_searcher),
 "           jalan/pdftotext, golang/tools/goimports
 "==============================================================================
 
@@ -13,7 +13,9 @@ set encoding=utf-8
 scriptencoding utf-8
 
 " vimrc 全体で使う augroup を初期化
-augroup vimrc | autocmd! | augroup END
+augroup vimrc
+  autocmd!
+augroup END
 
 " vim-altercmd
 " https://github.com/tyru/vim-altercmd
@@ -165,9 +167,8 @@ set matchpairs+=<:>,（:）,「:」,『:』,【:】
 " }}}2 File {{{2
 
 " viminfo のパスを指定
-" ': oldfiles の数を増やす 100 -> 300
 " n: viminfo ファイルのパスを指定。
-set viminfo='300,<50,s10,h,rA:,rB:,n~/_vim/viminfo
+set viminfo='100,<50,s10,h,rA:,rB:,n~/_vim/viminfo
 
 " swapファイル他用ディレクトリ。カレントディレクトリは嫌
 " 末尾 // でパスを考慮した一意なファイル名で書き込み。
@@ -316,7 +317,7 @@ set backspace=indent,eol,start
 " +M マルチバイトの連結は空白なし
 " -t 自動折返し止め
 " -c 自動折返して、現在のコメント開始文字列を自動挿入はやめ
-" +j コメントリーダーを除いて連結. v:version >= 704
+" +j コメントリーダーを除いて連結
 set formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
 
 " ファイル末尾に改行を追加しない
@@ -342,7 +343,6 @@ set wildmenu
 " }}}2 indent {{{2
 
 " indent
-" デフォルトの設定。ファイルタイプごとの設定は ftplugin にある
 " 賢い indent
 set cindent
 " タブの画面上での幅
@@ -382,6 +382,7 @@ set tags=./tags;
 " rg は通常 SJIS の検索をしないのでやはり不便
 " let &grepprg = 'rg --vimgrep --no-heading --sort path --no-ignore-vcs'
 " set grepformat=%f:%l:%c:%m,%f:%l:%m
+
 " /U: .gitignore を無視
 let &grepprg = 'pt /nogroup /nocolor /column /hidden /home-ptignore /S /U'
 " /column で桁を表示しているので %c も使うパターンを追加
@@ -407,31 +408,6 @@ command! SwapfileDelete call vimrc#swapfile_delete()
 
 " Improve diff
 set diffopt& diffopt+=algorithm:histogram,indent-heuristic
-
-" FIXME: temporary plugin {{{3
-set packpath& packpath+=~/_vim
-let s:jobs = {}
-let s:plugdir = expand('~/_vim/pack/temp/opt')
-function! s:gitclone_end(ch) abort
-  let j = ch_getjob(a:ch)
-  echomsg s:jobs[j] .. ' installed.'
-endfunction
-
-function! s:echo(_, msg) abort
-  echo a:msg
-endfunction
-
-function! s:gitclone_temp(url) abort
-  let cmd = printf('git clone --depth=1 %s', a:url)
-  let j = job_start(['cmd', '-c', cmd], {
-        \ 'out_cb': funcref('s:echo'),
-        \ 'close_cb': funcref('s:gitclone_end'),
-        \ })
-  let s:jobs[j] = a:url
-endfunction
-
-command! -nargs=1 Templug call s:gitclone_temp(<f-args>)
-" }}}3
 
 " }}}2
 
@@ -497,21 +473,20 @@ let g:changelog_new_date_format="%d\n\n%c\n"
 
 " }}}2  dein {{{2
 let s:dein_home = expand('~/_vim/dein')
+let g:dein#install_github_api_token = g:github_token
 execute 'set runtimepath& runtimepath+=' .. s:dein_home .. '/repos/github.com/Shougo/dein.vim'
-let g:dein#install_log_filename = s:dein_home .. '/dein.log'
-let g:dein#auto_recache = 0
 
 if dein#load_state(s:dein_home)
   call dein#begin(s:dein_home)
-  call dein#load_toml(expand('~/vimfiles/rc/plugins.tml'))
+  call dein#load_toml(expand('~/vimfiles/rc/plugins.toml'))
   call dein#end()
   call dein#save_state()
 endif
 
 call extend(g:vimrc_altercmd_dic, {
       \ 'du': 'call dein#update()',
+      \ 'dc': 'call dein#check_update(v:true)',
       \ 'di': 'call dein#install()',
-      \ 'dl': 'view ' .. g:dein#install_log_filename,
       \ 'dr': 'call dein#recache_runtimepath()'})
 
 autocmd vimrc VimEnter * call dein#call_hook('post_source')
@@ -619,7 +594,7 @@ noremap <C-n> :<C-u>enew<CR>
 
 " open vimrc
 noremap <F4> :<C-u>edit $MYVIMRC<CR>
-noremap <S-F4> :<C-u>edit ~/vimfiles/rc/plugins.tml<CR>
+noremap <S-F4> :<C-u>edit ~/vimfiles/rc/plugins.toml<CR>
 
 " Open cheatsheet
 nnoremap <Leader>c :split<CR>:edit ~/vimfiles/rc/cheatsheet.rst<CR>
@@ -638,10 +613,10 @@ nnoremap qt :tabclose<CR>
 " }}}2 Window {{{2
 
 " Ctrl + hjkl でウィンドウ間を移動
-noremap  <C-h> <C-w>h
-noremap  <C-j> <C-w>j
-noremap  <C-k> <C-w>k
-noremap  <C-l> <C-w>l
+nnoremap  <C-h> <C-w>h
+nnoremap  <C-j> <C-w>j
+nnoremap  <C-k> <C-w>k
+nnoremap  <C-l> <C-w>l
 
 " Shift + 矢印でウィンドウサイズを変更
 nnoremap <S-Left>  <C-w><
@@ -669,8 +644,21 @@ cnoremap <M-i> <C-f>
 
 " 表示上の行移動変更
 " https://github.com/darookee/dotfiles/blob/2c11a0d322c04c549d13d9cacb282d1e44a5a3c7/vimrc#L195
-nnoremap <expr> j v:count == 0 ? 'gj' : 'j'
-nnoremap <expr> k v:count == 0 ? 'gk' : 'k'
+noremap <expr> j v:count == 0 ? 'gj' : 'j'
+inoremap <C-n> <C-o>gj
+cnoremap <C-n> <Down>
+" noremap  <C-n> <Down>
+
+noremap <expr> k v:count == 0 ? 'gk' : 'k'
+inoremap <C-p> <C-o>gk
+cnoremap <C-p> <Up>
+
+cnoremap <C-f> <Right>
+noremap  <C-f> l
+
+noremap! <C-b> <Left>
+noremap  <C-b> h
+
 
 " スクロールしていくと最後一行になってしまうのを直す設定
 " http://itchyny.hatenablog.com/entry/2016/02/02/210000
@@ -679,27 +667,13 @@ noremap <expr> <M-j> max([winheight(0) - 2, 1]) .. "\<C-d>" .. (line('.') > line
 noremap! <M-k> <PageUp>
 noremap <expr> <M-k> max([winheight(0) - 2, 1]) .. "\<C-u>" .. (line('.') < 1         + winheight(0) ? 'H' : 'L')
 
-" mode nv は smarthome でマッピング
-" smarthome は insert mode で動作するとき一度 normal mode に移行しているので自分の設定では IME がオフになってしまうから除外
-BulkMap <noremap> [ci] <C-a> <Home>
-BulkMap <noremap> [ci] <M-h> <Home>
-BulkMap <noremap> [ci] <C-e> <End>
-BulkMap <noremap> [ci] <M-l> <End>
+" mode nvi は smarthome でマッピング
+cnoremap <C-a> <Home>
+cnoremap <M-h> <Home>
+cnoremap <C-e> <End>
+cnoremap <M-l> <End>
 onoremap <Leader>h ^
 onoremap <Leader>l $
-
-
-noremap! <C-n> <Down>
-" noremap  <C-n> <Down>
-
-noremap! <C-p> <Up>
-noremap  <C-p> <Up>
-
-cnoremap <C-f> <Right>
-noremap  <C-f> l
-
-noremap! <C-b> <Left>
-noremap  <C-b> h
 
 " 単語先頭へ進む w, 単語先頭へ戻る W
 " dw で dW になるのでやめ
@@ -723,9 +697,6 @@ nnoremap <CR> G
 " その際 jumplist も更新しない
 inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
 
-" 補完候補を Tab で選択
-inoremap <expr> <Tab> pumvisible() ? '<C-n>' : '<Tab>'
-
 " }}}2 Yank, Paste {{{2
 
 " OS クリップボード {{{3
@@ -744,6 +715,14 @@ nnoremap <silent><expr> <Leader>y% ':let @+ = "' .. substitute(expand("%:p"), "\
 
 " バッファ全体
 nnoremap <Leader>ye :<C-u>%y+<CR>
+
+" 現在行 (行頭空白、行末空白・改行を除く)
+nnoremap <silent> <Leader>yy :call <SID>Linecopy()<CR>
+function! s:Linecopy() abort
+  let view = winsaveview()
+  normal! 0vg_"+y
+  silent call winrestview(view)
+endfunction
 
 nnoremap <Leader>Y "+y$
 "}}}3
@@ -773,16 +752,15 @@ nnoremap <M-o> :<C-U>call append(line('.'), repeat([''], v:count1))<CR>
 nnoremap <M-O> :<C-U>call append(line('.') - 1, repeat([''], v:count1))<CR>
 
 " 日付入力
-nnoremap <F6> <ESC>i<C-R>=strftime("%Y-%m-%d")<CR><ESC>
 inoremap <C-r><C-d> <C-R>=strftime("%Y-%m-%d")<CR>
-inoremap <S-F6> [<C-R>=strftime("%Y-%m-%d")<CR>]!<SPACE>
-nnoremap <S-F6> <ESC>i[<C-R>=strftime("%Y-%m-%d")<CR>]!<SPACE><ESC>
+nmap <F6> <ESC>i<C-r><C-d><ESC>
+imap <F6> <C-r><C-d>
 
 " smart indent when entering insert mode with i on empty lines
 " https://github.com/yukiycino-dotfiles/dotfiles/blob/ff76abc26557f3158b10cf5bedc92767fad4877d/.vimrc#L246-L248
-nnoremap <expr> i len(getline('.')) ? 'i' : 'cc'
-nnoremap <expr> a len(getline('.')) ? 'a' : 'cc'
-nnoremap <expr> A len(getline('.')) ? 'A' : 'cc'
+nnoremap <expr> i len(getline('.')) ? 'i' : '"_cc'
+nnoremap <expr> a len(getline('.')) ? 'a' : '"_cc'
+nnoremap <expr> A len(getline('.')) ? 'A' : '"_cc'
 
 " https://www.key-p.com/blog/staff/archives/104879
 " コメント開始文字列を挿入せずに改行
@@ -801,7 +779,7 @@ xnoremap > >gv
 xnoremap <Tab> >gv
 
 " @r に置換マクロ登録
-let @r = ';%s/[^\\]*\./00001./ggnvveGg'
+let @r = ';%s/[^\\]\+\.\([^\\]\+$\)/00001.\1/gg2nvveGg'
 
 " 選択範囲を置換する
 " http://qiita.com/itmammoth/items/312246b4b7688875d023
@@ -812,6 +790,10 @@ function! s:set_vsearch()
   silent normal! gv"zy
   let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
 endfunction
+
+" https://github.com/wass88/dotfiles/blob/62ad8bca0a494c45294164fb9df27ee440b23e87/.vimrc#L737-L738
+" one char insert
+nnoremap <space>i i_<ESC>r
 
 " }}}2 Search {{{2
 
@@ -872,12 +854,11 @@ endif
 if has('gui_running')
   " font {{{
   " set guifont=BDF_M+:h9
-  " set guifont=Cica:h12:qANTIALIASED
-  " set guifont=HackGen:h11:cSHIFTJIS:qDRAFT
+  " set guifont=Cica:h12
+  " set guifont=Cica:h11
   " set guifont=MyricaM_M:h11
   " set guifont=UD_デジタル_教科書体_N-R:h11
-  " set guifont=Cica:h11
-  set guifont=HackGenNerd_Console:h11:cSHIFTJIS:qDRAFT
+  set guifont=HackGenNerd_Console:h11
 
   " 行間隔の設定
   set linespace=1
@@ -899,6 +880,8 @@ if has('gui_running')
   " colorscheme {{{
   " https://github.com/vim-jp/reading-vimrc/wiki/vimrcアンチパターン
   function! DefineMyHighlights()
+    highlight StatusLine guifg=#e996aa guibg=#132132
+
     " IME の有効無効でカーソルの色を変更する。
     if has('multi_byte_ime')
       highlight CursorIM guifg=NONE guibg=Green gui=NONE

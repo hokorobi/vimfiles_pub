@@ -1,0 +1,14 @@
+" vim -N -u ~/vimfiles/vimrc-min-asyncomplete -U NONE -i NONE
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\prabirshrestha\asyncomplete.vim
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\prabirshrestha\async.vim
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\prabirshrestha\vim-lsp
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\prabirshrestha\asyncomplete-lsp.vim
+autocmd User lsp_setup call lsp#register_server({
+ \ 'name': 'gopls',
+ \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
+ \ 'whitelist': ['go'],
+ \ })
+autocmd BufWritePre *.go LspDocumentFormatSync
+filetype plugin indent on
+syntax enable
+
