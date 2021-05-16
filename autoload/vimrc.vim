@@ -20,7 +20,7 @@ function! vimrc#popup_cursor_info()
   let l:fenc = &fileencoding == '' ? &encoding : &fileencoding
   let l:fenc = l:fenc !=# 'utf-8' ? fenc : &bomb ? fenc .. ' (BOM)' : fenc
 
-  let l:line3 = s:genLine([l:ftype, l:fenc, &fileformat, 'Col: ' .. l:pos[2]], ' | ')
+  let l:line3 = s:genLine([&fileformat, l:fenc, l:ftype, 'Col: ' .. l:pos[2]], ' | ')
 
   " カーソル位置のハイライト名を表示
   " https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
@@ -257,35 +257,20 @@ function! vimrc#dup_term_buf() abort
   call delete(file)
 endfunction
 
-" QuickFix か loclist かをを自動的に判定して項目移動 {{{
-function! s:listmove(winnr, direction) abort
-  let l:wi = getwininfo(win_getid(a:winnr))[0]
-  if l:wi.loclist
-    if a:direction ==# 'next'
-      silent! lnext
-    else
-      silent! lprevious
-    endif
-    return v:true
-  elseif l:wi.quickfix
-    if a:direction ==# 'next'
-      silent! cnext
-    else
-      silent! cprevious
-    endif
-    return v:true
-  endif
-  return v:false
+" 現在行を yank (行頭空白、行末空白・改行を除く)
+function! vimrc#linecopy() abort
+  let view = winsaveview()
+  normal! 0vg_"+y
+  silent call winrestview(view)
 endfunction
 
-function! vimrc#listmove(direction) abort
-  for i in range(1, winnr('$'))
-    if s:listmove(i, a:direction)
-      return
-    endif
-  endfor
+" コマンドの結果をスクラッチバッファに表示
+function! vimrc#L(args)
+  new
+  setlocal buftype=nofile bufhidden=delete noswapfile
+  nnoremap <buffer> qq <Cmd>close<CR>
+  call setline(1, split(execute(a:args), '\n'))
 endfunction
-" }}}
 
 " Swap {{{
 " https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L651-L687
@@ -320,6 +305,22 @@ endfunction
 
 
 " plugin {{{1
+" '' か "" で括られた文字列か選択範囲を user/repogitory のリポジトリ名と想定して取得
+function! s:getRepogitoryName(mode) abort
+  let backup_z = @z
+  let @z = ''
+  if a:mode ==# 'n'
+    normal! "zyi'
+    if @z ==# ''
+      normal! "zyi"
+    endif
+  else
+    normal! gv"zy
+  endif
+  let repo = @z
+  let @z = backup_z
+  return repo
+endfunction
 
 " gf-user {{{2
 " http://d.hatena.ne.jp/thinca/20140324/1395590910
@@ -355,32 +356,11 @@ function! vimrc#EditHowmNew(dir) abort
   startinsert!
 endfunction
 
-" }}}2 Denite {{{2
-
-" 2017-03-30 現在の Denite では Windows で grep にディレクトリを渡すとエラーになる場合があるので cd する
-" 最近の更新で grep:'C:\path\to\dir'::^=\\s が使えるようになったかと思ったが、カレントディレクトリが C ドライブでないとエラーになる
-function! vimrc#DeniteGrepHowm() abort
-  execute 'cd ' .. g:howm_dir
-  Denite -resume -buffer-name=denite-howm -cursor-wrap grep:::^=\\s
-endfunction
-
 " }}}2 open-browser {{{2
 function! vimrc#openGithubRepository(mode) abort
-  " get repository name
-  let backup_z = @z
-  let @z = ''
-  if a:mode ==# 'n'
-    normal! "zyi'
-    if @z ==# ''
-      normal! "zyi"
-    endif
-  else
-    normal! gv"zy
-  endif
-  let repo = @z
-  let @z = backup_z
-
+  let repo = s:getRepogitoryName(a:mode)
   if repo ==# '' || stridx(repo, '/') == -1
+    echo 'リポジトリ名は取得できませんでした。'
     return
   endif
 
@@ -388,6 +368,11 @@ function! vimrc#openGithubRepository(mode) abort
 endfunction
 
 " }}}2 CtrlP {{{2
+
+function! vimrc#CtrlPRepository(mode) abort
+  execute 'CtrlP' '~/_vim/dein/repos/github.com/' .. s:getRepogitoryName(a:mode)
+endfunction
+
 " CtrlP のコマンドと初期入力値を指定して実行
 function! vimrc#CtrlPDefaultInput(cmd, input)
   try

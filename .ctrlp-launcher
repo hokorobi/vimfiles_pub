@@ -1,4 +1,5 @@
-instant.ini	exe('edit ' .. g:fenrir_dir .. '/data/instant.ini')
+fenrir instant.ini	exe('edit ' .. g:fenrir_dir .. '/data/instant.ini')
+fenrir path	exe('edit ' .. g:fenrir_dir .. '/data/path')
 autohotkey ahk	exe('edit ' .. g:ahk_path)
 _vimrc.local	exe('edit ' .. g:vimrc_local)
 vimplugins.rst	edit ~/Documents/Sphinx/github.io/vimplugins.rst
@@ -9,7 +10,7 @@ cheatsheet	edit ~/vimfiles/rc/cheatsheet.rst
 PPX.CFG	exe('edit ' .. g:ppx_dir .. '/PPX.CFG')
 gitconfig	edit ~/.gitconfig
 Gist	Gista list
-cVim - Gist	exe('Gista open ' .. g:gist_cvim .. ' gistfile1.txt')
+cVim - Gist	exe('Gista open ' .. g:gist_cvim .. ' cVimrc.vim')
 lexima.vim vimrc	edit ~/vimfiles/rc/lexima.vim
 twicli regexp - Gist	exe('Gista open ' .. g:gist_twicli_regexp)
 twicli plugins - Gist	exe('Gista open ' .. g:gist_twicli_plugins)
@@ -17,6 +18,7 @@ debug_print	call print_debug#print_debug()
 snippet	exe('edit ' .. expand('~/vimfiles/vsnip/' .. &filetype .. '.json'))
 ftplugin	exe('edit ' .. expand('~/vimfiles/after/ftplugin/' .. &filetype .. '.vim'))
 autoload vimrc	edit ~/vimfiles/autoload/vimrc.vim
-sphinx-terminal	!start cmd /k "\%USERPROFILE\%\Documents\Sphinx\_venv\Scripts\activate.bat"
-sphinx-autobuild	!start cmd /k "\%USERPROFILE\%\Documents\Sphinx\_venv\Scripts\activate.bat & sphinx-autobuild.exe %:p:h %:p:h\autobuild -B -i .git/* -i _build/* -i bakgit/* -i _image/* -i _static/*"
+zenn-preview	cd \%USERPROFILE\%\Documents\zenn | FloatermNew! npx zenn preview
+zenn-new	cd \%USERPROFILE\%\Documents\zenn | !npx zenn new:article
+sphinx-autobuild	FloatermNew! sphinx-autobuild.exe %:p:h %:p:h\autobuild --open-browser --ignore .git/* --ignore _build/* --ignore bakgit/* --ignore _image/* --ignore _static/*
 jupyter-terminal	!start cmd /k "cd \%USERPROFILE\%\Documents\jupyter & \%USERPROFILE\%\Documents\jupyter\_venv\Scripts\activate.bat & jupyter notebook"
