@@ -13,6 +13,9 @@ set encoding=utf-8
 scriptencoding utf-8
 
 " vimrc 全体で使う augroup を初期化
+" thinca の教え
+" 例えば BufEnter でバッファ用 autocmd 仕込むならaugroup がないと多重登録されることになる。同様にあらゆる autocmd は doautocmd により複数回トリガーされる可能性がある。
+" なので私はバッファ用 autocmd にも常に augroup 付けてます。
 augroup vimrc
   autocmd!
 augroup END
@@ -22,9 +25,9 @@ augroup END
 "   TODO: 再読み込みの場合も考慮する（？）
 
 " https://github.com/DeaR/dotfiles/blob/7c021c276903d93e413bf0b4c7b134b1e0c8f946/.vimrc#L1421-L1436
-"   dt:ウィンドウで表示しているバッファで diffthis
 let g:vimrc_altercmd_dic = {
       \   'tagsg[en]': '!ctags -R',
+      "\   ウィンドウに表示しているバッファで diffthis
       \   'dt': 'windo diffthis',
       \}
 
@@ -106,7 +109,7 @@ command! -bang -nargs=0 DeleteMe call vimrc#DeleteMe(<bang>0)
 " 開いているファイルのディレクトリへ移動
 " http://vim-jp.org/vim-users-jp/2009/09/08/Hack-69.html
 command! -nargs=? -complete=dir -bang CD call vimrc#ChangeCurrentDir('<args>', '<bang>')
-nnoremap cd :<C-u>CD<CR>
+nnoremap cd <Cmd>CD<CR>
 
 " diff xdoc2txt
 " xdoc2txt でフィルタリングした結果を diff
@@ -114,7 +117,7 @@ command! -nargs=0 DiffXdoc2txt call vimrc#DiffXdoc2txt()
 
 " カーソル下の単語を vimgrep
 command! -nargs=1 VimGrepCurrent vimgrep <args> %
-nnoremap <expr> <Leader>* ':<C-u>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
+nnoremap <expr> <Leader>* '<Cmd>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
 
 " json processor
 command! -nargs=? Jq call vimrc#Jq(<f-args>)
@@ -131,23 +134,19 @@ call extend(g:vimrc_altercmd_dic, {
       \ 'grepw[rap]': 'GrepWrap'})
 
 " コマンドの結果をスクラッチバッファに表示
-command! -bar ToScratch
-      \ setlocal buftype=nofile bufhidden=delete noswapfile |
-      \ nnoremap <buffer> qq :close<CR>
-command! -nargs=1 -complete=command L
-      \ <mods> new | ToScratch |
-      \ call setline(1, split(execute(<q-args>), '\n'))
-command! MessL :L messages
-command! Map :L map
-command! Nmap :L nmap
-command! Vmap :L vmap
-command! Xmap :L xmap
-command! Smap :L smap
-command! Tmap :L tmap
-command! Omap :L omap
-command! Imap :L imap
-command! Lmap :L lmap
-command! Cmap :L cmap
+command! -nargs=1 -complete=command L call vimrc#L(<q-args>)
+
+command! MessL L messages
+command! Map   L map
+command! Nmap  L nmap
+command! Vmap  L vmap
+command! Xmap  L xmap
+command! Smap  L smap
+command! Tmap  L tmap
+command! Omap  L omap
+command! Imap  L imap
+command! Lmap  L lmap
+command! Cmap  L cmap
 call extend(g:vimrc_altercmd_dic, {
       \   'scriptn[ames]': 'L scriptnames',
       \ })
@@ -278,8 +277,8 @@ set mouse=a mousehide
 
 " 新規ウィンドウは下、右に開く
 set splitbelow splitright
-" ウィンドウ分割時にウィンドウの高さ、幅を変えない
-set noequalalways
+" ウィンドウ分割時にウィンドウの高さ、幅を等幅にする
+set equalalways
 
 " メニュー非表示時に起動高速化
 let g:did_install_default_menus = 1
@@ -307,18 +306,12 @@ autocmd vimrc CmdwinEnter [:\/\?=] setlocal nonumber norelativenumber
 autocmd vimrc CmdwinEnter [:\/\?=] setlocal signcolumn=no
 
 " タブ文字などを表示
-set list listchars=eol:↲,tab:«-»,trail:_,extends:\
+set list listchars=tab:«-»,trail:_,extends:»,precedes:«,nbsp:%
 
 " }}}2 edit {{{2
 
 " バックスペースでインデントや改行を削除できるようにする
 set backspace=indent,eol,start
-
-" +M マルチバイトの連結は空白なし
-" -t 自動折返し止め
-" -c 自動折返して、現在のコメント開始文字列を自動挿入はやめ
-" +j コメントリーダーを除いて連結
-set formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
 
 " ファイル末尾に改行を追加しない
 set nofixendofline
@@ -407,7 +400,7 @@ command! SwapfileRecovery call vimrc#swapfile_recovery()
 command! SwapfileDelete call vimrc#swapfile_delete()
 
 " Improve diff
-set diffopt& diffopt+=algorithm:histogram,indent-heuristic
+set diffopt& diffopt+=algorithm:histogram,indent-heuristic,followwrap
 
 " }}}2
 
@@ -497,6 +490,12 @@ filetype plugin indent on
 
 " }}}1 Filetype {{{1
 
+" +M マルチバイトの連結は空白なし
+" -t 自動折返し止め
+" -c 自動折返して、現在のコメント開始文字列を自動挿入はやめ
+" +j コメントリーダーを除いて連結
+autocmd vimrc FileType * setlocal formatoptions& formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
+
 " バイナリファイルのテキスト化 {{{
 " xlsx などが zip として表示されることを避ける
 " https://vim.fandom.com/wiki/Open_PDF_files?oldid=16226
@@ -520,19 +519,20 @@ autocmd vimrc BufNewFile,BufRead *.js9 set filetype=javascript
 
 " }}}1 Key Mapping {{{1
 
-"---------------------------------------------------------------------------"
-" Commands \ Modes | Normal | Insert | Command | Visual | Select | Operator |
-"------------------|--------|--------|---------|--------|--------|----------|
-" map  / noremap   |    @   |   -    |    -    |   @    |   @    |    @     |
-" nmap / nnoremap  |    @   |   -    |    -    |   -    |   -    |    -     |
-" vmap / vnoremap  |    -   |   -    |    -    |   @    |   @    |    -     |
-" omap / onoremap  |    -   |   -    |    -    |   -    |   -    |    @     |
-" xmap / xnoremap  |    -   |   -    |    -    |   @    |   -    |    -     |
-" smap / snoremap  |    -   |   -    |    -    |   -    |   @    |    -     |
-" map! / noremap!  |    -   |   @    |    @    |   -    |   -    |    -     |
-" imap / inoremap  |    -   |   @    |    -    |   -    |   -    |    -     |
-" cmap / cnoremap  |    -   |   -    |    @    |   -    |   -    |    -     |
-"---------------------------------------------------------------------------"
+"+--------------------------------------------------------------------------------------+
+"| Commands \ Modes | Normal | Insert | Command | Visual | Select | Operator | Lang-Arg |
+"|------------------|--------|--------|---------|--------|--------|----------|----------|
+"| map  / noremap   |   @    |   -    |    -    |   @    |   @    |    @     |    -     |
+"| nmap / nnoremap  |   @    |   -    |    -    |   -    |   -    |    -     |    -     |
+"| map! / noremap!  |   -    |   @    |    @    |   -    |   -    |    -     |    -     |
+"| imap / inoremap  |   -    |   @    |    -    |   -    |   -    |    -     |    -     |
+"| cmap / cnoremap  |   -    |   -    |    @    |   -    |   -    |    -     |    -     |
+"| vmap / vnoremap  |   -    |   -    |    -    |   @    |   @    |    -     |    -     |
+"| xmap / xnoremap  |   -    |   -    |    -    |   @    |   -    |    -     |    -     |
+"| smap / snoremap  |   -    |   -    |    -    |   -    |   @    |    -     |    -     |
+"| omap / onoremap  |   -    |   -    |    -    |   -    |   -    |    @     |    -     |
+"| lmap / lnoremap  |   -    |   @    |    @    |   -    |   -    |    -     |    @     |
+"+--------------------------------------------------------------------------------------+
 
 " Space 単体は何もしない
 nnoremap <Space> <Nop>
@@ -541,8 +541,7 @@ nnoremap <Space> <Nop>
 nnoremap [toggle] <Nop>
 nmap <Leader>t [toggle]
 
-nnoremap <silent> [toggle]w :<C-u>call vimrc#toggle_option('wrap')<CR>
-nnoremap <silent> <C-F3> :<C-u>call vimrc#toggle_option('wrap')<CR>
+nnoremap <silent> [toggle]w <Cmd>call vimrc#toggle_option('wrap')<CR>
 
 " ; と : の入れ替え
 noremap ; :
@@ -564,7 +563,7 @@ xnoremap v <C-v>
 
 " Show cursor info / buffer info in popup
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
-nnoremap <silent> <C-CR> :<C-u>call vimrc#popup_cursor_info()<CR>
+nnoremap <silent> <C-CR> <Cmd>call vimrc#popup_cursor_info()<CR>
 
 " Buffer {{{2
 
@@ -578,7 +577,7 @@ inoremap <script> <SID>(gui-save) <C-o><SID>(gui-save)
 inoremap <silent> <script> <C-s> <SID>(gui-save)<ESC>
 nnoremap <silent> <script> <C-s> <SID>(gui-save)
 nnoremap <silent> <script> <Leader>w <SID>(gui-save)
-nnoremap <SID>(gui-save) :<C-u>call <SID>gui_save()<CR>
+nnoremap <SID>(gui-save) <Cmd>call <SID>gui_save()<CR>
 function! s:gui_save()
   if bufname('%') ==# ''
     browse confirm saveas
@@ -587,28 +586,20 @@ function! s:gui_save()
   endif
 endfunction
 
-" :b でバッファリストを表示
-cnoreabbrev <expr>b getcmdtype()==':' && getcmdline()=~'^b' ? 'ls<CR>:b' : 'b'
-
-noremap <C-n> :<C-u>enew<CR>
+noremap <C-n> <Cmd>enew<CR>
 
 " open vimrc
-noremap <F4> :<C-u>edit $MYVIMRC<CR>
-noremap <S-F4> :<C-u>edit ~/vimfiles/rc/plugins.toml<CR>
+noremap <F4> <Cmd>edit $MYVIMRC<CR>
+noremap <S-F4> <Cmd>edit ~/vimfiles/rc/plugins.toml<CR>
 
 " Open cheatsheet
-nnoremap <Leader>c :split<CR>:edit ~/vimfiles/rc/cheatsheet.rst<CR>
+nnoremap <Leader>c <Cmd>split ~/vimfiles/rc/cheatsheet.rst<CR>
 
 " バッファの切り替え
-nnoremap b :bn<CR>
-nnoremap B :bN<CR>
+nnoremap b <Cmd>bn<CR>
+nnoremap B <Cmd>bN<CR>
 
-" http://stackoverflow.com/questions/15393301/automatically-sort-quickfix-entries-by-line-text-in-vim
-" pt で grep を実行した後に結果をパス順にしたかったので sort
-" QuickFixCmdPost で実行していたけど w:quickfix_title が常に setqflist() になってしまうのでやめ。
-nnoremap <Leader>s :call vimrc#SortQuickfix('vimrc#QfStrCmp')<CR>
-
-nnoremap qt :tabclose<CR>
+nnoremap qt <Cmd>tabclose<CR>
 
 " }}}2 Window {{{2
 
@@ -625,16 +616,16 @@ nnoremap <S-Up>    <C-w>-
 nnoremap <S-Down>  <C-w>+
 
 " ウィンドウを閉じる
-noremap <C-q> :<C-u>close<CR>
+noremap <C-q> <Cmd>close<CR>
 
 " split and go
 " 元ネタ http://daisuzu.hatenablog.com/entry/2012/08/19/235923
-nnoremap <silent> _ :SplitAndGo split<CR>
-nnoremap <silent> <bar> :SplitAndGo vsplit<CR>
+nnoremap <silent> _ <Cmd>SplitAndGo split<CR>
+nnoremap <silent> <bar> <Cmd>SplitAndGo vsplit<CR>
 command! -count=1 -nargs=1 SplitAndGo call vimrc#SplitAndGo(<q-args>)
 
 " http://vim.g.hatena.ne.jp/ka-nacht/20090119/1232347709
-nnoremap <silent> [toggle]q :<C-u>call vimrc#toggle_quickfix_window()<CR>
+nnoremap <silent> [toggle]q <Cmd>call vimrc#toggle_quickfix_window()<CR>
 
 " コマンドラインウィンドウを開く
 " cedit に <M-i> が設定できない？
@@ -681,20 +672,15 @@ onoremap <Leader>l $
 " noremap W B
 
 " タブ間移動
-noremap <C-Tab> :<C-u>tabnext<CR>
-noremap <C-S-Tab> :<C-u>tabprevious<CR>
-
-" cn, cp
-noremap <silent> <F10> :<C-u>call vimrc#listmove('next')<CR>
-noremap <silent> <S-F10> :<C-u>call vimrc#listmove('previous')<CR>
-noremap <silent> <F11> :<C-u>call vimrc#listmove('previous')<CR>
+noremap <C-Tab> <Cmd>tabnext<CR>
+noremap <C-S-Tab> <Cmd>tabprevious<CR>
 
 " http://postd.cc/how-to-boost-your-vim-productivity/
 nnoremap <CR> G
 
-" https://raw.githubusercontent.com/todashuta/.dotfiles/aa1f494c4f223113e619f2551161af2176df1deb/.vimrc#L693
 " insert mode から戻るときにカーソルを移動させない
 " その際 jumplist も更新しない
+" https://raw.githubusercontent.com/todashuta/.dotfiles/aa1f494c4f223113e619f2551161af2176df1deb/.vimrc#L693
 inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
 
 " }}}2 Yank, Paste {{{2
@@ -706,23 +692,18 @@ xnoremap <Leader>d "+d
 " 貼り付け
 noremap! <C-v> <MiddleMouse>
 nnoremap <C-v> "+gP
-
+tnoremap <C-v> <C-w>"*
 " コピー
 BulkMap <noremap> [nx] <Leader>y "+y
 
 " バッファのフルパス
-nnoremap <silent><expr> <Leader>y% ':let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
+nnoremap <silent><expr> <Leader>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
 
 " バッファ全体
-nnoremap <Leader>ye :<C-u>%y+<CR>
+nnoremap <Leader>ye <Cmd>%y+<CR>
 
 " 現在行 (行頭空白、行末空白・改行を除く)
-nnoremap <silent> <Leader>yy :call <SID>Linecopy()<CR>
-function! s:Linecopy() abort
-  let view = winsaveview()
-  normal! 0vg_"+y
-  silent call winrestview(view)
-endfunction
+nnoremap <silent> <Leader>yy <Cmd>call vimrc#linecopy()<CR>
 
 nnoremap <Leader>Y "+y$
 "}}}3
@@ -748,11 +729,11 @@ inoremap <C-BS> <C-u>
 nnoremap <C-BS> d0
 
 " カーソル移動せずに改行挿入
-nnoremap <M-o> :<C-U>call append(line('.'), repeat([''], v:count1))<CR>
-nnoremap <M-O> :<C-U>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <M-o> <Cmd>call append(line('.'), repeat([''], v:count1))<CR>
+nnoremap <M-O> <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
 
 " 日付入力
-inoremap <C-r><C-d> <C-R>=strftime("%Y-%m-%d")<CR>
+inoremap <C-r><C-d> <C-R>=strftime("%F")<CR>
 nmap <F6> <ESC>i<C-r><C-d><ESC>
 imap <F6> <C-r><C-d>
 
@@ -762,14 +743,15 @@ nnoremap <expr> i len(getline('.')) ? 'i' : '"_cc'
 nnoremap <expr> a len(getline('.')) ? 'a' : '"_cc'
 nnoremap <expr> A len(getline('.')) ? 'A' : '"_cc'
 
-" https://www.key-p.com/blog/staff/archives/104879
 " コメント開始文字列を挿入せずに改行
+" https://www.key-p.com/blog/staff/archives/104879
 inoremap <S-CR> <CR><C-u>
 nnoremap <S-CR> o<C-u>
 
 " visual repeat
 " http://vim.wikia.com/wiki/Repeat_command_on_each_line_in_visual_block
-vnoremap . :normal .<CR>
+" Can't use <Cmd>
+xnoremap . :normal .<CR>
 
 " Visual 選択状態でインデント後も選択状態のままにする
 " https://twitter.com/mattn_jp/status/1202603537521401856
@@ -785,29 +767,38 @@ let @r = ';%s/[^\\]\+\.\([^\\]\+$\)/00001.\1/gg2nvveGg'
 " http://qiita.com/itmammoth/items/312246b4b7688875d023
 nnoremap <Leader># "zyiw:%s/\<<C-R>z\>/<C-R>z/gc<left><left>
 " xnoremap <Leader># "zy:%s/\V<C-R>z/<C-R>z/g<left><left>
-xnoremap <Leader># :call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
+xnoremap <Leader># <Cmd>call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
 function! s:set_vsearch()
   silent normal! gv"zy
   let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
 endfunction
 
-" https://github.com/wass88/dotfiles/blob/62ad8bca0a494c45294164fb9df27ee440b23e87/.vimrc#L737-L738
 " one char insert
+" https://github.com/wass88/dotfiles/blob/62ad8bca0a494c45294164fb9df27ee440b23e87/.vimrc#L737-L738
 nnoremap <space>i i_<ESC>r
 
 " }}}2 Search {{{2
 
 " clear hlsearch
-nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
+nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR>
 
 " incsearch 中に前後の候補へカーソル移動
 cnoremap <C-j> <C-g>
 cnoremap <C-k> <C-t>
 
 " 現在のバッファから grep
-nnoremap <Leader>gr :<C-u>vimgrep // %<Left><Left><Left>
+nnoremap <Leader>/ :vimgrep // %<Left><Left><Left>
 
 " }}}2
+
+" https://vim-jp.slack.com/archives/C03C4RC9F/p1611390583218000
+onoremap u t_
+onoremap U <Cmd>call <SID>numSearchLine('[A-Z]', v:count1, '')<CR>
+function! s:numSearchLine(ptn, num, opt)
+  for i in range(a:num)
+    call search(a:ptn, a:opt, line('.'))
+  endfor
+endfunction
 
 " }}}1 Git {{{1
 call extend(g:vimrc_altercmd_dic, {'git': '!git'})
@@ -815,40 +806,54 @@ call extend(g:vimrc_altercmd_dic, {'git': '!git'})
 " Suppress git add -p message
 let $LANG = 'ja_JP.UTF-8'
 
-nnoremap <silent> <Leader>gl :!git gl -100<CR>
-nnoremap <silent> <Leader>gd :!git diff<CR>
-nnoremap <silent> <Leader>gs :!git status<CR>
+nnoremap <silent> <Leader>gl <Cmd>!git gl -100<CR>
+nnoremap <silent> <Leader>gd <Cmd>!git diff<CR>
+nnoremap <silent> <Leader>gs <Cmd>!git status<CR>
 " nnoremap <silent> <Leader>gbb :!git branch<CR>
-nnoremap <Leader>gbb :call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
+nnoremap <Leader>gbb <Cmd>call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
 nnoremap <Leader>gp :!git push origin master
 
 " コミット対象の hunk を選択する場合: ga -> gc
 " コミットメッセージに詳細を書く場合: gu -> gc
-nnoremap <silent> <Leader>ga :call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
-nnoremap <silent> <Leader>gu :silent !git add -u<CR>
-nnoremap <silent> <Leader>gc :!git commit -v<CR>
+nnoremap <silent> <Leader>gad <Cmd>call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
+nnoremap <silent> <Leader>gu <Cmd>silent !git add -u<CR>
+nnoremap <silent> <Leader>gc <Cmd>!git commit -v<CR>
+nnoremap <silent> <Leader>gam <Cmd>!git commit --amend<CR>
 " 単純なコミットメッセージの場合: gn
 nnoremap <Leader>gn :!git commit -a -m ""<Left>
 
 " 直前のコミットを master にする場合: gbr -> g-
 " rename current branch
-nnoremap <Leader>gbr :!git branch -m<Space>
+nnoremap <Leader>gbr :!git branch -m temp
 " switch new branch (default: master) from last commit (default: master)
 nnoremap <Leader>g- :!git switch -c master HEAD~<Left><Left><Left><Left><Left><Left>
+" restore temp branch
+nnoremap <Leader>gr :!git restore -s temp .
+" delete branch
+nnoremap <Leader>gbd :!git branch -d temp
 
 
 " }}}1 Terminal {{{1
-if has('terminal')
-  " すでに :terminal が存在していればその :terminal を使用する
-  " http://secret-garden.hatenablog.com/entry/2017/11/14/113127
-  " FIXME: ウィンドウが開いていれば、そこにフォーカスしたい
-  command! -nargs=* Terminal call vimrc#terminal_open(<q-args>)
-  call extend(g:vimrc_altercmd_dic, {'ter[minal]': 'Terminal'})
+" すでに :terminal が存在していればその :terminal を使用する
+" http://secret-garden.hatenablog.com/entry/2017/11/14/113127
+" FIXME: ウィンドウが開いていれば、そこにフォーカスしたい
+" floaterm でいらなくなるかな？
+command! -nargs=* Terminal call vimrc#terminal_open(<q-args>)
+call extend(g:vimrc_altercmd_dic, {'ter[minal]': 'Terminal'})
 
-  " 端末ウィンドウを複製する
-  " http://tyru.hatenablog.com/entry/2018/09/23/021423
-  tnoremap <C-w>y <C-w>:<C-u>call vimrc#dup_term_buf()<CR>
-endif
+" 端末ウィンドウを複製する
+" http://tyru.hatenablog.com/entry/2018/09/23/021423
+tnoremap <C-w>y <C-w>:call vimrc#dup_term_buf()<CR>
+
+tnoremap <C-p> <Up>
+tnoremap <C-n> <Down>
+tnoremap <C-f> <Right>
+tnoremap <C-b> <Left>
+tnoremap <C-a> <Home>
+tnoremap <C-e> <End>
+
+tnoremap <C-d> <Delete>
+tnoremap <C-h> <BS>
 
 " }}}1 GUI {{{1
 if has('gui_running')
@@ -875,13 +880,11 @@ if has('gui_running')
 
   " Make <M-Space> same as ordinal applications on MS Windows
   " https://github.com/tyru/config/blob/3e16b655e3dea14d55c4fbc6f41ec314e3480c5c/home/volt/rc/default/vimrc.vim#L581
-  nnoremap <M-Space> :<C-u>simalt ~<CR>
+  nnoremap <M-Space> <Cmd>simalt ~<CR>
 
   " colorscheme {{{
   " https://github.com/vim-jp/reading-vimrc/wiki/vimrcアンチパターン
   function! DefineMyHighlights()
-    highlight StatusLine guifg=#e996aa guibg=#132132
-
     " IME の有効無効でカーソルの色を変更する。
     if has('multi_byte_ime')
       highlight CursorIM guifg=NONE guibg=Green gui=NONE

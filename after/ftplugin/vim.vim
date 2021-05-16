@@ -4,5 +4,3 @@ scriptencoding utf-8
 " iW などでいいかも？　と思ったけど、func(g:hoge とかは先頭まで対象になるから駄目だ。
 setlocal iskeyword+=58
 
-setlocal formatoptions& formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
-

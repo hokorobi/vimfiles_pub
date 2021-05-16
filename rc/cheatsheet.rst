@@ -40,6 +40,7 @@ Edit
 * `gs`                      : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動、s, S: ソート昇順、降順、r: 反転、g, G: グループ化、解除) に入る。. で繰り返し可能 feat. swap
 * `g>`                      : 要素を右に移動 feat. swap
 * `g<`                      : 要素を左に移動 feat. swap
+* `gss<ESC>`                : (v) 選択範囲をソート。ノーマルモードなら一行全体。 feat. swap
 * `g<C-a>`                  : (v) 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
 * `cxiw`                    : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
 * `cxc`                     : 入れ替え候補のキャンセル feat. vim-exchange
@@ -59,6 +60,22 @@ Edit
 * `:argsadd {argument}`            : 処理対象を追加したい場合。{argument} に追加対象を指定。
 * `:argdo %s/hoge/fuga/g | update` : args で指定した対象に対して置換、保存が実行される
 * `:vim foo ##`                    : args で指定した対象に対して foo を実行する。## が {argument} に置換される
+
+対象の文字列を含むファイルを全置換する
+--------------------------------------
+
+参考: `編集を加速するVimのquickfix機能 - daisuzu's notes <https://daisuzu.hatenablog.com/entry/2020/12/03/003629>`_
+
+1. `:enew`: 新しいバッファを開く
+2. `:r !pt -l hogefuga .`: バッファに hogefuga を含むファイルのファイル名を一覧表示
+3. 各行の末尾に :1:a を追加。quickfix でファイルを開けるようにするため
+4. `:cbuffer` バッファの内容を quickfix に読み込み
+5. `<Space>Qa`: @a へマクロの記録開始
+5. `:%s/hogefuga/fugafuga/g`: 置換
+6. `:w`: 保存
+7. `:cnext`: 次のバッファを表示
+8. `<Space>Q`: マクロの保存
+9. `100@a`: ファイルの数だけマクロを繰り返し実行
 
 . で連続して置換
 -----------------
@@ -186,6 +203,7 @@ fold
 * `zv`        : カーソル位置の折りたたみをすべて開く
 * `zf`        : 折りたたみを作成する
 * `:set nofen`: 折り畳みの無効化。statusline で fold が有効になっていると意図しないタイミングで折りたたまれることがあるので無効にする。
+* `C-q`       : (i) ターミナルコードの入力
 
 
 file
@@ -298,20 +316,21 @@ LSP
 
 Git
 ========
-* `<Leader>gl`  : gl<CR>
-* `<Leader>gL`  : :Gina log --graph -100<CR> feat. gina.vim
-* `<Leader>gd`  : diff<CR>
-* `<Leader>gs`  : status<CR>
-* `<Leader>gS`  : Gina status -S. feat. gina.vim
+
+* `<Leader>gl`  : graph log
+* `<Leader>gL`  : graph log 100 line in Gina. feat. gina.vim
+* `<Leader>gd`  : diff
+* `<Leader>gs`  : status
+* `<Leader>gS`  : status in Gina. feat. gina.vim
 * `<Leader>gg`  : log -p -G"|"
-* `<Leader>ga`  : add -p<CR> in popup window
-* `<Leader>gu`  : add -u<CR>
-* `<Leader>gc`  : commit -v<CR>
+* `<Leader>ga`  : add -p in popup window
+* `<Leader>gu`  : add all tracking files
+* `<Leader>gc`  : commit -v
 * `<Leader>gm`  : Show the history of commits under the cursor. feat. git-messenger.vim
 * `<Leader>gn`  : commit -a -m "|"
 * `<Leader>gbb` : Show branches
 * `<Leader>gbr` : Rename current branch
-* `<Leader>gbl` : Gina blame. feat. gina.vim
+* `<Leader>gbl` : blame in Gina. feat. gina.vim
 * `<Leader>g-`  : Switch last commit and new branch name
 
 gina.vim
@@ -326,7 +345,7 @@ gina.vim
 
 #. :Gina blame を起動して、Enter と BS で対象のコミットを表示
 #. :Gina show でコミットの説明を参照。これをすぐに忘れるので書いておく。
-#. :Gina blame で表示されるタブは :tabclose を実行したり C-q を二回押したりして閉じる。
+#. :Gina blame で表示されるタブは :tabclose を実行したり C-q を2回押したりして閉じる。
 
 command
 -------
@@ -339,8 +358,18 @@ command
 * `git restore --staged filename`: Unstage filename. Unstage everything is ".".
 * `git pull https://github.com/{upstream/project} refs/pull/{id}/head`: フォーク元のマージされていないプルリクをマージする。
   via https://stackoverflow.com/questions/55108304/how-to-merge-a-pull-request-or-commit-from-a-different-repository-using-git
+* `git fetch origin refs/pull/head:BRANCHNAME`: マージされていないプルリクを試す。
 * `git log -G"hoge" -p`: 履歴の差分から hoge を検索する。 --pickaxe-all も指定すると、検索されたコミットで変更のあったファイルすべてを表示する。
 * `git submodule update --remote` : 配下の submodule を更新
+
+Vim で commit のやりなおし
+--------------------------
+
+* `<Leader>gbr (git branch -m temp)`: 現在のブランチ名を temp へ変更。
+* `<Leader>g- (git switch -c master HEAD~)`: 一つ前のコミットのブランチ名を master にする。
+* `<Leader>gr (git restore -s temp .)`: すべてのファイルを temp ブランチの内容に変更。ステージングはされていない状態。
+* コミットやり直し。
+* `<Leader>gbd (git branch -D temp)`: temp ブランチ削除
 
 git stash
 ----------
@@ -413,19 +442,32 @@ powershell
 
 set verbose=3 するとsourceしてるものが出る
 
-対象の文字列を含むファイルを全置換する
---------------------------------------
+デバッグプリント
+----------------
 
-参考: `編集を加速するVimのquickfix機能 - daisuzu's notes <https://daisuzu.hatenablog.com/entry/2020/12/03/003629>`_
+* `:L PP dict`: 整形して表示してくれる。
+* `:L verbose PP dict`: 辞書関数の中身も見られる。
+* `:echom string(dict)` : echom に副作用があるらしい。知らんけど。
+* `:put=string(dict)` : バッファに出力。
+* `:let g:x=dict` : からの `:breakadd expr g:x` ？　よくわからん。
 
-1. `:enew`: 新しいバッファを開く
-2. `:r !pt -l hogefuga .`: バッファに hogefuga を含むファイルのファイル名を一覧表示
-3. 各行の末尾に :1:a を追加。quickfix でファイルを開けるようにするため
-4. `:cbuffer` バッファの内容を quickfix に読み込み
-5. `<Space>Qa`: @a へマクロの記録開始
-5. `:%s/hogefuga/fugafuga/g`: 置換
-6. `:w`: 保存
-7. `:cnext`: 次のバッファを表示
-8. `<Space>Q`: マクロの保存
-9. `100@a`: ファイルの数だけマクロを繰り返し実行
+デバッグログ
+------------
+
+`vim -V9log.log`: log.log に色々表示。
+
+ImageMagick で画像の切り抜き
+============================
+
+切り抜き。高さだけ 100% などは使えない。::
+
+    convert -crop 切り抜く幅x高さ+開始X+開始Y input.jpg output.jpg
+
+crop フォルダへ一括書き出し::
+
+    mogrify -path crop -crop 切り抜く幅x高さ+開始X+開始Y *.jpg
+
+output-0.jpg, output-1.jpg へ横分割::
+
+    convert -crop 50%x100% input.jpg output.jpg
 
