@@ -4,7 +4,6 @@ repo = 'Shougo/dein.vim'
 
 [[plugins]]
 repo = 'hokorobi/vim-templug'
-frozen = 1
 on_cmd = 'Templug'
 hook_add = '''
   set packpath& packpath+=~/_vim
@@ -1417,27 +1416,6 @@ hook_source = '''
   let g:sayonara_filetypes.agit_stat = 'tabclose'
   let g:sayonara_filetypes.agit_diff = 'tabclose'
 '''
-
-# GitHub {{{2
-
-[[plugins]]
-repo = 'lambdalisue/vim-gista'
-on_cmd = 'Gista'
-on_map = '<Plug>'
-depends = 'open-browser.vim'
-hook_add = '''
-  let g:gista#client#default_username = 'hokorobi'
-  let g:gista#client#cache_dir = '~/_vim/vim-gista'
-
-  call extend(g:vimrc_altercmd_dic, {'gis[ta]': 'Gista'})
-'''
-
-[[plugins]]
-repo = 'skanehira/gh.vim'
-hook_add = '''
-  let g:gh_token = g:github_token
-'''
-# }}}2
 
 # }}}1  Utility {{{1
 [[plugins]]
