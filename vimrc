@@ -77,7 +77,8 @@ command! -nargs=* BulkMap call s:cmd_map(<q-args>)
 function! s:cmd_map(args) abort
   let m = matchlist(a:args, '^\(.*\)\[\([nvxsoiclt]\+\)\]\(.*\)$')
   if empty(m)
-    throw 'BulkMap: invalid arguments: ' . a:args
+    echohl Error | echom printf('BulkMap: invalid arguments: %s', a:args) | echohl None
+    return
   endif
   let [l, modes, r] = m[1:3]
   let l = substitute(l, '<noremap>', '', 'g')
@@ -415,20 +416,19 @@ endif
 
 " デフォルトプラグインの停止 {{{2
 " http://lambdalisue.hatenablog.com/entry/2015/12/25/000046
-let g:loaded_gzip            = 1
-let g:loaded_tar             = 1
-let g:loaded_tarPlugin       = 1
-let g:loaded_zip             = 1
-let g:loaded_zipPlugin       = 1
-let g:loaded_rrhelper        = 1
-let g:loaded_2html_plugin    = 1
-let g:loaded_vimball         = 1
-let g:loaded_vimballPlugin   = 1
-let g:loaded_getscript       = 1
-let g:loaded_getscriptPlugin = 1
-let g:loaded_logipat         = 1
+let g:loaded_2html_plugin     = 1
+let g:loaded_getscriptPlugin  = 1
+let g:loaded_gzip             = 1
+let g:loaded_logiPat          = 1
+let g:loaded_rrhelper         = 1
+let g:loaded_spellfile_plugin = 1
+let g:loaded_tar              = 1
+let g:loaded_tarPlugin        = 1
+let g:loaded_vimball          = 1
+let g:loaded_vimballPlugin    = 1
+let g:loaded_zip              = 1
+let g:loaded_zipPlugin        = 1
 " use matchup
-let g:loaded_matchparen = 1
 let g:loaded_matchit = 1
 
 let g:skip_defaults_vim = 1
@@ -469,9 +469,12 @@ let s:dein_home = expand('~/_vim/dein')
 let g:dein#install_github_api_token = g:github_token
 execute 'set runtimepath& runtimepath+=' .. s:dein_home .. '/repos/github.com/Shougo/dein.vim'
 
-if dein#load_state(s:dein_home)
+if dein#min#load_state(s:dein_home)
   call dein#begin(s:dein_home)
-  call dein#load_toml(expand('~/vimfiles/rc/plugins.toml'))
+  call dein#load_toml('~/vimfiles/rc/plugins.toml')
+  " call dein#load_toml('~/vimfiles/rc/asyncomplete.toml')
+  call dein#load_toml('~/vimfiles/rc/ddc.toml', {'lazy' : 1})
+  call dein#load_toml('~/vimfiles/rc/deinft.toml')
   call dein#end()
   call dein#save_state()
 endif
@@ -490,19 +493,10 @@ filetype plugin indent on
 
 " }}}1 Filetype {{{1
 
-" +M マルチバイトの連結は空白なし
-" -t 自動折返し止め
-" -c 自動折返して、現在のコメント開始文字列を自動挿入はやめ
-" +j コメントリーダーを除いて連結
-autocmd vimrc FileType * setlocal formatoptions& formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
-
 " バイナリファイルのテキスト化 {{{
 " xlsx などが zip として表示されることを避ける
 " https://vim.fandom.com/wiki/Open_PDF_files?oldid=16226
 autocmd vimrc BufReadPost *.{doc,docx,pdf,ppt,pptx,xls,xlsx} setlocal readonly buftype=nofile noswapfile
-
-" デフォルトプラグインの停止で設定済みになっているのでここでは不要
-" let g:loaded_zipPlugin= 1
 
 autocmd vimrc BufReadPost *.{doc,docx,ppt,pptx,xls,xlsx} %!xdoc2txt "%"
 
@@ -541,7 +535,7 @@ nnoremap <Space> <Nop>
 nnoremap [toggle] <Nop>
 nmap <Leader>t [toggle]
 
-nnoremap <silent> [toggle]w <Cmd>call vimrc#toggle_option('wrap')<CR>
+nnoremap [toggle]w <Cmd>call vimrc#toggle_option('wrap')<CR>
 
 " ; と : の入れ替え
 noremap ; :
@@ -563,7 +557,7 @@ xnoremap v <C-v>
 
 " Show cursor info / buffer info in popup
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
-nnoremap <silent> <C-CR> <Cmd>call vimrc#popup_cursor_info()<CR>
+nnoremap <C-CR> <Cmd>call vimrc#popup_cursor_info()<CR>
 
 " Buffer {{{2
 
@@ -620,12 +614,12 @@ noremap <C-q> <Cmd>close<CR>
 
 " split and go
 " 元ネタ http://daisuzu.hatenablog.com/entry/2012/08/19/235923
-nnoremap <silent> _ <Cmd>SplitAndGo split<CR>
-nnoremap <silent> <bar> <Cmd>SplitAndGo vsplit<CR>
+nnoremap _ <Cmd>SplitAndGo split<CR>
+nnoremap <bar> <Cmd>SplitAndGo vsplit<CR>
 command! -count=1 -nargs=1 SplitAndGo call vimrc#SplitAndGo(<q-args>)
 
 " http://vim.g.hatena.ne.jp/ka-nacht/20090119/1232347709
-nnoremap <silent> [toggle]q <Cmd>call vimrc#toggle_quickfix_window()<CR>
+nnoremap [toggle]q <Cmd>call vimrc#toggle_quickfix_window()<CR>
 
 " コマンドラインウィンドウを開く
 " cedit に <M-i> が設定できない？
@@ -697,13 +691,13 @@ tnoremap <C-v> <C-w>"*
 BulkMap <noremap> [nx] <Leader>y "+y
 
 " バッファのフルパス
-nnoremap <silent><expr> <Leader>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
+nnoremap <expr> <Leader>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
 
 " バッファ全体
 nnoremap <Leader>ye <Cmd>%y+<CR>
 
 " 現在行 (行頭空白、行末空白・改行を除く)
-nnoremap <silent> <Leader>yy <Cmd>call vimrc#linecopy()<CR>
+nnoremap <Leader>yy <Cmd>call vimrc#linecopy()<CR>
 
 nnoremap <Leader>Y "+y$
 "}}}3
@@ -727,6 +721,10 @@ snoremap <C-l> a<BS>
 " 行頭まで削除
 inoremap <C-BS> <C-u>
 nnoremap <C-BS> d0
+
+" 行末まで削除
+inoremap <C-k> <C-o>D
+cnoremap <C-k> <C-\>e getcmdpos() == 1 ? '' : getcmdline()[:getcmdpos() - 2]<CR>
 
 " カーソル移動せずに改行挿入
 nnoremap <M-o> <Cmd>call append(line('.'), repeat([''], v:count1))<CR>
@@ -780,7 +778,7 @@ nnoremap <space>i i_<ESC>r
 " }}}2 Search {{{2
 
 " clear hlsearch
-nnoremap <silent> <Esc><Esc> <Cmd>nohlsearch<CR>
+nnoremap <Esc><Esc> <Cmd>nohlsearch<CR>
 
 " incsearch 中に前後の候補へカーソル移動
 cnoremap <C-j> <C-g>
@@ -806,19 +804,20 @@ call extend(g:vimrc_altercmd_dic, {'git': '!git'})
 " Suppress git add -p message
 let $LANG = 'ja_JP.UTF-8'
 
-nnoremap <silent> <Leader>gl <Cmd>!git gl -100<CR>
-nnoremap <silent> <Leader>gd <Cmd>!git diff<CR>
-nnoremap <silent> <Leader>gs <Cmd>!git status<CR>
+nnoremap <Leader>gl <Cmd>!git gl -100<CR>
+nnoremap <Leader>gd <Cmd>!git diff<CR>
+nnoremap <Leader>gs <Cmd>!git status<CR>
 " nnoremap <silent> <Leader>gbb :!git branch<CR>
 nnoremap <Leader>gbb <Cmd>call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
-nnoremap <Leader>gp :!git push origin master
+" @ は現在ブランチの最新コミット
+nnoremap <Leader>gp :!git push origin @
 
 " コミット対象の hunk を選択する場合: ga -> gc
 " コミットメッセージに詳細を書く場合: gu -> gc
-nnoremap <silent> <Leader>gad <Cmd>call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
-nnoremap <silent> <Leader>gu <Cmd>silent !git add -u<CR>
-nnoremap <silent> <Leader>gc <Cmd>!git commit -v<CR>
-nnoremap <silent> <Leader>gam <Cmd>!git commit --amend<CR>
+nnoremap <Leader>gad <Cmd>call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
+nnoremap <Leader>gu <Cmd>silent !git add -u<CR>
+nnoremap <Leader>gc <Cmd>!git commit -v<CR>
+nnoremap <Leader>gam <Cmd>!git commit --amend<CR>
 " 単純なコミットメッセージの場合: gn
 nnoremap <Leader>gn :!git commit -a -m ""<Left>
 
@@ -842,8 +841,8 @@ command! -nargs=* Terminal call vimrc#terminal_open(<q-args>)
 call extend(g:vimrc_altercmd_dic, {'ter[minal]': 'Terminal'})
 
 " 端末ウィンドウを複製する
-" http://tyru.hatenablog.com/entry/2018/09/23/021423
-tnoremap <C-w>y <C-w>:call vimrc#dup_term_buf()<CR>
+" https://vim-jp.org/slacklog/CJMV3MSLR/2021/05/#ts-1621213606.468200
+command! -nargs=0 TermView :call vimrc#term_view()<CR>
 
 tnoremap <C-p> <Up>
 tnoremap <C-n> <Down>

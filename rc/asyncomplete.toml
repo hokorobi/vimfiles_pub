@@ -1,0 +1,101 @@
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete.vim'
+on_ft = ['autohotkey', 'cfg', 'git', 'go', 'javascript', 'plantuml', 'python', 'rst', 'snippet', 'toml', 'vim', 'vb', 'xsl']
+hook_add = '''
+  " let g:asyncomplete_log_file = expand('~/_vim/.asyncomplete/asyncomplete.log')
+
+  " デフォルトでは asyncomplete を有効にしない
+  let g:asyncomplete_enable_for_all = 0
+  " completeopt は自分の設定を優先する。
+  let g:asyncomplete_auto_completeopt = 0
+
+  let g:asyncomplete_min_chars = 2
+
+  " ポップアップが表示され過ぎるのを避ける
+  let g:asyncomplete_popup_delay = 200
+
+  autocmd vimrc FileType autohotkey,cfg,git,go,javascript,plantuml,python,rst,snippet,toml,vim,vb,xsl call asyncomplete#enable_for_buffer()
+'''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_event = ['InsertEnter']
+hook_add = '''
+  " Expand or jump
+  BulkMap [is] <expr> <C-k> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<C-k>'
+
+  " Jump forward or backward
+  BulkMap [is] <expr> <Tab>   vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' : '<Tab>'
+  BulkMap [is] <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
+
+  let g:vsnip_snippet_dir = expand('~/vimfiles/vsnip')
+'''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+on_event = ['InsertEnter']
+depends = ['asyncomplete.vim', 'vim-vsnip']
+
+[[plugins]]
+repo = 'hokorobi/asyncomplete-buffer.vim'
+# rev = 'suppress-suggest-behind-japanese'
+depends = ['asyncomplete.vim']
+frozen = 1
+on_ft = ['autohotkey', 'cfg', 'git', 'javascript', 'plantuml', 'rst', 'snippet', 'toml', 'vb', 'vim', 'xsl']
+hook_source = '''
+  let g:asyncomplete_buffer_match_pattern = '\k\+$'
+
+  autocmd vimrc User asyncomplete_setup call
+    \ asyncomplete#register_source(
+    \   asyncomplete#sources#buffer#get_source_options({
+    \     'name': 'buffer',
+    \     'priority': 5,
+    \     'allowlist': ['*'],
+    \     'blocklist': ['go', 'python'],
+    \     'completor': function('asyncomplete#sources#buffer#completor'),
+    \   }))
+'''
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-necosyntax.vim'
+on_ft = ['autohotkey', 'javascript', 'plantuml', 'vb', 'vim']
+depends = ['asyncomplete.vim', 'neco-syntax']
+hook_source = '''
+  autocmd vimrc User asyncomplete_setup call
+      \ asyncomplete#register_source(
+      \   asyncomplete#sources#necosyntax#get_source_options({
+      \     'name': 'necosyntax',
+      \     'priority': 7,
+      \     'allowlist': ['autohotkey', 'javascript', 'plantuml', 'vb', 'vim'],
+      \     'completor': function('asyncomplete#sources#necosyntax#completor'),
+      \   }))
+'''
+
+[[plugins]]
+repo = 'Shougo/neco-syntax'
+lazy = 1
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-necovim.vim'
+on_ft = ['vim']
+depends = ['asyncomplete.vim', 'neco-vim']
+hook_source = '''
+  autocmd vimrc User asyncomplete_setup call
+      \ asyncomplete#register_source(
+      \   asyncomplete#sources#necovim#get_source_options({
+      \     'name': 'necovim',
+      \     'allowlist': ['vim'],
+      \     'priority': 10,
+      \     'completor': function('asyncomplete#sources#necovim#completor'),
+      \   }))
+'''
+
+[[plugins]]
+repo = 'Shougo/neco-vim'
+lazy = 1
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+on_ft = ['python', 'go']
+depends = ['asyncomplete.vim', 'vim-lsp']
+
