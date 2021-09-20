@@ -249,12 +249,11 @@ function! vimrc#terminal_open(args) abort
 endfunction
 
 " 端末ウィンドウを複製する
-function! vimrc#dup_term_buf() abort
-  let file = tempname()
-  call term_dumpwrite('', file)
-  call term_dumpload(file)
-  setlocal nolist
-  call delete(file)
+" https://vim-jp.org/slacklog/CJMV3MSLR/2021/05/#ts-1621213606.468200
+function! vimrc#term_view() abort
+  let n = input('Term Num: ', '0')
+  new
+  put=getbufline(term_list()[n],1,'$')
 endfunction
 
 " 現在行を yank (行頭空白、行末空白・改行を除く)

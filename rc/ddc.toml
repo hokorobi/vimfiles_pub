@@ -1,0 +1,89 @@
+[[plugins]]
+repo = 'Shougo/ddc.vim'
+depends = 'denops.vim'
+on_event = 'InsertEnter'
+hook_source = '''
+  call ddc#custom#patch_global('sourceOptions', {
+      \ '_': {
+      \   'matchers': ['matcher_fuzzy'],
+      \   'ignoreCase': v:true,
+      \ },
+      \ 'buffer': {'mark': 'B'},
+      \ 'ddc-vim-lsp': {'mark': 'L'},
+      \ 'file': {
+      \   'mark': 'F',
+      \   'isVolatile': v:true,
+      \   'forceCompletionPattern': '\S/\S*',
+      \ },
+      \ 'necovim': {'mark': 'V'},
+      \ 'vsnip': {
+      \   'mark': 'S',
+      \   'dup': v:true,
+      \ },
+      \ })
+  call ddc#custom#patch_filetype(
+      \ ['rst'], 'sources', ['buffer', 'around', 'file', 'vsnip'])
+  call ddc#custom#patch_filetype(
+      \ ['go', 'python'], 'sources', ['ddc-vim-lsp', 'file', 'vsnip'])
+  call ddc#custom#patch_filetype(
+      \ ['vim', 'toml'], 'sources', ['necovim', 'buffer', 'around', 'file', 'vsnip'])
+  call ddc#custom#patch_filetype(
+      \ ['autohotkey', 'cfg', 'git', 'javascript', 'markdown', 'plantuml', 'snippet', 'vb', 'xsl'], 'sources', ['buffer', 'around', 'file'])
+  call ddc#enable()
+'''
+
+[[plugins]]
+repo = 'vim-denops/denops.vim'
+hook_add = '''
+  let $path .= ';' .. '~/.deno/bin'
+  " let g:denops#debug = v:true
+  " let g:denops#trace = v:true
+'''
+
+[[plugins]]
+repo = 'matsui54/ddc-matcher_fuzzy'
+on_source = 'ddc.vim'
+
+# [[plugins]]
+# repo = 'Shougo/ddc-matcher_head'
+# on_source = 'ddc.vim'
+
+# [[plugins]]
+# repo = 'Shougo/ddc-sorter_rank'
+# on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/neco-vim'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-around'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'matsui54/ddc-buffer'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'LumaKernel/ddc-file'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'shun/ddc-vim-lsp'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+lazy = 1
+hook_add = '''
+  BulkMap [is] <expr> <Tab>   vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' : '<Tab>'
+  BulkMap [is] <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
+
+  let g:vsnip_snippet_dir = expand('~/vimfiles/vsnip')
+'''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+depends = 'vim-vsnip'
+on_source = 'ddc.vim'
+

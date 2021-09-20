@@ -82,12 +82,6 @@ for c in [',']
         \   'char' : '<BS>',
         \   'input': '<BS><BS>',
         \})
-  " [Volt] '(filetype|excmd)= の後ろなら空白なし
-  call lexima#add_rule({
-        \   'at'   : '''\(filetype\|excmd\)=.*\%#',
-        \   'char' : c,
-        \   'filetype' : 'vim'
-        \})
 endfor
 
 " 末尾に空白があれば改行でなく削除
@@ -160,6 +154,13 @@ call lexima#add_rule({
 " set 系コマンドでは = の間にスペースを入れない
 call lexima#add_rule({
       \   'at'      : '\%(^\||\|\\\)\s*set.*\%#',
+      \   'char'    : '=',
+      \   'filetype': 'vim',
+      \})
+
+" command -nargs の後ろの = はスペースなし
+call lexima#add_rule({
+      \   'at'      : '-nargs\%#',
       \   'char'    : '=',
       \   'filetype': 'vim',
       \})

@@ -1,5 +1,8 @@
+Vim
+===
+
 Movement
-========
+--------
 
 * `[z` `]z`    : 現在の折りたたみの先頭/末尾へ移動
 * `zj` `zk`    : 次/前の折りたたみの先頭/末尾へ移動。feat. submode 連続して j, k 入力で次、前へ移動
@@ -14,14 +17,14 @@ Movement
 
 
 Select
-=======
+-------
 
 * `gv` : 最後に使用したのと同じ範囲を選択してのビジュアルモードを開始する
 * `gp` : 最後に paste したのと同じ範囲を選択してのビジュアルモードを開始する
 
 
 Edit
-====
+----
 
 * `F6`                      : (ni) 日付の入力
 * `~`                       : 大文字小文字入れ替え
@@ -54,7 +57,7 @@ Edit
 * `dNib`                    : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
 
 複数ファイルに対する処理
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 * `:args {argument}`               : {argument} で処理対象のファイルリストを指定。{argument} は `./*.html` とか。
 * `:argsadd {argument}`            : 処理対象を追加したい場合。{argument} に追加対象を指定。
@@ -62,7 +65,7 @@ Edit
 * `:vim foo ##`                    : args で指定した対象に対して foo を実行する。## が {argument} に置換される
 
 対象の文字列を含むファイルを全置換する
---------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 参考: `編集を加速するVimのquickfix機能 - daisuzu's notes <https://daisuzu.hatenablog.com/entry/2020/12/03/003629>`_
 
@@ -78,23 +81,15 @@ Edit
 9. `100@a`: ファイルの数だけマクロを繰り返し実行
 
 . で連続して置換
------------------
+~~~~~~~~~~~~~~~~~
 
 1. / で検索
 2. cgn で次の合致文字列を変更
 3. . で次の合致文字列を同様に置換
 
-複数の単語に同様の変更を加える
--------------------------------
-
-単語を <p></p> で囲む場合。
-
-1. 最初の単語で cw<p><C-R><C-P>"</p><ESC> （<C-R><C-P>" でなく <C-R>" では駄目）
-2. 次の単語で .
-
 
 Easy Align
-----------
+~~~~~~~~~~
 
 * `<Space>`    : Around 1st whitespaces
 * `2<Space>`   : Around 2nd whitespaces
@@ -112,7 +107,7 @@ Easy Align
 
 
 Surround (feat. sandwich)
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * `sa{Text Object}"`: Text Object を " で括る
 * `sa"`             : (v) 選択範囲を " で括る
@@ -132,7 +127,7 @@ Surround (feat. sandwich)
 
 
 vim-emmet
----------
+~~~~~~~~~
 
 * `<c-y>d` / `<c-y>D` : (ni) 外側/内側 のタグの範囲を選択
 * `<c-y>n` / `<c-y>N` : (ni) 次/前 の入力ポイントに移動
@@ -194,7 +189,7 @@ vim-emmet
 
 
 fold
-====
+----
 
 * `zc` / `zo` : 現在の折りたたみを閉じる/開く
 * `zC` / `zO` : 現在の折りたたみをすべて閉じる/すべて開く
@@ -207,14 +202,14 @@ fold
 
 
 file
-====
+----
 
 * `:DeleteMe`   : カレントファイル削除
 * `:PrevimOpen` : markdown のプレビュー feat. previm
 
 
 grep
-====
+----
 
 * `<Space>*`                        : カーソルの単語をファイル内から検索指定 Quickfix へ表示
 * `:vim /{pattern}/ %`              : カレントバッファを
@@ -225,7 +220,7 @@ grep
 
 
 help
-====
+----
 
 `:help CTRL-]`             : (ノーマルモードの) コントロール文字コマンド CTRL-] のヘルプを表示
 `:help i_CTRL-]`            : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
@@ -244,7 +239,7 @@ help
 
 
 quickfix
-========
+--------
 
 * `:cwindow`   : quickfix の表示
 * `:colder`    : 古い quickfix へ移動
@@ -255,14 +250,14 @@ quickfix
 
 
 Macro
-=====
+-----
 
 * `A-m`       : マクロ m へ記録。A-m で記録を停止。. で @m を繰り返し実行。「対象の文字列を含むファイルを全置換する」の場合にカウントが使えなかった。
 * `<Space>Qa` : マクロ a へ記録。<Space>Q で記録を停止
 * `@a`        : マクロ a を実行
 
 Text Object
-===========
+-----------
 
 * `ad`, `id` : /\#_-キャメルケースの文字列で区切った文字列. feat. vim-textobj-delimited
 * `ac`, `ic` : コメント
@@ -271,7 +266,7 @@ Text Object
 
 
 rst
-===
+---
 
 * `<Space><Space>n` : レベル n のセクションとして指定
 * `<C-CR>`          : 現在行の List bullet を次の行に挿入
@@ -279,7 +274,7 @@ rst
 * `<C-S-CR>`        : 現在行の親 List bullet を次の行に挿入
 
 snippet
--------
+~~~~~~~
 
 * `link_label`: `title <link>`_
 * `image`: .. image:: path
@@ -290,32 +285,35 @@ snippet
 
 
 CtrlP
-=====
+-----
 
 * `C-z` : バッファ選択
 * `C-w` : バッファを閉じる
 
 
 howm
-========
+----
 
 * `<Space>,c` : howm ファイルを新規作成. feat. vim-template
 
 golang
-=======
+------
 
 * `GoRun`          : feat. vim-gorun
 * `GoAddTags json` : struct に json tag を追加。feat. vim-goaddtags
 
 LSP
-====
+---
 
 * `<Space>al` : Show diagnostics list in quickfix. feat. vim-lsp
 * `<Space>ak` : Next diagnostics. feat. vim-lsp
 * `<Space>aj` : Previous diagnostics. feat. vim-lsp
 
 Git
-========
+---
+
+keymap
+~~~~~~
 
 * `<Leader>gl`  : graph log
 * `<Leader>gL`  : graph log 100 line in Gina. feat. gina.vim
@@ -333,19 +331,107 @@ Git
 * `<Leader>gbl` : blame in Gina. feat. gina.vim
 * `<Leader>g-`  : Switch last commit and new branch name
 
+Vim で commit のやりなおし
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* `<Leader>gbr (git branch -m temp)`: 現在のブランチ名を temp へ変更。
+* `<Leader>g- (git switch -c master HEAD~)`: 一つ前のコミットのブランチ名を master にする。
+* `<Leader>gr (git restore -s temp .)`: すべてのファイルを temp ブランチの内容に変更。ステージングはされていない状態。
+* コミットやり直し。
+* `<Leader>gbd (git branch -D temp)`: temp ブランチ削除
+
 gina.vim
-----------
+~~~~~~~~
 
 * `cc`          : (status) Gina commit
 * `s`           : (blame) Gina show
 * `:Gina log :` : current buffer history
 
 :Gina blame の使い方
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 #. :Gina blame を起動して、Enter と BS で対象のコミットを表示
 #. :Gina show でコミットの説明を参照。これをすぐに忘れるので書いておく。
 #. :Gina blame で表示されるタブは :tabclose を実行したり C-q を2回押したりして閉じる。
+
+Others
+------
+
+* `<M-i>`                   : (c) コマンドラインウィンドウ表示
+* `<C-CR>`                  : カーソル位置のハイライトグループ名表示
+* `gv`                      : 前回の選択範囲を再度選択
+* `:verbose inoremap <C-l>` : <C-l> を最後に inoremap したファイルを表示
+* `:verbose set whichwrap`  : whichwarp を最後に変更したファイルを表示
+* `:cq`                     : vim を不正終了。git コミットのキャンセルなど
+* `:Jq .obj`                : JSON の obj を抽出。引数なしなら整形のみ
+* `:Jj obj`                 : JSON の obj を抽出。引数なしなら整形のみ（Jq より高速。まだ若いのでバグがあるかも）
+* `/[\u3041-\u3096]`        : ひらがな検索 https://so-zou.jp/software/tech/programming/tech/regular-expression/meta-character/variable-width-encoding.htm
+* `vim --clean -u vimrcfile`: Clean な Vim で vimrcfile を vimrc の代わりに読み込む
+* `nnoremap [hoge] <Nop>`
+  `nmap C-t [hoge]`         : [hoge] をマッピングのプレフィクス（？）にする。C-t は例。
+* `<Space>rw`               : window resize mode(?) feat. submode
+* `/[^\x01-\x7E]`           : 全角文字検索
+* `<Space>y%`               : バッファのファイル名をクリップボードへコピー
+* `:set nomodeline`         : " vim:fen などのモードラインがファイルに記載されていても、これを反映しない。vim-lsp ポップアップ時に fen が反映されることがあったので
+* `@:`                      : 直前に実行した `:` コマンドを再実行。
+
+profile の取り方 1
+~~~~~~~~~~~~~~~~~~
+
+`gvim -c "profile start profile.log" -c "profile func *" -c "call timer_start(0, {->execute('quit')})"`
+
+profile の取り方 2
+~~~~~~~~~~~~~~~~~~
+
+コマンド定義 ::
+
+   command! -nargs=* Profile call s:command_profile('<args>')
+   function! s:command_profile(section) abort
+     profile start ~/profile.txt
+     profile func *
+     execute printf('profile file %s', empty(a:section) ? '*' : a:section)
+   endfunction
+
+1. vim を立ち上げ直す
+2. `:Profile` を実行する
+3. 気になっている操作を実行する
+4. vim を落とす
+5. profile.txt の中身を確認
+
+関数エラーからの Vim script の追い方
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+以下のようなエラーが表示された場合に関数を指定してコードを確認する。::
+
+   function gista#autocmd#call[14]..<SNR>159_on_BufWriteCmd[13]..gista#command#patch#call[14]..gista#resource#remote#patch[17]..gista#resource#remote#get[19]..159[9]..157[34]..<SNR>137_request[33]..166 の処理中にエラーが検出されました:
+   行   94:
+   E887: このコマンドは無効です,ごめんなさい. Python の site モジュールをロードできませんでした.
+
+* `:verbose function gista#autocmd#call`
+* `:verbose function {157}`
+
+該当するautocommandは存在しません を調べる
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+set verbose=3 するとsourceしてるものが出る
+
+デバッグプリント
+~~~~~~~~~~~~~~~~
+
+* `:L PP dict`: 整形して表示してくれる。
+* `:L verbose PP dict`: 辞書関数の中身も見られる。
+* `:echom string(dict)` : echom に副作用があるらしい。知らんけど。
+* `:put=string(dict)` : バッファに出力。
+* `:let g:x=dict` : からの `:breakadd expr g:x` ？　よくわからん。
+
+デバッグログ
+~~~~~~~~~~~~
+
+`vim -V9log.log`: log.log に色々表示。
+
+
+Git
+===
 
 command
 -------
@@ -361,15 +447,7 @@ command
 * `git fetch origin refs/pull/head:BRANCHNAME`: マージされていないプルリクを試す。
 * `git log -G"hoge" -p`: 履歴の差分から hoge を検索する。 --pickaxe-all も指定すると、検索されたコミットで変更のあったファイルすべてを表示する。
 * `git submodule update --remote` : 配下の submodule を更新
-
-Vim で commit のやりなおし
---------------------------
-
-* `<Leader>gbr (git branch -m temp)`: 現在のブランチ名を temp へ変更。
-* `<Leader>g- (git switch -c master HEAD~)`: 一つ前のコミットのブランチ名を master にする。
-* `<Leader>gr (git restore -s temp .)`: すべてのファイルを temp ブランチの内容に変更。ステージングはされていない状態。
-* コミットやり直し。
-* `<Leader>gbd (git branch -D temp)`: temp ブランチ削除
+* `git clone --depth=1 URL` : 最新のコミットだけをクローン
 
 git stash
 ----------
@@ -394,67 +472,22 @@ PR をマージ
 * `pr135` はブランチ名
 
 
+GitHub の GraphQL
+-----------------
 
-Others
-======
+curl -H "Authorization: bearer "<token> -X POST -d@query.json https://api.github.com/graphql
 
-* `<M-i>`                   : (c) コマンドラインウィンドウ表示
-* `<C-CR>`                  : カーソル位置のハイライトグループ名表示
-* `gv`                      : 前回の選択範囲を再度選択
-* `:verbose inoremap <C-l>` : <C-l> を最後に inoremap したファイルを表示
-* `:verbose set whichwrap`  : whichwarp を最後に変更したファイルを表示
-* `:cq`                     : vim を不正終了。git コミットのキャンセルなど
-* `:Jq .obj`                : JSON の obj を抽出。引数なしなら整形のみ
-* `:Jj obj`                 : JSON の obj を抽出。引数なしなら整形のみ（Jq より高速。まだ若いのでバグがあるかも）
-* `/[\u3041-\u3096]`        : ひらがな検索 https://so-zou.jp/software/tech/programming/tech/regular-expression/meta-character/variable-width-encoding.htm
-* `vim --clean -u vimrcfile`: Clean な Vim で vimrcfile を vimrc の代わりに読み込む
-* `nnoremap [hoge] <Nop>`
-  `nmap C-t [hoge]`         : [hoge] をマッピングのプレフィクス（？）にする。C-t は例。
-* `<Space>rw`               : window resize mode(?) feat. submode
-* `/[^\x01-\x7E]`           : 全角文字検索
-* `<Space>y%`               : バッファのファイル名をクリップボードへコピー
-* `:set nomodeline`         : " vim:fen などのモードラインがファイルに記載されていても、これを反映しない。vim-lsp ポップアップ時に fen が反映されることがあったので
-* `gvim -c "profile start profile.log" -c "profile func *" -c "call timer_start(0, {->execute('quit')})"` : profile の取り方
+query.json
+{ "query": "query {a0:repository(owner:\"markonm\", name: \"traces.vim\"){ pushedAt nameWithOwner }}" }
 
-
-関数エラーからの Vim script の追い方
-------------------------------------
-
-以下のようなエラーが表示された場合に関数を指定してコードを確認する。::
-
-   function gista#autocmd#call[14]..<SNR>159_on_BufWriteCmd[13]..gista#command#patch#call[14]..gista#resource#remote#patch[17]..gista#resource#remote#get[19]..159[9]..157[34]..<SNR>137_request[33]..166 の処理中にエラーが検出されました:
-   行   94:
-   E887: このコマンドは無効です,ごめんなさい. Python の site モジュールをロードできませんでした.
-
-* `:verbose function gista#autocmd#call`
-* `:verbose function {157}`
 
 powershell
-----------
+==========
 
 * `Compare-Object (Get-Content fileA) (Get-Content fileB)` | Out-File -filepath diff.txt -width 4000 -Encoding UTF8: Output diff.txt to diff fileA fileB. =>: 右ファイルからなくなった行, <=: 左ファイルからなくなった行
 * `man commandlet` : ヘルプ表示。 -online: Web ブラウザで表示, alias: Get-Help, help
 * `Get-Content file`: ファイルの表示。 alias: cat, type
 * `New-Item -type file $profile`: PowerShell 設定ファイル作成
-
-該当するautocommandは存在しません を調べる
--------------------------------------------
-
-set verbose=3 するとsourceしてるものが出る
-
-デバッグプリント
-----------------
-
-* `:L PP dict`: 整形して表示してくれる。
-* `:L verbose PP dict`: 辞書関数の中身も見られる。
-* `:echom string(dict)` : echom に副作用があるらしい。知らんけど。
-* `:put=string(dict)` : バッファに出力。
-* `:let g:x=dict` : からの `:breakadd expr g:x` ？　よくわからん。
-
-デバッグログ
-------------
-
-`vim -V9log.log`: log.log に色々表示。
 
 ImageMagick で画像の切り抜き
 ============================
@@ -470,4 +503,9 @@ crop フォルダへ一括書き出し::
 output-0.jpg, output-1.jpg へ横分割::
 
     convert -crop 50%x100% input.jpg output.jpg
+
+golang
+======
+
+* `go build -ldflags -s`: strip
 

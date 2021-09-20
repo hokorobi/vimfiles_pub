@@ -111,49 +111,49 @@
 		"prefix": "download",
 		"body": ":download:`${1:Title} <${2:path}>` $0",
 		"description": "Download",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"numref": {
 		"prefix": "numref",
 		"body": ":numref:`${1:Title} <${2:figure}>` $0",
 		"description": "Cross-referencing Figure",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"math": {
 		"prefix": "math",
 		"body": ":math:`${1:expression}` $0",
 		"description": "Math Expression",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"command": {
 		"prefix": "command",
 		"body": ":command:`${1:Title}` $0",
 		"description": "Command",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"file": {
 		"prefix": "file",
 		"body": ":file:`${1:path}` $0",
 		"description": "File",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"guilabel": {
 		"prefix": "guilabel",
 		"body": ":guilabel:`${1:Title}` $0",
 		"description": "GUI Label",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"key": {
 		"prefix": "key",
 		"body": ":kbd:`${1:shortcut}` $0",
 		"description": "Keyboard Shortcut",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"menu": {
 		"prefix": "menu",
 		"body": ":menuselection:`${1:Title} --> ${2:Title2}` $0",
 		"description": "Menu Selection",
-		"scope": "text.restructuredtext"		
+		"scope": "text.restructuredtext"
 	},
 	"literalinclude": {
 		"prefix": "literalinclude",
