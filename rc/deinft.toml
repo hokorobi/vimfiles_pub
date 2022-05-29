@@ -25,6 +25,7 @@ nnoremap <buffer> sq <Cmd>call vimrc#SortQuickfix('vimrc#QfStrCmp')<CR>
 
 toml = '''
 setlocal nocindent
+setlocal expandtab shiftwidth=2 tabstop=4 softtabstop=2
 '''
 
 # : を \k などに含める。s:hoge を単語として扱った方が便利なことが多いので

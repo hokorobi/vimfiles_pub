@@ -1,48 +1,105 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
-depends = 'denops.vim'
-on_event = 'InsertEnter'
+# rev = '1516e6'
+depends = ['denops.vim', 'pum.vim']
+on_event = ['InsertEnter', 'CursorHold']
 hook_source = '''
-  call ddc#custom#patch_global('sourceOptions', {
-      \ '_': {
-      \   'matchers': ['matcher_fuzzy'],
-      \   'ignoreCase': v:true,
-      \ },
-      \ 'buffer': {'mark': 'B'},
-      \ 'ddc-vim-lsp': {'mark': 'L'},
-      \ 'file': {
-      \   'mark': 'F',
-      \   'isVolatile': v:true,
-      \   'forceCompletionPattern': '\S/\S*',
-      \ },
-      \ 'necovim': {'mark': 'V'},
-      \ 'vsnip': {
-      \   'mark': 'S',
-      \   'dup': v:true,
-      \ },
-      \ })
+  let s:ddc_sourceOptions = {}
+  let s:ddc_sourceOptions['_'] = #{
+      \   matchers: ['matcher_fuzzy'],
+      \   converters: ['converter_fuzzy'],
+      \   ignoreCase: v:true,
+      \ }
+  let s:ddc_sourceOptions['around'] = #{
+      \   mark: 'A',
+      \   dup: v:false,
+      \   maxKeywordLength: 30,
+      \ }
+  let s:ddc_sourceOptions['buffer'] = #{
+      \   mark: 'B',
+      \   dup: v:false,
+      \   maxKeywordLength: 30,
+      \ }
+  let s:ddc_sourceOptions['file'] = #{
+      \   mark: 'F',
+      \   isVolatile: v:true,
+      \ }
+  " https://github.com/kuuote/dotvim/blob/7fbd83a2aedb1e30405f9bd1d8126b04dc5fe72e/conf/vim-lsp.toml#L50
+  " メソッド呼び出しを補完
+  let s:ddc_sourceOptions['vim-lsp'] = #{
+      \   mark: 'L',
+      \   forceCompletionPattern: '\..?',
+      \   minAutoCompleteLength: 2,
+      \ }
+  let s:ddc_sourceOptions['vsnip'] = #{
+      \   mark: 'S',
+      \   dup: v:true,
+      \ }
+
+  call ddc#custom#patch_global('sourceOptions', s:ddc_sourceOptions)
+
   call ddc#custom#patch_filetype(
       \ ['rst'], 'sources', ['buffer', 'around', 'file', 'vsnip'])
   call ddc#custom#patch_filetype(
-      \ ['go', 'python'], 'sources', ['ddc-vim-lsp', 'file', 'vsnip'])
-  call ddc#custom#patch_filetype(
-      \ ['vim', 'toml'], 'sources', ['necovim', 'buffer', 'around', 'file', 'vsnip'])
+      \ ['go', 'python', 'typescript'], 'sources', ['vim-lsp', 'file', 'vsnip'])
   call ddc#custom#patch_filetype(
       \ ['autohotkey', 'cfg', 'git', 'javascript', 'markdown', 'plantuml', 'snippet', 'vb', 'xsl'], 'sources', ['buffer', 'around', 'file'])
+
+  call ddc#custom#patch_global('postFilters', ['sorter_fuzzy'])
+
+  smap <silent><expr> <Tab>
+        \ vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' :
+        \ '<Tab>'
+  imap <silent><expr> <Tab>
+        \ vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' :
+        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+        \ ddc#can_complete() ? ddc#manual_complete() :
+        \ '<Tab>'
+  imap <silent><expr> <C-j>
+        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+        \ '<C-j>'
+  smap <silent><expr> <C-n>
+        \ vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' :
+        \ '<C-n>'
+  imap <silent><expr> <C-n>
+        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+        \ '<Cmd>normal! gj<CR>'
+  smap <silent><expr> <S-Tab>
+        \ vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' :
+        \ '<S-Tab>'
+  imap <silent><expr> <S-Tab>
+        \ vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' :
+        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
+        \ '<C-h>'
+  imap <silent><expr> <C-k>
+        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
+        \ '<Cmd>normal! D<CR>'
+  imap <silent><expr> <C-p>
+        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
+        \ '<Cmd>normal! gk<CR>'
+
+  " Use pum.vim
+  call ddc#custom#patch_global('completionMenu', 'pum.vim')
+  call ddc#custom#patch_global('backspaceCompletion', v:true)
+  call ddc#custom#patch_global('filterParams', #{
+    \   converter_fuzzy: #{
+    \     hlGroup: 'SpellBad'
+    \   }
+    \ })
+
   call ddc#enable()
 '''
 
 [[plugins]]
-repo = 'vim-denops/denops.vim'
-hook_add = '''
-  let $path .= ';' .. '~/.deno/bin'
-  " let g:denops#debug = v:true
-  " let g:denops#trace = v:true
-'''
+repo = 'Shougo/pum.vim'
 
 [[plugins]]
-repo = 'matsui54/ddc-matcher_fuzzy'
+repo = 'tani/ddc-fuzzy'
 on_source = 'ddc.vim'
+
+# [[plugins]]
+# repo = 'matsui54/ddc-matcher_fuzzy'
+# on_source = 'ddc.vim'
 
 # [[plugins]]
 # repo = 'Shougo/ddc-matcher_head'
@@ -54,7 +111,12 @@ on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'Shougo/neco-vim'
-on_source = 'ddc.vim'
+depends = 'ddc.vim'
+on_ft = ['toml', 'vim']
+hook_source = '''
+  call ddc#custom#patch_global('sourceOptions', #{necovim: #{mark: 'V'}})
+  call ddc#custom#patch_filetype(['vim', 'toml'], 'sources', ['necovim', 'buffer', 'around', 'file', 'vsnip'])
+'''
 
 [[plugins]]
 repo = 'Shougo/ddc-around'
@@ -62,6 +124,7 @@ on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'matsui54/ddc-buffer'
+# rev = '8698aa'
 on_source = 'ddc.vim'
 
 [[plugins]]
@@ -70,20 +133,31 @@ on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'shun/ddc-vim-lsp'
+# rev = '257293'
 on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip'
 lazy = 1
 hook_add = '''
-  BulkMap [is] <expr> <Tab>   vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' : '<Tab>'
-  BulkMap [is] <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
-
-  let g:vsnip_snippet_dir = expand('~/vimfiles/vsnip')
+  let g:vsnip_snippet_dir = expand('~/vimfiles/rc/vsnip')
 '''
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip-integ'
 depends = 'vim-vsnip'
 on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'matsui54/denops-popup-preview.vim'
+# rev = 'b8f62b'
+depends = 'denops.vim'
+on_source = 'ddc.vim'
+hook_source = '''
+  call popup_preview#enable()
+'''
+
+# [[plugins]]
+# repo = 'hokorobi/neco-syntax'
+# on_source = 'ddc.vim'
 

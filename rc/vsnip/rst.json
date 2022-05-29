@@ -5,16 +5,16 @@
 		"description": "Code",
 		"scope": "text.restructuredtext"
 	},
-	"image": {
-		"prefix": "image",
-		"body": ".. image:: ${1:path}\n$0",
-		"description": "Image",
-		"scope": "text.restructuredtext"
-	},
 	"figure": {
-		"prefix": "figure",
+		"prefix": ["figure","image"],
 		"body": ".. figure:: ${1:path}\n\n   $0",
 		"description": "Figure",
+		"scope": "text.restructuredtext"
+	},
+	"figure-clipboard": {
+		"prefix": ["image-clipboard","figure-clipboard"],
+		"body": ".. figure:: $CLIPBOARD\n$0",
+		"description": "figure clipboard",
 		"scope": "text.restructuredtext"
 	},
 	"link": {

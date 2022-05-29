@@ -55,6 +55,7 @@ Edit
 * `<C-R>0`                  : (i) 一つ前のレジスタから Paste。cw<C-R>" だと変更前の単語が Paste されるので、こちらを使う。
 * `sdt`                     : HTML のタグだけを削除。 feat. sandwich
 * `dNib`                    : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
+* `:v/\(^.*$\)\n\1$/delete` : ソート済みの重複行を削除。3行以上ある場合は、その1行だけ削除。
 
 複数ファイルに対する処理
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -204,7 +205,6 @@ fold
 file
 ----
 
-* `:DeleteMe`   : カレントファイル削除
 * `:PrevimOpen` : markdown のプレビュー feat. previm
 
 
@@ -252,9 +252,10 @@ quickfix
 Macro
 -----
 
-* `A-m`       : マクロ m へ記録。A-m で記録を停止。. で @m を繰り返し実行。「対象の文字列を含むファイルを全置換する」の場合にカウントが使えなかった。
+* `A-m`       : マクロ m へ記録。A-m で記録を停止。
 * `<Space>Qa` : マクロ a へ記録。<Space>Q で記録を停止
 * `@a`        : マクロ a を実行
+* `@@`        : 直前のマクロを再実行。
 
 Text Object
 -----------
@@ -374,6 +375,7 @@ Others
 * `<Space>y%`               : バッファのファイル名をクリップボードへコピー
 * `:set nomodeline`         : " vim:fen などのモードラインがファイルに記載されていても、これを反映しない。vim-lsp ポップアップ時に fen が反映されることがあったので
 * `@:`                      : 直前に実行した `:` コマンドを再実行。
+* `let &l:statusline='hoge'`: setlocal statusline の let 版。ほかのオプションも同様。
 
 profile の取り方 1
 ~~~~~~~~~~~~~~~~~~
@@ -448,11 +450,13 @@ command
 * `git log -G"hoge" -p`: 履歴の差分から hoge を検索する。 --pickaxe-all も指定すると、検索されたコミットで変更のあったファイルすべてを表示する。
 * `git submodule update --remote` : 配下の submodule を更新
 * `git clone --depth=1 URL` : 最新のコミットだけをクローン
+* `git branch -r` : リモートブランチ表示
+* `git pull org master:master` : ローカルの master ブランチへ org/master から pull
 
 git stash
 ----------
 
-* `git stash save "comment"`: stash
+* `git stash push -u -m "comment"`: stash. -u include untrack
 * `git stash list`: list stash
 * `git stash show stash@{N}`: list file N's stash
 * `git stash show -p stash@{N}`: show diff N's stash
@@ -488,6 +492,7 @@ powershell
 * `man commandlet` : ヘルプ表示。 -online: Web ブラウザで表示, alias: Get-Help, help
 * `Get-Content file`: ファイルの表示。 alias: cat, type
 * `New-Item -type file $profile`: PowerShell 設定ファイル作成
+* `Get-ChildItem -Filter *.vim -Recurse -Hidden | %{hoge $_.FullName}`: 拡張子 vim に対して hoge を実行。
 
 ImageMagick で画像の切り抜き
 ============================
@@ -508,4 +513,5 @@ golang
 ======
 
 * `go build -ldflags -s`: strip
-
+* `go clean --modcache`: mod のキャッシュ削除
+* `go get -d github.com/user/lib`: lib の更新。https://encore.dev/guide/go.mod

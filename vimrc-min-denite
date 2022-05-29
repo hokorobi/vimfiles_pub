@@ -1,6 +1,0 @@
-set nocompatible
-set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\roxma\nvim-yarp
-set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\roxma\vim-hug-neovim-rpc
-set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\denite.nvim
-filetype plugin indent on
-syntax enable
