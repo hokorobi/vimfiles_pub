@@ -1,3 +1,4 @@
+rst insert image	exe('call vimrc#CtrlPFilenameInsert(".. image:: ", "")')
 fenrir instant.ini	exe('edit ' .. g:fenrir_dir .. '/data/instant.ini')
 fenrir path	exe('edit ' .. g:fenrir_dir .. '/data/path')
 autohotkey ahk	exe('edit ' .. g:ahk_path)
@@ -14,7 +15,7 @@ lexima.vim vimrc	edit ~/vimfiles/rc/lexima.vim
 twicli regexp - Gist	exe('Gista open ' .. g:gist_twicli_regexp)
 twicli plugins - Gist	exe('Gista open ' .. g:gist_twicli_plugins)
 debug_print	call print_debug#print_debug()
-snippet	exe('edit ' .. expand('~/vimfiles/vsnip/' .. &filetype .. '.json'))
+snippet	exe('edit ' .. expand('~/vimfiles/rc/vsnip/' .. &filetype .. '.json'))
 ftplugin	exe('edit ' .. expand('~/vimfiles/after/ftplugin/' .. &filetype .. '.vim'))
 autoload vimrc	edit ~/vimfiles/autoload/vimrc.vim
 zenn-preview	cd \%USERPROFILE\%\Documents\zenn | FloatermNew! npx zenn preview

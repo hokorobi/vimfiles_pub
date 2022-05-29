@@ -20,11 +20,16 @@ function! vimrc#popup_cursor_info()
   let l:fenc = &fileencoding == '' ? &encoding : &fileencoding
   let l:fenc = l:fenc !=# 'utf-8' ? fenc : &bomb ? fenc .. ' (BOM)' : fenc
 
-  let l:line3 = s:genLine([&fileformat, l:fenc, l:ftype, 'Col: ' .. l:pos[2]], ' | ')
+  let l:line3 = s:genLine([&fileformat, l:fenc, l:ftype, l:pos[1] .. ':' .. l:pos[2]], ' | ')
 
   " カーソル位置のハイライト名を表示
   " https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
-  let l:highlight = join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name") .. "(" .. synIDattr(synIDtrans(v:val), "name") .. ")"'), ',')
+  let l:highlight =
+        \ synstack(line('.'), col('.'))
+        \ ->map({_, id -> synIDattr(id, 'name') == synIDtrans(id)->synIDattr('name')
+        \       ? synIDattr(id, 'name')
+        \       : printf('%s(%s)', synIDattr(id, 'name'), synIDtrans(id)->synIDattr('name'))})
+        \ ->join(' -> ')
 
   let l:vsep = '--------------------------------'
 
@@ -32,6 +37,7 @@ function! vimrc#popup_cursor_info()
   let l:lines = ['hl: ' .. l:highlight, l:vsep, l:line2, l:vsep, l:line3]
   " open temporary popup
   call popup_atcursor(l:lines, #{
+        \ border: [1, 1, 1, 1],
         \ pos: 'topleft',
         \ moved: 'any',
         \ padding: [0, 1, 0, 1],
@@ -58,6 +64,8 @@ endfunction
 
 
 " / と :s///g をトグル
+" 8.1.0271 あたりから :s でハイライトされるようになったけどまだ使ってる
+" https://github.com/cohama/.vim/commit/dc23152a2246435a9912bf37fe206638f47bda9f
 function! vimrc#ToggleSubstituteSearch(type, line) abort
   if a:type ==# '/' || a:type ==# '?'
     let range = s:GetOnetime('s:range', '%')
@@ -83,6 +91,7 @@ endfunction
 
 
 " My retab
+" https://github.com/cohama/.vim/blob/85dd7d1f63eb3913cf9d13482c1772caa340fd7b/.vimrc#L1369-L1377
 function! vimrc#Retab(old_tabstop) abort
   let pos = getpos('.')
   let new_indent = &l:expandtab ? repeat(' ', &l:tabstop) : '\t'
@@ -92,57 +101,39 @@ function! vimrc#Retab(old_tabstop) abort
 endfunction
 
 " インデントを簡単に設定
-function! vimrc#ISetting(setting, force_retab) abort
+" ISetting    => 現在の状態を表示
+" ISetting t4 => tab で幅4
+" ISetting s2 => space で幅2
+" https://github.com/cohama/.vim/blob/9bcf4c6da9ef538b75ba6052d592290e31d629bb/init.vim#L873-L905
+function! vimrc#ISetting(setting) abort
   if empty(a:setting)
     echo 'indent: ' .. ((&l:expandtab) ? 'space' : 'tab') .. ' ' .. &l:shiftwidth
     return
   endif
 
-  if match(a:setting[0], '[st]') || str2nr(a:setting[1:]) == 0
+  if match(a:setting, '[1-9][st]') == 0
+    let shiftwidth = a:setting[0]
+    let expandflag = a:setting[1]
+  elseif match(a:setting, '[st][1-9]') == 0
+    let shiftwidth = a:setting[1]
+    let expandflag = a:setting[0]
+  else
     echo 'Arg Error'
     return
   endif
-
-  if a:setting[0] ==# 's'
+  if expandflag ==# 's'
     setlocal expandtab
   else
     setlocal noexpandtab
   endif
 
-  let shiftwidth = a:setting[1]
   let bk_tabstop = &l:tabstop
 
   let &l:shiftwidth  = shiftwidth
   let &l:softtabstop = shiftwidth
   let &l:tabstop     = shiftwidth
 
-  " 強制的に Retab をかける
-  if a:force_retab
-    execute 'Retab ' .. bk_tabstop
-  endif
-
-  " IndentGuides を再描画させるため
-  doautocmd WinEnter
-endfunction
-
-
-" 今開いているファイルを削除
-function! vimrc#DeleteMe(force) abort
-  if a:force || !&modified
-    let filename = expand('%')
-    bdelete!
-    call delete(filename)
-  else
-    echomsg 'File modified'
-  endif
-endfunction
-
-
-" 今開いているファイルをリネーム
-function! vimrc#RenameMe(newFileName) abort
-  let currentFileName = expand('%')
-  execute 'saveas ' .. a:newFileName
-  call delete(currentFileName)
+  call vimrc#Retab(bk_tabstop)
 endfunction
 
 " 開いているファイルのディレクトリへ移動
@@ -271,6 +262,34 @@ function! vimrc#L(args)
   call setline(1, split(execute(a:args), '\n'))
 endfunction
 
+" ycino@vim-jp slack
+function! vimrc#option_to_edit() abort
+  setlocal buftype= modifiable noreadonly
+  setlocal list tabstop=8 shiftwidth=8 softtabstop=8 noexpandtab textwidth=78
+  setlocal colorcolumn=+1
+  setlocal conceallevel=0
+endfunction
+
+
+function! vimrc#percent_expr() abort
+  let curr_char = getline('.')[col('.') - 1]
+  if curr_char == '"'
+    if col('.') == col('''>')
+      return "v2i\"o\<esc>"
+    else
+      return "v2i\"\<esc>"
+    endif
+  elseif curr_char == "'"
+    if col('.') == col('''>')
+      return "v2i'o\<esc>"
+    else
+      return "v2i'\<esc>"
+    endif
+  else
+    return '%'
+  endif
+endfunction
+
 " Swap {{{
 " https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L651-L687
 function! vimrc#on_SwapExists() abort
@@ -366,6 +385,17 @@ function! vimrc#openGithubRepository(mode) abort
   call openbrowser#open('https://github.com/' .. repo)
 endfunction
 
+function! vimrc#openUrlInBuffer() abort
+  let lines = getline(0, line("$"))
+  for i in lines
+    let head = stridx(i, "https:\/\/")
+    if head < 0
+      continue
+    endif
+    call openbrowser#open(i[head:])
+  endfor
+endfunction
+
 " }}}2 CtrlP {{{2
 
 function! vimrc#CtrlPRepository(mode) abort
@@ -383,6 +413,28 @@ function! vimrc#CtrlPDefaultInput(cmd, input)
       let g:ctrlp_default_input = l:default_input_save
     endif
   endtry
+endfunction
+
+" CtrlP で選択したファイルをバッファに挿入
+function! vimrc#CtrlPPasteFunc(action, line) abort
+  call setreg('9', getreg('7') .. a:line .. getreg('8'))
+  call ctrlp#exit()
+  normal! "zp
+  call setreg('7', s:backreg7)
+  call setreg('8', s:backreg8)
+  call setreg('9', s:backreg9)
+  let g:ctrlp_open_func = {}
+endfunction
+function! vimrc#CtrlPFilenameInsert(prefix, suffix) abort
+  let s:backreg7 = getreg('7')
+  let s:backreg8 = getreg('8')
+  let s:backreg9 = getreg('9')
+  call setreg('7', a:prefix)
+  call setreg('8', a:suffix)
+  let g:ctrlp_open_func = { 'files': 'vimrc#CtrlPPasteFunc' }
+  CtrlP
+  " ここで setreg('7', backreg7) などと書いても駄目。
+  " CtrlP が非同期で動くため先にレジスタの値が元に戻ってしまう。
 endfunction
 " }}}2
 

@@ -1,0 +1,5 @@
+@startuml
+!theme toy
+
+@enduml
+/' vim: ff=dos fenc=cp932 '/
