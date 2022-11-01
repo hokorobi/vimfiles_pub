@@ -1,0 +1,5 @@
+" gvim -N -u ~/vimfiles/vimrc-min-lexima -U NONE -i NONE
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\cohama\lexima.vim_feature_feedkeys
+filetype plugin indent on
+syntax enable
+

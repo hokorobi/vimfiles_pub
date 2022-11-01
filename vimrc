@@ -1,12 +1,12 @@
-"==============================================================================
+"======================================================================================
 " Vim configuration
 " Author:   hokorobi
 " Platform: Windows
 " Vim:      https://github.com/vim/vim-win32-installer/releases gVim
-" CAUTION:  other platform, old version no compatibility
-" REQUIRE:  xdoc2txt, pt (monochromegane/the_platinum_searcher),
-"           jalan/pdftotext, golang/tools/goimports
-"==============================================================================
+" CAUTION:  other platform, old version no compatibility. Reloading is not considered.
+" REQUIRE:  xdoc2txt, pt (monochromegane/the_platinum_searcher), jalan/pdftotext,
+"           golang/tools/goimports
+"======================================================================================
 
 scriptversion 3
 set encoding=utf-8
@@ -66,7 +66,10 @@ command! ToUnix :set fileformat=unix
 command! ToLF :set fileformat=unix
 
 " / と :s///g をトグル
-cnoremap <expr> <C-t> vimrc#ToggleSubstituteSearch(getcmdtype(), getcmdline())
+" hrsh7th/vim-searchx を使っていると動かない
+" cnoremap <expr> <C-t> vimrc#ToggleSubstituteSearch(getcmdtype(), getcmdline())
+" / を :s///g へ
+cmap <C-t> <Esc>;s/<C-r>//
 
 " https://zenn.dev/kawarimidoll/articles/513d603681ece9
 function! s:bulkmap(force_map, modes, ...) abort
@@ -134,6 +137,7 @@ call extend(g:vimrc_altercmd_dic, {
       \   'ml': 'L messages',
       \ })
 
+" Vim ヘルプファイル編集用設定反映
 command! HelpEdit call vimrc#option_to_edit()
 
 " }}}1 Option {{{1
@@ -173,14 +177,12 @@ set fileformats=unix,dos
 " 余分なパスは削除
 set packpath=
 
-" undo-persistence {{{
 " undoファイルを保存するディレクトリの設定
 let &undodir = expand('~/_vim/info/undo')
 if !isdirectory(&undodir)
   silent! call mkdir(&undodir, 'p')
 endif
 set undofile
-" }}}
 
 
 " }}}2 Function {{{2
@@ -314,7 +316,8 @@ set backspace=indent,eol,start
 " ファイル末尾に改行を追加しない
 set nofixendofline
 
-" insert mode で IME をオンにした状態から normal mode で r や R で IME をオフ
+" insert mode で IME をオンにした状態のまま normal mode に戻って r や R では IME をオフ
+" 再度 insert mode に戻ったら IME オン
 let s:lastiminsert = 0
 autocmd vimrc InsertLeave * if v:insertmode !=# 'r' | let s:lastiminsert = &iminsert | set iminsert=0 | endif
 autocmd vimrc InsertEnter * if v:insertmode ==# 'i' | let &iminsert = s:lastiminsert | endif
@@ -402,7 +405,7 @@ command! SwapfileRecovery call vimrc#swapfile_recovery()
 command! SwapfileDelete call vimrc#swapfile_delete()
 
 " Improve diff
-set diffopt& diffopt+=algorithm:histogram,indent-heuristic,followwrap
+set diffopt& diffopt+=algorithm:histogram,indent-heuristic,followwrap,vertical
 
 " ja の後に en を探しに行く
 set helplang=ja,en
@@ -480,6 +483,7 @@ let g:dein#install_progress_type = 'floating'
 let g:dein#auto_remote_plugins = v:false
 " Strict check updated plugins yesterday
 " let g:dein#install_check_remote_threshold = 24 * 60 * 60
+let g:dein#enable_hook_function_cache = v:true
 
 if dein#min#load_state(s:dein_home)
   call dein#begin(s:dein_home)
@@ -487,7 +491,6 @@ if dein#min#load_state(s:dein_home)
   " call dein#load_toml('~/vimfiles/rc/asyncomplete.toml')
   call dein#load_toml('~/vimfiles/rc/ddc.toml')
   " call dein#load_toml('~/vimfiles/rc/ddu.toml', {'lazy': 1})
-  " call dein#load_toml('~/vimfiles/rc/ddu-min.toml', {'lazy': 1})
   call dein#load_toml('~/vimfiles/rc/deinft.toml')
   call dein#end()
   call dein#save_state()
@@ -577,9 +580,6 @@ noremap <C-n> <Cmd>enew<CR>
 noremap <F4> <Cmd>edit $MYVIMRC<CR>
 noremap <S-F4> <Cmd>edit ~/vimfiles/rc/plugins.toml<CR>
 
-" Open cheatsheet
-nnoremap <Leader>c <Cmd>split ~/vimfiles/rc/cheatsheet.rst<CR>
-
 " バッファの切り替え
 nnoremap b <Cmd>bnext<CR>
 nnoremap B <Cmd>bprevious<CR>
@@ -616,7 +616,8 @@ command! -count=1 -nargs=1 SplitAndGo call vimrc#SplitAndGo(<q-args>)
 nnoremap [toggle]q <Cmd>call vimrc#toggle_quickfix_window()<CR>
 
 " コマンドラインウィンドウを開く
-" cedit に <M-i> が設定できない？
+" cedit に <M-i> が設定できない
+cnoremap <M-;> <C-f>
 cnoremap <M-i> <C-f>
 cnoremap <M-c> <C-f>
 
@@ -625,14 +626,12 @@ cnoremap <M-c> <C-f>
 " 表示上の行移動変更
 " https://github.com/darookee/dotfiles/blob/2c11a0d322c04c549d13d9cacb282d1e44a5a3c7/vimrc#L195
 noremap <expr> j v:count == 0 ? 'gj' : 'j'
-" rc/ddc.toml
-" inoremap <C-n> <C-o>gj
+inoremap <C-n> <C-o>gj
 cnoremap <C-n> <Down>
 " noremap  <C-n> <Down>
 
 noremap <expr> k v:count == 0 ? 'gk' : 'k'
-" rc/ddc.toml
-" inoremap <C-p> <C-o>gk
+inoremap <C-p> <C-o>gk
 cnoremap <C-p> <Up>
 
 cnoremap <C-f> <Right>
@@ -669,9 +668,10 @@ nnoremap <CR> G
 autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 
 " insert mode から戻るときにカーソルを移動させない
-" その際 jumplist も更新しない
 " https://raw.githubusercontent.com/todashuta/.dotfiles/aa1f494c4f223113e619f2551161af2176df1deb/.vimrc#L693
-inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
+" その際 jumplist も更新しない
+" FIXME: IME の状態を復元する設定が動かなくなるようになったのでコメントアウト
+" inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
 
 " popup 表示中は C-k, C-j で上下候補選択
 " rc/ddc.toml
@@ -782,10 +782,6 @@ function! s:set_vsearch()
   let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
 endfunction
 
-" one char insert
-" https://github.com/wass88/dotfiles/blob/62ad8bca0a494c45294164fb9df27ee440b23e87/.vimrc#L737-L738
-nnoremap <space>i i_<ESC>r
-
 " vim-jp.slack
 " du で _ の前まで削除など
 onoremap u t_
@@ -875,7 +871,9 @@ if has('gui_running')
   " set guifont=Cica:h11
   " set guifont=MyricaM_M:h11
   " set guifont=UD_デジタル_教科書体_N-R:h11
-  set guifont=HackGenNerd_Console:h11
+  " set guifont=HackGenNerd:h11
+  " set guifont=HackGen_Console_NFJ:h11
+  set guifont=HackGen:h11
   " ノートPCモニタ用
   " set guifont=HackGenNerd_Console:h14
 

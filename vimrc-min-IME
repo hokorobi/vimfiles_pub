@@ -1,0 +1,15 @@
+" gvim -N -u ~/vimfiles/vimrc-min-IME -U NONE -i NONE
+" insert mode で IME をオンにした状態のまま normal mode に戻って r や R では IME をオフ
+" 再度 insert mode に戻ったら IME オン
+" let s:lastiminsert = 0
+" autocmd InsertLeave * if v:insertmode !=# 'r' | let s:lastiminsert = &iminsert | set iminsert=0 | endif
+" autocmd InsertEnter * if v:insertmode ==# 'i' | let &iminsert = s:lastiminsert | endif
+let g:lastiminsert = 0
+autocmd InsertLeave * if v:insertmode !=# 'r' | echom "InsertLeave iminsert" &iminsert | let g:lastiminsert = &iminsert | set iminsert=0 | endif
+autocmd InsertEnter * if v:insertmode ==# 'i' | let &iminsert = g:lastiminsert | echom "InsertEnter iminsert" &iminsert | endif
+
+" この設定で上が正常動作しなくなる。
+inoremap <silent> <Esc> <Esc>`^
+" inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
+" NG
+" autocmd InsertLeave * if v:insertmode !=# 'r' | keepjumps normal! `^ | endif

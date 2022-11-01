@@ -1,126 +1,63 @@
 [[plugins]]
 repo = 'Shougo/ddu.vim'
 depends = 'denops.vim'
-hook_add = '''
-  nnoremap <silent> s<Space>
-  \ <Cmd>Ddu -name=files file_rec
-  \ -source-param-path='`fnamemodify($MYVIMRC, ':h').'/rc'`'<CR>
-  nnoremap <silent> ss
-  \ <Cmd>Ddu -name=files file_point file_old
-  \ `finddir('.git', ';') != '' ? 'file_external' : 'file_rec'`<CR>
-  nnoremap <silent> / <Cmd>Ddu
-  \ -name=search line
-  \ -ui-param-startFilter<CR>
-  nnoremap <silent> * <Cmd>Ddu
-  \ -name=search line -input=`expand('<cword>')`
-  \ -ui-param-startFilter=v:false<CR>
-  nnoremap <silent> ;g <Cmd>Ddu
-  \ -name=search rg
-  \ -source-param-input=`input('Pattern: ')`<CR>
-  nnoremap <silent> n <Cmd>Ddu
-  \ -name=search -resume
-  \ -ui-param-startFilter=v:false<CR>
-  nnoremap <silent> ;r <Cmd>Ddu
-  \ -buffer-name=register register
-  \ -ui-param-autoResize<CR>
-'''
 hook_source = '''
 call ddu#custom#patch_global({
     \   'ui': 'ff',
+    \   'kindOptions': {
+    \     'file': {
+    \       'defaultAction': 'open',
+    \     },
+    \   },
     \   'sourceOptions': {
     \     '_': {
     \       'ignoreCase': v:true,
     \       'matchers': ['matcher_substring'],
     \     },
-    \     'file_old': {
-    \       'matchers': [
-    \         'matcher_substring', 'matcher_relative', 'matcher_hidden',
-    \       ],
-    \     },
-    \     'file_external': {
-    \       'matchers': [
-    \         'matcher_substring', 'matcher_hidden',
-    \       ],
-    \     },
     \   },
-    \   'sourceParams': {
-    \     'file_external': {
-    \       'cmd': ['git', 'ls-files', '-co', '--exclude-standard'],
-    \     },
-    \   },
+    \   'sources': [{'name': 'file_rec', 'params': {}}, {'name': 'mr'}, {'name': 'register'}, {'name': 'buffer'}],
     \   'uiParams': {
     \     'ff': {
-    \       'filterSplitDirection': 'botright',
-    \     }
-    \   },
-    \   'kindOptions': {
-    \     'file': {
-    \       'defaultAction': 'open',
-    \     },
-    \     'word': {
-    \       'defaultAction': 'append',
-    \     },
-    \     'deol': {
-    \       'defaultAction': 'switch',
-    \     },
-    \   }
-    \ })
-call ddu#custom#patch_local('files', {
-    \   'uiParams': {
-    \     'ff': {
+    \       'startFilter': v:true,
+    \       'autoResize': v:false,
+    \       'reversed': v:true,
     \       'split': 'horizontal',
+    \       'winHeight': '5',
     \     }
     \   },
     \ })
 '''
-
 [plugins.ftplugin]
 ddu-ff = '''
-nnoremap <buffer><silent> <CR>
-\ <Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
-nnoremap <buffer><silent> <Space>
-\ <Cmd>call ddu#ui#ff#do_action('toggleSelectItem')<CR>
-nnoremap <buffer><silent> i
-\ <Cmd>call ddu#ui#ff#do_action('openFilterWindow')<CR>
-nnoremap <buffer><silent> <C-l>
-\ <Cmd>call ddu#ui#ff#do_action('refreshItems')<CR>
-nnoremap <buffer><silent> p
-\ <Cmd>call ddu#ui#ff#do_action('preview')<CR>
-nnoremap <buffer><silent> q
-\ <Cmd>call ddu#ui#ff#do_action('quit')<CR>
-nnoremap <buffer><silent> d
-\ <Cmd>call ddu#ui#ff#do_action('itemAction', {'name': 'delete'})<CR>
-nnoremap <buffer><silent> e
-\ <Cmd>call ddu#ui#ff#do_action('itemAction', {'name': 'edit'})<CR>
-nnoremap <buffer><silent> N
-\ <Cmd>call ddu#ui#ff#do_action('itemAction', {'name': 'new'})<CR>
-nnoremap <buffer><silent> r
-\ <Cmd>call ddu#ui#ff#do_action('updateOptions', {
-\   'sourceOptions': {
-\     '_': {
-\       'matchers': [],
-\     },
-\   },
-\ })<CR>
+nnoremap <buffer><silent>         <CR>  <Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
+nnoremap <buffer><silent><nowait> q     <Cmd>call ddu#ui#ff#do_action('quit')<CR>
 '''
 ddu-ff-filter = '''
-inoremap <buffer><silent> <CR>
-\ <Esc><Cmd>close<CR>
-nnoremap <buffer><silent> <CR>
-\ <Cmd>close<CR>
+inoremap <buffer><silent>         <CR>  <Cmd>call ddu#ui#ff#close()<CR><Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
+" FIXME: ESC ですべて閉じたい
+inoremap <buffer><silent><nowait> <Esc> <Cmd>call ddu#ui#ff#do_action('quit')<CR>
+
+nnoremap <buffer><silent><nowait> <CR>  <Cmd>call ddu#ui#ff#close()<CR>
+nnoremap <buffer><silent><nowait> <Esc> <Cmd>call ddu#ui#ff#close()<CR>
 '''
 
 [[plugins]]
 repo = 'Shougo/ddu-commands.vim'
 depends = 'ddu.vim'
 on_cmd = 'Ddu'
+hook_add = '''
+  nnoremap <silent> <Leader>du <Cmd>Ddu mr<CR>
+  nnoremap <silent> <Leader>db <Cmd>Ddu buffer<CR>
+  nnoremap <silent> <Leader>dr <Cmd>Ddu register<CR>
+  nnoremap <silent> <Leader>df <Cmd>Ddu file_rec<CR>
+'''
 
 [[plugins]]
 repo = 'Shougo/ddu-ui-ff'
 on_source = 'ddu.vim'
 
 [[plugins]]
-repo = 'Shougo/ddu-source-file'
+repo = 'shun/ddu-source-buffer'
 on_source = 'ddu.vim'
 
 [[plugins]]
@@ -128,15 +65,7 @@ repo = 'Shougo/ddu-source-file_rec'
 on_source = 'ddu.vim'
 
 [[plugins]]
-repo = 'Shougo/ddu-source-file_old'
-on_source = 'ddu.vim'
-
-[[plugins]]
-repo = 'Shougo/ddu-source-file_point'
-on_source = 'ddu.vim'
-
-[[plugins]]
-repo = 'Shougo/ddu-source-line'
+repo = 'kuuote/ddu-source-mr'
 on_source = 'ddu.vim'
 
 [[plugins]]
@@ -144,26 +73,9 @@ repo = 'Shougo/ddu-source-register'
 on_source = 'ddu.vim'
 
 [[plugins]]
-repo = 'matsui54/ddu-source-file_external'
-on_source = 'ddu.vim'
-
-[[plugins]]
-repo = 'shun/ddu-source-rg'
-on_source = 'ddu.vim'
-
-[[plugins]]
 repo = 'Shougo/ddu-filter-matcher_substring'
-on_source = 'ddu.vim'
-
-[[plugins]]
-repo = 'Shougo/ddu-filter-matcher_relative'
 on_source = 'ddu.vim'
 
 [[plugins]]
 repo = 'Shougo/ddu-kind-file'
 on_source = 'ddu.vim'
-
-[[plugins]]
-repo = 'Shougo/ddu-kind-word'
-on_source = 'ddu.vim'
-

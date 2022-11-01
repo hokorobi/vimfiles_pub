@@ -110,24 +110,6 @@ hook_add = '''
 #   let g:efm_langserver_settings#filetype_whitelist = ['vim']
 # '''
 
-# }}}1  Completion {{{1
-# [[plugins]]
-# repo = 'gelguy/wilder.nvim'
-# on_event = 'CmdlineEnter'
-# hook_source = '''
-#   cmap <expr> <Tab> wilder#in_context() ? wilder#next() : "\<Tab>"
-#   cmap <expr> <C-j> wilder#in_context() ? wilder#next() : "\<C-j>"
-#   cmap <expr> <S-Tab> wilder#in_context() ? wilder#previous() : "\<S-Tab>"
-#   cmap <expr> <C-k> wilder#in_context() ? wilder#previous() : "\<C-k>"
-#
-#   call wilder#setup({'modes': ['/', '?', ':']})
-#
-#   " Use popupmenu
-#   call wilder#set_option('renderer', wilder#popupmenu_renderer({
-#       \ 'highlighter': wilder#basic_highlighter(),
-#       \ }))
-# '''
-
 # }}}1  REPL {{{1
 
 # Quickrun {{{2
@@ -283,12 +265,6 @@ hook_source = '''
 
 [[plugins]]
 repo = 'machakann/vim-textobj-delimited'
-# hook_post_source = '''
-#   let g:textobj_delimited_patterns = deepcopy(g:textobj#delimited#default_patterns)
-#   " , 区切りのパターン
-#   " vim-swap へ移行
-#   let g:textobj_delimited_patterns += [[', *', '\m\%(, *\)\?\%([^,[\]{}]\+, *\)\+\%([^,[\]{}]\+\)\?']]
-# '''
 
 # }}}1  Language, Format, Filetype {{{1
 
@@ -347,13 +323,9 @@ hook_source = '''
 
 # }}}2 rst {{{2
 [[plugins]]
-repo = 'hokorobi/vim-restructuredtext'
-# rev = 'dev'
+repo = 'hokorobi/vim-rst-util'
 frozen = 1
 on_ft = 'rst'
-hook_add = '''
-  let g:rst_fold_enabled = 1
-'''
 [plugins.ftplugin]
 rst = '''
   nmap <buffer> <Leader><Leader>1 <Plug>(rst-section1)
@@ -369,6 +341,10 @@ rst = '''
 
   imap <buffer> <M-CR> <Plug>(rst-insert-lineblock)
 '''
+
+[[plugins]]
+repo = 'habamax/vim-rst'
+on_ft = 'rst'
 
 # }}}2 quickfix {{{2
 [[plugins]]
@@ -421,6 +397,7 @@ hook_add = '''
   nmap <silent> <F11> <plug>(qfnavigate-previous)
 '''
 
+# QuickFixでジャンプするときに直前のWindowを使う
 [[plugins]]
 repo = 'yssl/QFEnter'
 on_ft = 'qf'
@@ -497,7 +474,7 @@ repo = 'obcat/vim-hitspop'
 on_event = 'CmdlineEnter'
 hook_source = '''
   let g:hitspop_line = 'winbot'
-  let g:hitspop_column = 'winleft'
+  let g:hitspop_column = 'winright'
   let g:hitspop_timeout = 100
   highlight link hitspopErrorMsg ErrorMsg
   highlight link hitspopNormal ErrorMsg
@@ -645,12 +622,24 @@ hook_add = '''
   let g:ambiwidth_cica_enabled = v:false
 '''
 
+[[plugins]]
+repo = 'thinca/vim-partedit'
+on_cmd = 'Partedit'
+hook_add = '''
+  " depends kana/vim-textobj-indent
+  nmap <Leader>i vai;PartEdit -filetype vim<CR>
+  " TODO: qq で PartEditEnd を実行したいな。filetypeで識別できないのでSayonaraは使えないか。
+'''
+
 # }}}1  Input & Edit {{{1
 [[plugins]]
 repo = 'cohama/lexima.vim'
+# rev = 'feature/feedkeys'
 on_event = ['InsertEnter', 'CmdlineEnter']
 hook_source = '''
   let g:lexima_ctrlh_as_backspace = 1
+  " <Esc> へのマッピングを活かすため '' へ
+  let g:lexima_map_escape = ''
 
   source ~/vimfiles/rc/lexima.vim
   " 継続行の改行時に \ を入力するため
@@ -1144,6 +1133,9 @@ hook_source = '''
   let g:findroot_not_for_subdir = 0
 '''
 
+# [[plugins]]
+# repo = 'lambdalisue/mr.vim'
+
 # }}}1  Terminal {{{1
 # terminal 上で、未入力時に ESC, : が効くようにする
 [[plugins]]
@@ -1280,6 +1272,7 @@ on_cmd = 'CtrlPLauncher'
 hook_add = '''
   let g:ctrlp_launcher_file = expand('~/vimfiles/rc/.ctrlp-launcher')
   nnoremap <Leader>fl <Cmd>CtrlPLauncher<CR>
+  nnoremap <Leader>c <Cmd>CtrlPLauncher cheat<CR>
 '''
 
 [[plugins]]
@@ -1341,8 +1334,6 @@ hook_add = '''
   " 開いているファイル、選択行を Github で開く
   BulkMap nx <Leader>oG <Cmd>Gina browse :<CR>
 
-  nnoremap <Leader>gL <Cmd>Gina log --all --graph -100 --opener=split<CR>
-  nnoremap <Leader>gD <Cmd>Gina diff --opener=split<CR>
   nnoremap <Leader>gS <Cmd>Gina status -s<CR>
 
   nnoremap <Leader>gbl <Cmd>Gina blame<CR>
@@ -1379,6 +1370,10 @@ hook_source = '''
 repo = 'lambdalisue/gin.vim'
 on_cmd = ['Gin', 'GinBranch', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinPatch', 'GinStatus']
 depends = 'denops.vim'
+hook_add = '''
+  nnoremap <Leader>gD <Cmd>GinDiff<CR>
+  nnoremap <Leader>gL <Cmd>GinBuffer log --all --graph -100<CR>
+'''
 
 [[plugins]]
 repo = 'kuuote/gina-preview.vim'
@@ -1449,9 +1444,6 @@ hook_add = '''
 
   call extend(g:vimrc_altercmd_dic, {'pp': 'PP'})
 '''
-
-#[[plugins]]
-#repo = 'ynkdir/vim-vimlparser'
 
 [[plugins]]
 repo = 'kana/vim-operator-user'
@@ -1525,15 +1517,6 @@ hook_add = '''
   call submode#map('vinc', 'x', '', 'x', '<c-x>gv')
 '''
 
-# [[plugins]]
-# repo = 'vim-jp/vital.vim'
-# depends = 'vital-Whisky'
-# on_cmd = 'Vitalize'
-
-# [[plugins]]
-# repo = 'lambdalisue/vital-Whisky'
-# lazy = 1
-
 [[plugins]]
 repo = 'vim-jp/vimdoc-ja'
 
@@ -1575,19 +1558,9 @@ hook_source = '''
 [[plugins]]
 repo = 'vim-denops/denops.vim'
 lazy = 1
-#hook_source = '''
-#   let g:denops#debug = 1
-#   let g:denops#trace = 1
-#
-#  " for profile
-#  let g:denops#server#deno_args = [
-#      \ '-q',
-#      \ '--no-check',
-#      \ '--unstable',
-#      \ '-A',
-#      \ '--inspect',
-#      \ ]
-#'''
+hook_add = '''
+let g:denops_server_addr = '127.0.0.1:32123'
+'''
 
 # }}}1
 
