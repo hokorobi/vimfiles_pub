@@ -25,62 +25,56 @@
 	},
 	"attention": {
 		"prefix": "attention",
-		"body": ".. attention:: ${1:text}\n$0",
+		"body": ".. attention::\n\t${1:text}\n$0",
 		"description": "Attention",
 		"scope": "text.restructuredtext"
 	},
 	"note": {
 		"prefix": "note",
-		"body": ".. note:: ${1:text}\n$0",
+		"body": ".. note::\n\t${1:text}\n$0",
 		"description": "Note",
 		"scope": "text.restructuredtext"
 	},
 	"warning": {
 		"prefix": "warning",
-		"body": ".. warning:: ${1:text}\n$0",
+		"body": ".. warning::\n\t${1:text}\n$0",
 		"description": "Warning",
 		"scope": "text.restructuredtext"
 	},
 	"error": {
 		"prefix": "error",
-		"body": ".. error:: ${1:text}\n$0",
+		"body": ".. error::\n\t${1:text}\n$0",
 		"description": "Error",
 		"scope": "text.restructuredtext"
 	},
 	"hint": {
 		"prefix": "hint",
-		"body": ".. hint:: ${1:text}\n$0",
+		"body": ".. hint::\n\t${1:text}\n$0",
 		"description": "Hint",
 		"scope": "text.restructuredtext"
 	},
 	"important": {
 		"prefix": "important",
-		"body": ".. important:: ${1:text}\n$0",
+		"body": ".. important::\n\t${1:text}\n$0",
 		"description": "Important",
 		"scope": "text.restructuredtext"
 	},
 	"caution": {
 		"prefix": "caution",
-		"body": ".. caution:: ${1:text}\n$0",
+		"body": ".. caution::\n\t${1:text}\n$0",
 		"description": "Caution",
 		"scope": "text.restructuredtext"
 	},
 	"danger": {
 		"prefix": "danger",
-		"body": ".. danger:: ${1:text}\n$0",
+		"body": ".. danger::\n\t${1:text}\n$0",
 		"description": "Danger",
 		"scope": "text.restructuredtext"
 	},
 	"tip": {
 		"prefix": "tip",
-		"body": ".. tip:: ${1:text}\n$0",
+		"body": ".. tip::\n\t${1:text}\n$0",
 		"description": "Tip",
-		"scope": "text.restructuredtext"
-	},
-	"admonition": {
-		"prefix": "admonition",
-		"body": ".. admonition:: ${1:text}\n$0",
-		"description": "Admonition",
 		"scope": "text.restructuredtext"
 	},
 	"rubric": {

@@ -28,7 +28,7 @@ hook_add = '''
   BulkMap is <expr> <Tab>   vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' : '<Tab>'
   BulkMap is <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
 
-  let g:vsnip_snippet_dir = expand('~/vimfiles/vsnip')
+  let g:vsnip_snippet_dir = expand('~/vimfiles/rc/vsnip')
 '''
 
 [[plugins]]

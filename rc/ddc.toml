@@ -1,8 +1,7 @@
 [[plugins]]
 repo = 'Shougo/ddc.vim'
-# rev = '1516e6'
 depends = ['denops.vim', 'pum.vim']
-on_event = ['InsertEnter', 'CursorHold']
+on_event = ['InsertEnter']
 hook_source = '''
   let s:ddc_sourceOptions = {}
   let s:ddc_sourceOptions['_'] = #{
@@ -12,17 +11,16 @@ hook_source = '''
       \ }
   let s:ddc_sourceOptions['around'] = #{
       \   mark: 'A',
-      \   dup: v:false,
       \   maxKeywordLength: 30,
       \ }
   let s:ddc_sourceOptions['buffer'] = #{
       \   mark: 'B',
-      \   dup: v:false,
       \   maxKeywordLength: 30,
       \ }
   let s:ddc_sourceOptions['file'] = #{
       \   mark: 'F',
       \   isVolatile: v:true,
+      \   mode: 'win32',
       \ }
   " https://github.com/kuuote/dotvim/blob/7fbd83a2aedb1e30405f9bd1d8126b04dc5fe72e/conf/vim-lsp.toml#L50
   " メソッド呼び出しを補完
@@ -45,53 +43,78 @@ hook_source = '''
   call ddc#custom#patch_filetype(
       \ ['autohotkey', 'cfg', 'git', 'javascript', 'markdown', 'plantuml', 'snippet', 'vb', 'xsl'], 'sources', ['buffer', 'around', 'file'])
 
-  call ddc#custom#patch_global('postFilters', ['sorter_fuzzy'])
 
+  " ddc.vim を使用しない filetype では <Tab>
+  " popupで候補が選択されている場合、vsnipの展開ができるなら展開、できないなら次の候補へ
+  " popupが表示されている場合、次の候補へ
+  " vsnipのジャンプができる場合、次のジャンプ位置へ
+  " 空白行の場合、<Tab> そうでなければ補完
+  imap <silent><expr> <Tab>
+        \ !has_key(ddc#custom#get_filetype(), &filetype) ? '<Tab>' :
+        \ pum#entered() ? vsnip#expandable()  ? '<Plug>(vsnip-expand)' : '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+        \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+        \ vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' :
+        \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ? '<Tab>' :
+        \ ddc#map#manual_complete()
   smap <silent><expr> <Tab>
         \ vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' :
         \ '<Tab>'
-  imap <silent><expr> <Tab>
-        \ vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' :
-        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
-        \ ddc#can_complete() ? ddc#manual_complete() :
-        \ '<Tab>'
   imap <silent><expr> <C-j>
-        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+        \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
         \ '<C-j>'
-  smap <silent><expr> <C-n>
-        \ vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' :
-        \ '<C-n>'
-  imap <silent><expr> <C-n>
-        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
-        \ '<Cmd>normal! gj<CR>'
+  " smap <silent><expr> <C-n>
+  "      \ vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' :
+  "      \ '<C-n>'
+  " pum 表示時の imap <C-n> が意図したとおりに動かないのでコメントアウト。
+  " imap <C-n> と <C-j> を同じマッピングにしても動きが違う？　Vim のバグ？
+  " imap <silent><expr> <C-n>
+  "      \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+  "      \ '<Cmd>normal! gj<CR>'
+  imap <silent><expr> <S-Tab>
+        \ pum#visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
+        \ vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' :
+        \ '<C-h>'
   smap <silent><expr> <S-Tab>
         \ vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' :
         \ '<S-Tab>'
-  imap <silent><expr> <S-Tab>
-        \ vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' :
-        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
-        \ '<C-h>'
   imap <silent><expr> <C-k>
-        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
+        \ pum#visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
         \ '<Cmd>normal! D<CR>'
-  imap <silent><expr> <C-p>
-        \ ddc#map#pum_visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
-        \ '<Cmd>normal! gk<CR>'
+  " <C-n> をコメントアウトしたのでこちらもセットで。
+  " imap <silent><expr> <C-p>
+  "      \ pum#visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
+  "      \ '<Cmd>normal! gk<CR>'
 
-  " Use pum.vim
-  call ddc#custom#patch_global('completionMenu', 'pum.vim')
+  " Shougo/pum.vim
+  call ddc#custom#patch_global('ui', 'pum')
   call ddc#custom#patch_global('backspaceCompletion', v:true)
+  " tani/ddc-fuzzy
+  call ddc#custom#patch_global('postFilters', ['sorter_fuzzy'])
   call ddc#custom#patch_global('filterParams', #{
     \   converter_fuzzy: #{
     \     hlGroup: 'SpellBad'
     \   }
     \ })
 
+  " For thinca/partedit
+  autocmd OptionSet buftype if &buftype ==# 'acwrite' | call s:forPartedit() | endif
+  function! s:forPartedit() abort
+    call ddc#custom#patch_buffer('specialBufferCompletion', v:true)
+    nnoremap <buffer> qq <Cmd>ParteditEnd<CR>
+  endfunction
+
   call ddc#enable()
 '''
 
 [[plugins]]
 repo = 'Shougo/pum.vim'
+hook_source = '''
+  call pum#set_option('use_complete', v:true)
+'''
+
+[[plugins]]
+repo = 'Shougo/ddc-ui-pum'
+on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'tani/ddc-fuzzy'
@@ -119,7 +142,7 @@ hook_source = '''
 '''
 
 [[plugins]]
-repo = 'Shougo/ddc-around'
+repo = 'Shougo/ddc-source-around'
 on_source = 'ddc.vim'
 
 [[plugins]]

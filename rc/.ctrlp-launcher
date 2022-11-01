@@ -3,7 +3,7 @@ fenrir instant.ini	exe('edit ' .. g:fenrir_dir .. '/data/instant.ini')
 fenrir path	exe('edit ' .. g:fenrir_dir .. '/data/path')
 autohotkey ahk	exe('edit ' .. g:ahk_path)
 _vimrc.local	exe('edit ' .. g:vimrc_local)
-cheatsheet	edit ~/vimfiles/rc/cheatsheet.rst
+cheatsheet	CtrlPLauncher cheat
 PPX.CFG	exe('edit ' .. g:ppx_dir .. '/PPX.CFG')
 gitconfig	edit ~/.gitconfig
 lexima.vim vimrc	edit ~/vimfiles/rc/lexima.vim
