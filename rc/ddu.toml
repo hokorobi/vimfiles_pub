@@ -46,10 +46,10 @@ repo = 'Shougo/ddu-commands.vim'
 depends = 'ddu.vim'
 on_cmd = 'Ddu'
 hook_add = '''
-  nnoremap <silent> <Leader>du <Cmd>Ddu mr<CR>
-  nnoremap <silent> <Leader>db <Cmd>Ddu buffer<CR>
-  nnoremap <silent> <Leader>dr <Cmd>Ddu register<CR>
-  nnoremap <silent> <Leader>df <Cmd>Ddu file_rec<CR>
+  nnoremap <silent> <Space>du <Cmd>Ddu mr<CR>
+  nnoremap <silent> <Space>db <Cmd>Ddu buffer<CR>
+  nnoremap <silent> <Space>dr <Cmd>Ddu register<CR>
+  nnoremap <silent> <Space>df <Cmd>Ddu file_rec<CR>
 '''
 
 [[plugins]]

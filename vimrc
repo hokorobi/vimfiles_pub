@@ -44,17 +44,13 @@ function! Vimrc_executable(expr)
 endfunction
 
 
-let g:mapleader = "\<Space>"
-let g:maplocalleader = "\<Space>"
-
-
 " Command {{{1
 
-" エンコードを指定して開き直す
+" 文字コードを指定して開き直す
 command! OpenUtf8 :e ++enc=utf-8
 command! OpenSjis :e ++enc=cp932
 
-" エンコードを変換
+" 文字コードを変換
 command! ToUtf8 :set fileencoding=utf-8
 command! ToUtf8bom :set fileencoding=utf-8 bomb
 command! ToSjis :set fileencoding=cp932
@@ -80,7 +76,7 @@ function! s:bulkmap(force_map, modes, ...) abort
       echoerr 'Invalid mode is detected: ' .. arg
       return
     endif
-    execute mode .. map arg
+    execute printf('%s%s %s', mode, map, arg)
   endfor
 endfunction
 command! -nargs=+ -bang BulkMap call s:bulkmap(<bang>0, <f-args>)
@@ -102,7 +98,7 @@ command! -nargs=0 DiffXdoc2txt call vimrc#DiffXdoc2txt()
 
 " カーソル下の単語を vimgrep
 command! -nargs=1 VimGrepCurrent vimgrep <args> %
-nnoremap <expr> <Leader>* '<Cmd>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
+nnoremap <expr> <Space>* '<Cmd>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
 
 " json processor
 command! -nargs=? Jq call vimrc#Jq(<f-args>)
@@ -296,17 +292,8 @@ autocmd vimrc Syntax * syntax sync minlines=500 maxlines=1000
 " 大きなファイルをすぐ開く
 " https://vim-jp.slack.com/archives/C03C4RC9F/p1652842090652059
 " https://vim-jp.slack.com/archives/C03C4RC9F/p1652842245469699
-function! s:syntaxoff_large_file() abort
-  let max_file_size = 1000 * 1000
-  let fsize = getfsize(@%)
-
-  if fsize > max_file_size
-    set syntax=OFF
-    call interrupt()
-  endif
-endfunction
-" BufReadPost だと <C-s>で保存できなくなるので BufEnterへ
-autocmd vimrc BufEnter * call s:syntaxoff_large_file()
+" BufReadPost だと <C-s> で保存できなくなるので BufEnter へ
+autocmd vimrc BufEnter * if getfsize(@%) > 1000 * 1000 | setlocal syntax=OFF | call interrupt() | endif
 
 " }}}2 edit {{{2
 
@@ -420,7 +407,7 @@ set switchbuf=uselast
 " ローカル設定の読み込み
 let g:vimrc_local = '~/_vim/_vimrc.local'
 if filereadable(expand(g:vimrc_local))
-  execute 'source' .. g:vimrc_local
+  execute printf('source %s', g:vimrc_local)
 endif
 
 
@@ -478,7 +465,7 @@ let g:changelog_new_date_format="%d\n\n%c\n"
 let s:dein_home = expand('~/_vim/dein')
 " let g:dein#install_log_filename = s:dein_home .. '/dein.log'
 let g:dein#install_github_api_token = g:github_token
-execute 'set runtimepath& runtimepath+=' .. s:dein_home .. '/repos/github.com/Shougo/dein.vim'
+execute printf('set runtimepath& runtimepath+=%s/repos/github.com/Shougo/dein.vim', s:dein_home)
 let g:dein#install_progress_type = 'floating'
 let g:dein#auto_remote_plugins = v:false
 " Strict check updated plugins yesterday
@@ -530,6 +517,7 @@ autocmd vimrc Filetype cfg setlocal noexpandtab
 autocmd vimrc BufNewFile,BufRead *.js9 set filetype=javascript
 
 " }}}1 Key Mapping {{{1
+
 " :help map-table
 
 " Space 単体は何もしない
@@ -537,7 +525,7 @@ nnoremap <Space> <Nop>
 
 " toggle
 nnoremap [toggle] <Nop>
-nmap <Leader>t [toggle]
+nmap <Space>t [toggle]
 
 nnoremap [toggle]w <Cmd>call vimrc#toggle_option('wrap')<CR>
 
@@ -546,7 +534,7 @@ noremap ; :
 noremap : ;
 
 " 誤爆を防ぐ {{{
-nnoremap <Leader>Q q
+nnoremap <Space>Q q
 nnoremap q <Nop>
 " IME のトグルに使っているのでノーマルモードで押し間違えることがあるため
 nnoremap <C-^> <Nop>
@@ -563,6 +551,15 @@ xnoremap v <C-v>
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
 nnoremap <C-CR> <Cmd>call vimrc#popup_cursor_info()<CR>
 
+" https://vim-jp.slack.com/archives/CLKR04BEF/p1667463907309639
+" a = "foo" で ( "foo") でなく ("foo") を選択する
+onoremap a' 2i'
+xnoremap a' 2i'
+onoremap a" 2i"
+xnoremap a" 2i"
+onoremap a` 2i`
+xnoremap a` 2i`
+
 " Buffer {{{2
 
 " 直前に閉じたファイルを開き直す
@@ -571,7 +568,7 @@ noremap <C-z> <C-^>
 
 " <C-s> でバッファ変更時のみ保存。無名はダイアログ表示
 " http://d.hatena.ne.jp/tyru/20130803/cua_save
-nnoremap <expr> <C-s> '<Cmd>' .. (bufname('%') ==# '' ? 'browse confirm saveas' : 'update') .. '<CR>'
+nnoremap <expr> <C-s> printf('<Cmd>%s<CR>', bufname('%') ==# '' ? 'browse confirm saveas' : 'update')
 imap <C-s> <ESC><C-s>
 
 noremap <C-n> <Cmd>enew<CR>
@@ -580,14 +577,10 @@ noremap <C-n> <Cmd>enew<CR>
 noremap <F4> <Cmd>edit $MYVIMRC<CR>
 noremap <S-F4> <Cmd>edit ~/vimfiles/rc/plugins.toml<CR>
 
-" バッファの切り替え
-nnoremap b <Cmd>bnext<CR>
-nnoremap B <Cmd>bprevious<CR>
-
 nnoremap qt <Cmd>tabclose<CR>
 
-nnoremap <Leader><F10> <Cmd>cnfile<CR>
-nnoremap <Leader><F11> <Cmd>cpfile<CR>
+nnoremap <Space><F10> <Cmd>cnfile<CR>
+nnoremap <Space><F11> <Cmd>cpfile<CR>
 
 " }}}2 Window {{{2
 
@@ -626,12 +619,12 @@ cnoremap <M-c> <C-f>
 " 表示上の行移動変更
 " https://github.com/darookee/dotfiles/blob/2c11a0d322c04c549d13d9cacb282d1e44a5a3c7/vimrc#L195
 noremap <expr> j v:count == 0 ? 'gj' : 'j'
-inoremap <C-n> <C-o>gj
+" inoremap <C-n> <Cmd>normal! gj<CR>
 cnoremap <C-n> <Down>
 " noremap  <C-n> <Down>
 
 noremap <expr> k v:count == 0 ? 'gk' : 'k'
-inoremap <C-p> <C-o>gk
+" inoremap <C-p> <Cmd>normal! gk<CR>
 cnoremap <C-p> <Up>
 
 cnoremap <C-f> <Right>
@@ -651,8 +644,8 @@ cnoremap <C-a> <Home>
 cnoremap <M-h> <Home>
 cnoremap <C-e> <End>
 cnoremap <M-l> <End>
-onoremap <Leader>h ^
-onoremap <Leader>l $
+onoremap <Space>h ^
+onoremap <Space>l $
 
 " 単語先頭へ進む w, 単語先頭へ戻る W
 " dw で dW になるのでやめ
@@ -686,25 +679,25 @@ autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 
 " OS クリップボード {{{3
 " 切り取り
-xnoremap <Leader>d "+d
+xnoremap <Space>d "+d
 
 " 貼り付け
 noremap! <C-v> <C-R><C-O>*
 nnoremap <C-v> "+gP
 tnoremap <C-v> <C-w>"*
 " コピー
-BulkMap nx <Leader>y "+y
+BulkMap nx <Space>y "+y
 
 " バッファのフルパス
-nnoremap <expr> <Leader>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
+nnoremap <expr> <Space>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
 
 " バッファ全体
-nnoremap <Leader>ye <Cmd>%y+<CR>
+nnoremap <Space>ye <Cmd>%y+<CR>
 
 " 現在行 (行頭空白、行末空白・改行を除く)
-nnoremap <Leader>yy <Cmd>call vimrc#linecopy()<CR>
+nnoremap <Space>yy <Cmd>call vimrc#linecopy()<CR>
 
-nnoremap <Leader>Y "+y$
+nnoremap <Space>Y "+y$
 "}}}3
 
 nnoremap Y y$
@@ -719,9 +712,7 @@ map! <C-h> <BS>
 
 " Del
 noremap! <C-d> <Del>
-noremap! <C-l> <Del>
 snoremap <C-d> a<BS>
-snoremap <C-l> a<BS>
 
 " 行頭まで削除
 inoremap <C-BS> <C-u>
@@ -735,8 +726,8 @@ nnoremap <C-BS> d0
 
 
 " カーソル移動せずに改行挿入
-nnoremap <M-o> <Cmd>call append(line('.'), repeat([''], v:count1))<CR>
-nnoremap <M-O> <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <expr> <M-o> vimrc#blank_below()
+nnoremap <expr> <M-O> vimrc#blank_above()
 
 " 日付入力
 inoremap <C-r><C-d> <C-R>=strftime("%F")<CR>
@@ -774,11 +765,11 @@ nnoremap <expr> <A-m> reg_recording() == 'm' ? 'q' : 'qm'
 
 " 選択範囲を置換する
 " http://qiita.com/itmammoth/items/312246b4b7688875d023
-nnoremap <Leader># "zyiw:%s/\<<C-R>z\>/<C-R>z/gc<left><left>
-" xnoremap <Leader># "zy:%s/\V<C-R>z/<C-R>z/g<left><left>
-xnoremap <Leader># <Cmd>call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
+nnoremap <Space># "zyiw:%s/\<<C-R>z\>/<C-R>z/gc<left><left>
+" xnoremap <Space># "zy:%s/\V<C-R>z/<C-R>z/g<left><left>
+xnoremap <Space># <Cmd>call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
 function! s:set_vsearch()
-  silent normal! gv"zy
+  silent noautocmd normal! gv"zy
   let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
 endfunction
 
@@ -803,7 +794,7 @@ cnoremap <M-j> <C-g>
 cnoremap <M-k> <C-t>
 
 " 現在のバッファから grep
-nnoremap <Leader>/ :vimgrep // %<Left><Left><Left>
+call util#addLeft('nnoremap <Space>/ :vimgrep /', '/ %')
 
 " }}}2
 
@@ -813,32 +804,33 @@ call extend(g:vimrc_altercmd_dic, {'git': '!git'})
 " Suppress git add -p message
 let $LANG = 'ja_JP.UTF-8'
 
-" nnoremap <Leader>gl <Cmd>!git gl -100<CR>
-nnoremap <Leader>gd <Cmd>!git diff<CR>
-nnoremap <Leader>gs <Cmd>!git status<CR>
-" nnoremap <silent> <Leader>gbb :!git branch<CR>
-nnoremap <Leader>gbb <Cmd>call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
+" nnoremap <Space>gl <Cmd>!git gl -100<CR>
+nnoremap <Space>gd <Cmd>!git diff<CR>
+nnoremap <Space>gs <Cmd>!git status -v<CR>
+" nnoremap <silent> <Space>gbb :!git branch<CR>
+nnoremap <Space>gbb <Cmd>call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
+nnoremap <Space>gbc :!git switch -c<Space>
 " @ は現在ブランチの最新コミット
-nnoremap <Leader>gp :!git push origin @
+nnoremap <Space>gp :!git push origin @
 
 " コミット対象の hunk を選択する場合: ga -> gc
 " コミットメッセージに詳細を書く場合: gu -> gc
-nnoremap <Leader>gad <Cmd>call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
-nnoremap <Leader>gu <Cmd>silent !git add -u<CR>
-nnoremap <Leader>gc <Cmd>!git commit -v<CR>
-nnoremap <Leader>gam <Cmd>!git commit --amend<CR>
+nnoremap <Space>gad <Cmd>call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
+nnoremap <Space>gu <Cmd>silent !git add --update<CR>
+nnoremap <Space>gc <Cmd>!git commit -v<CR>
+nnoremap <Space>gam <Cmd>!git commit --amend<CR>
 " 単純なコミットメッセージの場合: gn
-nnoremap <Leader>gn :!git commit -a -m ""<Left>
+nnoremap <Space>gn :!git commit --all -v -m ""<Left>
 
 " 直前のコミットを master にする場合: gbr -> g-
 " rename current branch
-nnoremap <Leader>gbr :!git branch -m temp
+nnoremap <Space>gbr :!git branch -m temp
 " switch new branch (default: master) from last commit (default: master)
-nnoremap <Leader>g- :!git switch -c master HEAD~<Left><Left><Left><Left><Left><Left>
+call util#addLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')
 " restore temp branch
-nnoremap <Leader>gr :!git restore -s temp .
+nnoremap <Space>gr :!git restore --source=temp .
 " delete branch
-nnoremap <Leader>gbd :!git branch -D temp
+nnoremap <Space>gbd :!git branch -D temp
 
 
 " }}}1 Terminal {{{1

@@ -6,13 +6,17 @@ hook_add = '''
 
   " デフォルトでは asyncomplete を有効にしない
   let g:asyncomplete_enable_for_all = 0
-  " completeopt は自分の設定を優先する。
-  let g:asyncomplete_auto_completeopt = 0
 
   let g:asyncomplete_min_chars = 2
 
   " ポップアップが表示され過ぎるのを避ける
   let g:asyncomplete_popup_delay = 200
+
+  " FIXME: 補完候補が選択されない
+  inoremap <silent><expr> <C-l>
+        \ pumvisible() ? vsnip#expandable() ? '<Plug>(vsnip-expand)' : '<Cmd>call asyncomplete#close_popup()<CR>' :
+        \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
+        \ ''
 
   autocmd vimrc FileType autohotkey,cfg,git,go,javascript,plantuml,python,rst,snippet,toml,vim,vb,xsl call asyncomplete#enable_for_buffer()
 '''
@@ -20,28 +24,37 @@ hook_add = '''
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip'
 on_event = 'InsertEnter'
-hook_add = '''
-  " Expand or jump
-  BulkMap is <expr> <C-k> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<C-k>'
-
-  " Jump forward or backward
-  BulkMap is <expr> <Tab>   vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' : '<Tab>'
-  BulkMap is <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
+hook_source = '''
+  imap <silent><expr> <Tab>
+        \ !b:asyncomplete_enable ? '<Tab>' :
+        \ pumvisible() ? '<Down>' :
+        \ vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' :
+        \ '<Tab>'
+  smap <silent><expr> <Tab>  vsnip#jumpable(1)  ? '<Plug>(vsnip-jump-next)' : '<Tab>'
+  imap <silent><expr> <S-Tab>
+        \ pumvisible() ? '<Up>' :
+        \ vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)' :
+        \ '<C-h>'
+  smap <expr> <S-Tab> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'
+  imap <silent><expr> <C-j>
+        \ pumvisible() ? '<Down>' :
+        \ '<C-j>'
+  imap <silent><expr> <C-k>
+        \ pumvisible() ? '<Up>' :
+        \ '<Cmd>normal! D<CR>'
 
   let g:vsnip_snippet_dir = expand('~/vimfiles/rc/vsnip')
 '''
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip-integ'
-on_event = 'InsertEnter'
-depends = ['asyncomplete.vim', 'vim-vsnip']
+on_source = 'vim-vsnip'
 
 [[plugins]]
 repo = 'hokorobi/asyncomplete-buffer.vim'
 # rev = 'suppress-suggest-behind-japanese'
-depends = 'asyncomplete.vim'
+on_source = 'asyncomplete.vim'
 frozen = 1
-on_ft = ['autohotkey', 'cfg', 'git', 'javascript', 'plantuml', 'rst', 'snippet', 'toml', 'vb', 'vim', 'xsl']
 hook_source = '''
   let g:asyncomplete_buffer_match_pattern = '\k\+$'
 
