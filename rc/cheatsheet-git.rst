@@ -46,3 +46,9 @@ curl -H "Authorization: bearer "<token> -X POST -d@query.json https://api.github
 
 query.json
 { "query": "query {a0:repository(owner:\"markonm\", name: \"traces.vim\"){ pushedAt nameWithOwner }}" }
+
+ほか
+----
+
+コンフリクトを試すリポジトリ
+https://github.com/QuinnyPig/conflicts

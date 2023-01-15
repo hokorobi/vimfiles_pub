@@ -1,0 +1,1 @@
+rst insert image	execute('call vimrc#CtrlPOpenfunc("CtrlP", "vimrc#CtrlPPasteFunc", ".. image:: ")')

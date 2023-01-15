@@ -31,7 +31,7 @@ F6 (ni)                   : 日付の入力
 :ExpandSerialNumber       : hoge [100-120] fuga などと入力して実行すると、hoge 100 fuga, hoge 101 fuga が各行に展開される。 feat. ExpandSerialNumber
                           : [0xa-0xf] 入力後に実行すると a-f を各行に展開 feat. ExpandSerialNumber
 :SortLine                 : , 区切りの文字列をソートする（行全体）
-<Leader>a / <Leader>x (v) : 選択範囲をインクリメント / デクリメント
+<Space>a / <Space>x (v) : 選択範囲をインクリメント / デクリメント
 :v/hoge/d                 : ある文字列を含む行のみを残して削除
 :g/hoge/d                 : ある文字列を含む行を削除
 gs                        : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動) に入る feat. swap
@@ -200,7 +200,7 @@ C-t         : GoDef のジャンプの前の位置に戻る feat. vim-go
 
 Gina.vim
 ========
-<Leader>gs  : Gina status
+<Space>gs  : Gina status
 cc (status) : Gina commit
 s (blame)   : Gina show
 

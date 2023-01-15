@@ -56,10 +56,10 @@ endfunction
 " 外部からファイルを渡して呼び出すことはできないのか？
 function! vimrc#YetAnotherEdit(file) abort
   if winnr('$') > 1
-    execute 'tabnew ' .. fnameescape(a:file)
+    execute printf('tabnew %s', fnameescape(a:file))
     return
   endif
-  execute 'e ' .. fnameescape(a:file)
+  execute printf('e %s', fnameescape(a:file))
 endfunction
 
 
@@ -76,7 +76,7 @@ function! vimrc#ToggleSubstituteSearch(type, line) abort
     if s:range ==# '''<,''>'
       call setpos('.', getpos('''<'))
     endif
-    return "\<End>\<C-U>\<BS>" .. '/' .. expr
+    return printf('<End><C-U><BS>/%s', expr)
   endif
 endfunction
 function! s:GetOnetime(varname, defaultValue) abort
@@ -85,7 +85,7 @@ function! s:GetOnetime(varname, defaultValue) abort
   endif
 
   let varValue = eval(a:varname)
-  execute 'unlet ' .. a:varname
+  execute printf('unlet %s', a:varname)
   return varValue
 endfunction
 
@@ -95,7 +95,7 @@ endfunction
 function! vimrc#Retab(old_tabstop) abort
   let pos = getpos('.')
   let new_indent = &l:expandtab ? repeat(' ', &l:tabstop) : '\t'
-  silent execute '%s/\v%(^ *)@<= {' .. a:old_tabstop .. '}/' .. new_indent .. '/ge'
+  silent execute printf('%%s/\v%(^ *)@<= {%s}/%s/ge', a:old_tabstop, new_indent)
   silent retab
   call setpos('.', pos)
 endfunction
@@ -107,7 +107,7 @@ endfunction
 " https://github.com/cohama/.vim/blob/9bcf4c6da9ef538b75ba6052d592290e31d629bb/init.vim#L873-L905
 function! vimrc#ISetting(setting) abort
   if empty(a:setting)
-    echo 'indent: ' .. ((&l:expandtab) ? 'space' : 'tab') .. ' ' .. &l:shiftwidth
+    echo printf('indent: %s %s', ((&l:expandtab) ? 'space' : 'tab'), &l:shiftwidth)
     return
   endif
 
@@ -141,7 +141,7 @@ function! vimrc#ChangeCurrentDir(directory, bang) abort
   if a:directory ==# ''
     lcd %:p:h
   else
-    execute 'lcd ' .. a:directory
+    execute printf('lcd %s', a:directory)
   endif
 
   if a:bang ==# ''
@@ -152,11 +152,12 @@ endfunction
 " diff xdoc2txt
 " vimdiff でファイルを開いた後に xdoc2txt でフィルタリングした結果を diffupdate
 function! vimrc#DiffXdoc2txt() abort
-  nnoremap qq :<C-u>qa!<CR>
-
   if expand('%:e') !~? 'html\?'
     return
   endif
+
+  nnoremap qq :<C-u>qa!<CR>
+
   windo %!xdoc2txt "%"
   windo setlocal wrap
   set diffopt+=iwhiteall
@@ -165,7 +166,7 @@ endfunction
 
 " toggle option
 function! vimrc#toggle_option(option_name) abort
-  execute 'setlocal' a:option_name .. '!' a:option_name .. '?'
+  execute printf('setlocal %s! %s?', a:option_name, a:option_name)
 endfunction
 
 " json processor
@@ -184,14 +185,14 @@ function! vimrc#Jq(...) abort
   endif
 
   if 0 ==# a:0
-    execute '%!' .. l:cmd .. ' ' .. l:arg0
+    execute printf('%!%s %s', l:cmd, l:arg0)
     return
   endif
   if l:cmd ==# 'python'
     echom 'jj, jq コマンドが見つからないため式は評価できません。'
     return
   endif
-  execute '%!' .. l:cmd ' "' .. a:1 .. '"'
+  execute printf('%!%s "%s"', l:cmd, a:1)
 endfunction
 
 
@@ -202,7 +203,7 @@ function! vimrc#GrepWrap(...) abort
   if len(str) == 0
     return 1
   endif
-  execute 'grep "' .. str .. '" ' .. path
+  execute printf('grep "%s" %s', str, path)
 endfunction
 
 " pt で grep を実行した後に結果をパス順にしたかったので sort
@@ -217,10 +218,9 @@ endfunction
 " split and go
 function! vimrc#SplitAndGo(cmd) abort
   execute a:cmd
-  if !v:count
-    return
+  if v:count
+    execute printf('normal! %sG', v:count)
   endif
-  execute 'normal! ' .. v:count .. 'G'
 endfunction
 
 function! vimrc#toggle_quickfix_window() abort
@@ -248,11 +248,11 @@ function! vimrc#term_view() abort
 endfunction
 
 " 現在行を yank (行頭空白、行末空白・改行を除く)
-function! vimrc#linecopy() abort
-  let view = winsaveview()
-  normal! 0vg_"+y
-  silent call winrestview(view)
-endfunction
+" function! vimrc#linecopy() abort
+"   let view = winsaveview()
+"   normal! 0vg_"+y
+"   silent call winrestview(view)
+" endfunction
 
 " コマンドの結果をスクラッチバッファに表示
 function! vimrc#L(args)
@@ -290,6 +290,53 @@ function! vimrc#percent_expr() abort
   endif
 endfunction
 
+" https://zenn.dev/kawarimidoll/articles/4357f07f210d2f
+" 現在の選択範囲を取得 {{{
+function! vimrc#get_current_selection() abort
+  if mode() !~# '^[vV\x16]'
+    " not in visual mode
+    return ''
+  endif
+
+  " save current z register
+  let save_reg = getreginfo('z')
+
+  " get selection through z register
+  noautocmd normal! "zygv
+  let result = @z
+
+  " restore z register
+  call setreg('z', save_reg)
+
+  return result
+endfunction
+" }}}
+
+" https://zenn.dev/vim_jp/articles/8de697fc88e63c
+" Vimで空行挿入+dot repeat {{{
+function! vimrc#blank_above(type = '') abort
+  if a:type == ''
+    set operatorfunc=function('vimrc#blank_above')
+    return 'g@ '
+  endif
+
+  for i in range(v:count1)
+    call append(line('.')-1, '')
+  endfor
+endfunction
+
+function! vimrc#blank_below(type = '') abort
+  if a:type == ''
+    set operatorfunc=function('vimrc#blank_below')
+    return 'g@ '
+  endif
+
+  for i in range(v:count1)
+    call append(line('.'), '')
+  endfor
+endfunction
+"}}}
+
 " Swap {{{
 " https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L651-L687
 function! vimrc#on_SwapExists() abort
@@ -325,19 +372,23 @@ endfunction
 " plugin {{{1
 " '' か "" で括られた文字列か選択範囲を user/repogitory のリポジトリ名と想定して取得
 function! s:getRepogitoryName(mode) abort
-  let backup_z = @z
-  let @z = ''
+  let backregz = getreg('z')
+  call setreg('z', '')
   if a:mode ==# 'n'
-    normal! "zyi'
-    if @z ==# ''
-      normal! "zyi"
+    noautocmd normal! "zyi'
+    if getreg('z') ==# ''
+      noautocmd normal! "zyi"
     endif
   else
-    normal! gv"zy
+    noautocmd normal! gv"zy
   endif
-  let repo = @z
-  let @z = backup_z
-  return repo
+  let repo = getreg('z')
+  call setreg('z', backregz)
+  if match(repo, '[^/]\+/[^/]\+$') == 0
+    return repo
+  else
+    return ''
+  endif
 endfunction
 
 " gf-user {{{2
@@ -354,10 +405,10 @@ function! vimrc#GfFile() abort
   if !filereadable(path)
     return 0
   endif
-  return {
-        \   'path': path,
-        \   'line': line,
-        \   'col':  0,
+  return #{
+        \   path: path,
+        \   line: line,
+        \   col:  0,
         \ }
 endfunction
 
@@ -368,7 +419,7 @@ function! vimrc#EditHowmNew(dir) abort
     call mkdir(dir, 'p')
   endif
   let file = strftime('/%Y%m%d%H%M%S.howm')
-  execute 'edit ' .. dir .. file
+  execute printf('edit %s%s', dir, file)
   Template howm
   " 行末尾追加でインサートモードへ
   startinsert!
@@ -386,20 +437,22 @@ function! vimrc#openGithubRepository(mode) abort
 endfunction
 
 function! vimrc#openUrlInBuffer() abort
-  let lines = getline(0, line("$"))
-  for i in lines
-    let head = stridx(i, "https:\/\/")
-    if head < 0
-      continue
+  if &filetype != '' && confirm("Open URLs in buffer?", "&Yes\n&No\n&Cancel") != 1
+    return
+  endif
+
+  for line in getline(0, line("$"))
+    let head = stridx(line, "https:\/\/")
+    if head >= 0
+      call openbrowser#open(line[head:])
     endif
-    call openbrowser#open(i[head:])
   endfor
 endfunction
 
 " }}}2 CtrlP {{{2
 
 function! vimrc#CtrlPRepository(mode) abort
-  execute 'CtrlP' '~/_vim/dein/repos/github.com/' .. s:getRepogitoryName(a:mode)
+  execute printf('CtrlP ~/_vim/dein/repos/github.com/%s', s:getRepogitoryName(a:mode))
 endfunction
 
 " CtrlP のコマンドと初期入力値を指定して実行
@@ -415,28 +468,41 @@ function! vimrc#CtrlPDefaultInput(cmd, input)
   endtry
 endfunction
 
-" CtrlP で選択したファイルをバッファに挿入
+" CtrlP で選択した内容を加工してバッファに挿入
 function! vimrc#CtrlPPasteFunc(action, line) abort
-  call setreg('9', getreg('7') .. a:line .. getreg('8'))
   call ctrlp#exit()
-  normal! "zp
-  call setreg('7', s:backreg7)
-  call setreg('8', s:backreg8)
-  call setreg('9', s:backreg9)
+
+  let backregz = getreg('z')
+  call setreg('z', join([s:ctrlp_affix[0], a:line, s:ctrlp_affix[1]], ''))
+  noautocmd normal! "zp
+  call setreg('z', backregz)
   let g:ctrlp_open_func = {}
 endfunction
-function! vimrc#CtrlPFilenameInsert(prefix, suffix) abort
-  let s:backreg7 = getreg('7')
-  let s:backreg8 = getreg('8')
-  let s:backreg9 = getreg('9')
-  call setreg('7', a:prefix)
-  call setreg('8', a:suffix)
-  let g:ctrlp_open_func = { 'files': 'vimrc#CtrlPPasteFunc' }
-  CtrlP
-  " ここで setreg('7', backreg7) などと書いても駄目。
-  " CtrlP が非同期で動くため先にレジスタの値が元に戻ってしまう。
+function! vimrc#CtrlPOpenfunc(ctrlp, openfunc, prefix='', suffix='') abort
+  if exists(":" .. a:ctrlp) != 2
+    echohl WarningMsg | echomsg a:ctrlp .. ": 存在しないコマンドです。" | echohl None
+    return
+  endif
+  if exists("?" .. a:openfunc)
+    echohl WarningMsg | echomsg a:openfunc .. ": 存在しない関数です。" | echohl None
+    return
+  endif
+
+  let s:ctrlp_affix = [a:prefix, a:suffix]
+  let g:ctrlp_open_func = #{ files: a:openfunc }
+  execute a:ctrlp
 endfunction
-" }}}2
+
+" }}}2 gin {{{2
+
+function! vimrc#ginCR()
+  if v:count > 0
+    execute printf('normal! %iG', v:count)
+  else
+    execute join(['!git show -r', expand('<cword>')])
+  endif
+endfunction
+" }}}
 
 " }}}1
 

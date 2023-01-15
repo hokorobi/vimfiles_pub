@@ -29,14 +29,15 @@ Edit
 * `:ExpandSerialNumber`     : hoge [100-120] fuga などと入力して実行すると、hoge 100 fuga, hoge 101 fuga が各行に展開される。 feat. ExpandSerialNumber
                             : [0xa-0xf] 入力後に実行すると a-f を各行に展開 feat. ExpandSerialNumber
 * `:SortLine`               : 行全体で , 区切りの文字列をソートする
-* `<Leader>a` / `<Leader>x` : (v) 選択範囲をインクリメント / デクリメント
+* `<Space>a` / `<Space>x` : (v) 選択範囲をインクリメント / デクリメント
 * `:v/hoge/d`               : hoge を含む行のみを残して削除
 * `:Capture g/hoge/p`       : hoge を含む行のみを Capture バッファへ出力。 feat. Capture
 * `:vim // %`               : 直前の検索条件を含む行のみを Quickfix へ出力
 * `:g/hoge/d`               : hoge を含む行を削除
+* `:g/hoge/normal 1dj`      : hoge を含む行+1行を削除
 * `:g/Second/s/bar/foo/g`   : Second を含む行に存在する bar をすべて foo に置換する。
 * `:s//bar/`                : 直前の / 検索の合致内容を bar に置換する。
-* `:g/hoge/cmd`             : hoge を含む行に対して :cmd を実行
+* `:g/hoge/cmd`             : hoge を含む行に対して :cmd を実行。例: `:g/^function/normal A abort` functionを含む行の末尾に abort を追加。
 * `gs`                      : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動、s, S: ソート昇順、降順、r: 反転、g, G: グループ化、解除) に入る。. で繰り返し可能 feat. swap
 * `g>`                      : 要素を右に移動 feat. swap
 * `g<`                      : 要素を左に移動 feat. swap
@@ -255,6 +256,16 @@ Macro
 * `@a`        : マクロ a を実行
 * `@@`        : 直前のマクロを再実行。
 
+thinca の教え
+~~~~~~~~~~~~~
+
+例えば q を使う場合、マクロの最後に @q を入れます。
+そうすると同じマクロが再度再生され、エラーが出るまで実行され続けます。
+これは例えばマクロを適用したい場所を検索しておいて、`n@qn@q` とやる代わりに
+マクロの最後を n@q にしておけば 1 度の実行で自動的に全部の箇所に順次適用される感じです
+(最後は検索でジャンプできずに止まる。適用後のテキストも検索で引っかかってしまうとずっと止まらないので注意)
+
+
 Text Object
 -----------
 
@@ -314,30 +325,30 @@ Git
 keymap
 ~~~~~~
 
-* `<Leader>gl`  : graph log
-* `<Leader>gL`  : graph log 100 line in Gina. feat. gina.vim
-* `<Leader>gd`  : diff
-* `<Leader>gs`  : status
-* `<Leader>gS`  : status in Gina. feat. gina.vim
-* `<Leader>gg`  : log -p -G"|"
-* `<Leader>ga`  : add -p in popup window
-* `<Leader>gu`  : add all tracking files
-* `<Leader>gc`  : commit -v
-* `<Leader>gm`  : Show the history of commits under the cursor. feat. git-messenger.vim
-* `<Leader>gn`  : commit -a -m "|"
-* `<Leader>gbb` : Show branches
-* `<Leader>gbr` : Rename current branch
-* `<Leader>gbl` : blame in Gina. feat. gina.vim
-* `<Leader>g-`  : Switch last commit and new branch name
+* `<Space>gl`  : graph log
+* `<Space>gL`  : graph log 100 line in Gina. feat. gina.vim
+* `<Space>gd`  : diff
+* `<Space>gs`  : status
+* `<Space>gS`  : status in Gina. feat. gina.vim
+* `<Space>gg`  : log -p -G"|"
+* `<Space>ga`  : add -p in popup window
+* `<Space>gu`  : add all tracking files
+* `<Space>gc`  : commit -v
+* `<Space>gm`  : Show the history of commits under the cursor. feat. git-messenger.vim
+* `<Space>gn`  : commit -a -m "|"
+* `<Space>gbb` : Show branches
+* `<Space>gbr` : Rename current branch
+* `<Space>gbl` : blame in Gina. feat. gina.vim
+* `<Space>g-`  : Switch last commit and new branch name
 
 Vim で commit のやりなおし
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* `<Leader>gbr (git branch -m temp)`: 現在のブランチ名を temp へ変更。
-* `<Leader>g- (git switch -c master HEAD~)`: 一つ前のコミットのブランチ名を master にする。
-* `<Leader>gr (git restore -s temp .)`: すべてのファイルを temp ブランチの内容に変更。ステージングはされていない状態。
+* `<Space>gbr (git branch -m temp)`: 現在のブランチ名を temp へ変更。
+* `<Space>g- (git switch -c master HEAD~)`: 一つ前のコミットのブランチ名を master にする。
+* `<Space>gr (git restore -s temp .)`: すべてのファイルを temp ブランチの内容に変更。ステージングはされていない状態。
 * コミットやり直し。
-* `<Leader>gbd (git branch -D temp)`: temp ブランチ削除
+* `<Space>gbd (git branch -D temp)`: temp ブランチ削除
 
 gina.vim
 ~~~~~~~~
@@ -352,6 +363,17 @@ gina.vim
 #. :Gina blame を起動して、Enter と BS で対象のコミットを表示
 #. :Gina show でコミットの説明を参照。これをすぐに忘れるので書いておく。
 #. :Gina blame で表示されるタブは :tabclose を実行したり C-q を2回押したりして閉じる。
+
+Gina patch, GinPatch
+~~~~~~~~~~~~~~~~~~~~
+
+左: 元、中央: 反映、右: worktree で表示。
+コミットしたい内容へ中央のバッファを変更して :w
+:Gin commit -v でコミット
+
+* `dp`: 左か右のバッファで実行して中央へ反映
+* `dor`: 中央のバッファで実行して右の内容を反映
+* `dol`: 中央のバッファで実行して左の内容を反映
 
 Others
 ------
@@ -375,13 +397,15 @@ Others
 * `@:`                      : 直前に実行した `:` コマンドを再実行。
 * `let &l:statusline='hoge'`: setlocal statusline の let 版。ほかのオプションも同様。
 
-profile の取り方 1
-~~~~~~~~~~~~~~~~~~
+
+起動時の profile の取り方
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `gvim -c "profile start profile.log" -c "profile func *" -c "call timer_start(0, {->execute('quit')})"`
 
-profile の取り方 2
-~~~~~~~~~~~~~~~~~~
+
+気になる関数の profile の取り方
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 コマンド定義 ::
 
@@ -392,11 +416,28 @@ profile の取り方 2
      execute printf('profile file %s', empty(a:section) ? '*' : a:section)
    endfunction
 
+1. `:Profile hogefunc` を実行する
+2. profile.txt の中身を確認
+
+
+気になる操作の profile の取り方
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+コマンド定義 ::
+
+   command! Profile call s:command_profile()
+   function! s:command_profile() abort
+     profile start ~/profile.txt
+     profile func *
+     profile file *
+   endfunction
+
 1. vim を立ち上げ直す
 2. `:Profile` を実行する
 3. 気になっている操作を実行する
 4. vim を落とす
 5. profile.txt の中身を確認
+
 
 関数エラーからの Vim script の追い方
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -410,10 +451,12 @@ profile の取り方 2
 * `:verbose function gista#autocmd#call`
 * `:verbose function {157}`
 
+
 該当するautocommandは存在しません を調べる
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 set verbose=3 するとsourceしてるものが出る
+
 
 デバッグプリント
 ~~~~~~~~~~~~~~~~
@@ -424,7 +467,33 @@ set verbose=3 するとsourceしてるものが出る
 * `:put=string(dict)` : バッファに出力。
 * `:let g:x=dict` : からの `:breakadd expr g:x` ？　よくわからん。
 
+
 デバッグログ
 ~~~~~~~~~~~~
 
 `vim -V9log.log`: log.log に色々表示。
+
+現在の選択範囲を取得
+~~~~~~~~~~~~~~~~~~~~
+
+現在の選択範囲を取得::
+
+  function! s:get_current_selection() abort
+    if mode() !~# '^[vV\x16]'
+      " not in visual mode
+      return ''
+    endif
+  
+    " save current z register
+    let save_reg = getreginfo('z')
+  
+    " get selection through z register
+    noautocmd normal! "zygv
+    let result = @z
+  
+    " restore z register
+    call setreg('z', save_reg)
+  
+    return result
+  endfunction
+
