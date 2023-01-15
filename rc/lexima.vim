@@ -153,29 +153,46 @@ call lexima#add_rule(#{
       \   filetype: 'vim',
       \})
 
-" == で = 入力は ==# にする
+" cyclic = -> == -> ==# -> !=
 call lexima#add_rule(#{
-      \   at      : '\w\+ == \%#',
+      \   at      : ' == \%#',
       \   char    : '=',
       \   input   : '<BS>#<Space>',
       \   filetype: 'vim',
       \})
-
-" ==# で = 入力は != にする
 call lexima#add_rule(#{
-      \   at      : '\w\+ ==# \%#',
+      \   at      : ' ==# \%#',
       \   char    : '=',
       \   input   : '<BS><BS><BS><BS>!=<Space>',
       \   filetype: 'vim',
       \})
+call lexima#add_rule(#{
+      \   at      : ' != \%#',
+      \   char    : '=',
+      \   input   : '<BS><BS><BS>=<Space>',
+      \   filetype: 'vim',
+      \})
 
 " https://github.com/cohama/lexima.vim/issues/33
-" "{{{|%#}}}
+" " {{{|%#}}}
 " ↓
-" "{{{
-" "}}}
+" " {{{
+" " |}}}
 call lexima#add_rule(#{
-      \   at         : '{{{\%#}}}',
+      \   at         : '"[^{]*{{{\%#}}}',
+      \   char       : '<CR>',
+      \   input      : '<CR>" ',
+      \   input_after: '',
+      \   priority   : 1,
+      \   filetype   : 'vim',
+      \})
+
+" " {{{|%#
+" ↓
+" " {{{
+" |
+call lexima#add_rule(#{
+      \   at         : '".*{\%#$',
       \   char       : '<CR>',
       \   input_after: '',
       \   priority   : 1,
@@ -261,57 +278,47 @@ endfor
 " }}}4
 
 " }}}3 go {{{3
-" == の場合は := にする
+" cycle = -> == <-> := <-> !=. = で ->, + で <-
 call lexima#add_rule(#{
-      \   at      : '\w\+ == \%#',
+      \   at      : ' == \%#',
       \   char    : '=',
       \   input   : '<BS><BS><BS>:=<Space>',
       \   filetype: ['go', 'autohotkey'],
       \})
-
-" := の場合は != にする
 call lexima#add_rule(#{
-      \   at      : '\w\+ := \%#',
+      \   at      : ' := \%#',
       \   char    : '=',
       \   input   : '<BS><BS><BS>!=<Space>',
       \   filetype: 'go',
       \})
-
-" != の場合は = にする
 call lexima#add_rule(#{
-      \   at      : '\w\+ != \%#',
+      \   at      : ' != \%#',
       \   char    : '=',
       \   input   : '<BS><BS><BS>=<Space>',
       \   filetype: 'go',
       \})
-
-" != の場合は := にする
 call lexima#add_rule(#{
-      \   at      : '\w\+ != \%#',
+      \   at      : ' != \%#',
       \   char    : '+',
       \   input   : '<BS><BS><BS>:=<Space>',
       \   filetype: 'go',
       \})
-
-" := の場合は == にする
 call lexima#add_rule(#{
-      \   at      : '\w\+ := \%#',
+      \   at      : ' := \%#',
       \   char    : '+',
       \   input   : '<BS><BS><BS>==<Space>',
       \   filetype: 'go',
       \})
-
-" == の場合は = にする
 call lexima#add_rule(#{
-      \   at      : '\w\+ == \%#',
+      \   at      : ' == \%#',
       \   char    : '+',
-      \   input   : '<BS><BS><BS>=<Space>',
+      \   input   : '<BS><BS><Space>',
       \   filetype: 'go',
       \})
 
 " = の場合は != にする
 call lexima#add_rule(#{
-      \   at      : '\w\+ = \%#',
+      \   at      : ' = \%#',
       \   char    : '+',
       \   input   : '<BS><BS>!=<Space>',
       \   filetype: 'go',

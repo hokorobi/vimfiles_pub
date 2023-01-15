@@ -42,7 +42,7 @@ hook_source = '''
   call ddc#custom#patch_filetype(
       \ ['go', 'python', 'typescript'], #{sources: ['vim-lsp', 'file', 'vsnip']})
   call ddc#custom#patch_filetype(
-      \ ['autohotkey', 'cfg', 'git', 'javascript', 'markdown', 'plantuml', 'snippet', 'toml', 'vb', 'xsl'], #{sources: ['buffer', 'around', 'file']})
+      \ ['autohotkey', 'cfg', 'git', 'gitcommit', 'javascript', 'markdown', 'plantuml', 'snippet', 'toml', 'vb', 'xsl'], #{sources: ['buffer', 'around', 'file']})
 
 
   " ddc.vim を使用しない filetype では <Tab>
@@ -177,12 +177,6 @@ on_source = 'ddc.vim'
 hook_source = '''
   call popup_preview#enable()
 '''
-
-[[plugins]]
-repo = 'matsui54/denops-signature_help'
-depends = 'vim-vsnip'
-on_source = 'ddc.vim'
-
 
 # [[plugins]]
 # repo = 'hokorobi/neco-syntax'

@@ -70,13 +70,13 @@ cmap <C-t> <Esc>;s/<C-r>//
 " https://zenn.dev/kawarimidoll/articles/513d603681ece9
 function! s:bulkmap(force_map, modes, ...) abort
   let arg = join(a:000, ' ')
-  let map = (a:force_map || arg =~? '<Plug>') ? 'map' : 'noremap'
-  for mode in split(a:modes, '\zs')
-    if stridx('nvsxoilct', mode) < 0
-      echoerr 'Invalid mode is detected: ' .. arg
-      return
+  let cmd = a:force_map ? 'map' : 'noremap'
+  for mode in split(a:modes, '.\zs')
+    if index(split('nvsxoilct', '.\zs'), mode) < 0
+      echoerr 'Invalid mode is detected: ' .. mode
+      continue
     endif
-    execute printf('%s%s %s', mode, map, arg)
+    execute mode .. cmd arg
   endfor
 endfunction
 command! -nargs=+ -bang BulkMap call s:bulkmap(<bang>0, <f-args>)
@@ -97,8 +97,8 @@ nnoremap cd <Cmd>CD<CR>
 command! -nargs=0 DiffXdoc2txt call vimrc#DiffXdoc2txt()
 
 " カーソル下の単語を vimgrep
-command! -nargs=1 VimGrepCurrent vimgrep <args> %
-nnoremap <expr> <Space>* '<Cmd>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
+" command! -nargs=1 VimGrepCurrent vimgrep <args> %
+" nnoremap <expr> <Space>* '<Cmd>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
 
 " json processor
 command! -nargs=? Jq call vimrc#Jq(<f-args>)
@@ -117,7 +117,6 @@ call extend(g:vimrc_altercmd_dic, {
 " コマンドの結果をスクラッチバッファに表示
 command! -nargs=1 -complete=command L call vimrc#L(<q-args>)
 
-command! MessL L messages
 command! Map   L map
 command! Nmap  L nmap
 command! Vmap  L vmap
@@ -477,7 +476,7 @@ if dein#min#load_state(s:dein_home)
   call dein#load_toml('~/vimfiles/rc/plugins.toml')
   " call dein#load_toml('~/vimfiles/rc/asyncomplete.toml')
   call dein#load_toml('~/vimfiles/rc/ddc.toml')
-  " call dein#load_toml('~/vimfiles/rc/ddu.toml', {'lazy': 1})
+  call dein#load_toml('~/vimfiles/rc/ddu.toml', {'lazy': 1})
   call dein#load_toml('~/vimfiles/rc/deinft.toml')
   call dein#end()
   call dein#save_state()
@@ -585,10 +584,10 @@ nnoremap <Space><F11> <Cmd>cpfile<CR>
 " }}}2 Window {{{2
 
 " Ctrl + hjkl でウィンドウ間を移動
-nnoremap  <C-h> <C-w>h
-nnoremap  <C-j> <C-w>j
-nnoremap  <C-k> <C-w>k
-nnoremap  <C-l> <C-w>l
+" nnoremap  <C-h> <C-w>h
+" nnoremap  <C-j> <C-w>j
+" nnoremap  <C-k> <C-w>k
+" nnoremap  <C-l> <C-w>l
 
 " Shift + 矢印でウィンドウサイズを変更
 nnoremap <S-Left>  <C-w><
@@ -657,7 +656,12 @@ noremap <C-Tab> <Cmd>tabnext<CR>
 noremap <C-S-Tab> <Cmd>tabprevious<CR>
 
 " http://postd.cc/how-to-boost-your-vim-productivity/ & ycino@vim-jp slack THNX
-nnoremap <CR> G
+function! s:alterG() abort
+  if v:count > 0
+    execute printf('normal! %iG', v:count)
+  endif
+endfunction
+nnoremap <CR> <Cmd>call <SID>alterG()<CR>
 autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 
 " insert mode から戻るときにカーソルを移動させない
@@ -695,7 +699,7 @@ nnoremap <expr> <Space>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "
 nnoremap <Space>ye <Cmd>%y+<CR>
 
 " 現在行 (行頭空白、行末空白・改行を除く)
-nnoremap <Space>yy <Cmd>call vimrc#linecopy()<CR>
+" nnoremap <Space>yy <Cmd>call vimrc#linecopy()<CR>
 
 nnoremap <Space>Y "+y$
 "}}}3
@@ -813,14 +817,16 @@ nnoremap <Space>gbc :!git switch -c<Space>
 " @ は現在ブランチの最新コミット
 nnoremap <Space>gp :!git push origin @
 
-" コミット対象の hunk を選択する場合: ga -> gc
+" コミット対象の hunk を選択する場合: gad -> gc
 " コミットメッセージに詳細を書く場合: gu -> gc
-nnoremap <Space>gad <Cmd>call popup_create(term_start(['git', 'add', '-p'], #{ hidden: 1, term_finish: 'close'}), #{ border: [], minwidth: &columns*9/10, minheight: &lines/2 })<CR>
+nnoremap <Space>gad :!git add --patch<Space>
+nnoremap <Space>gai <Cmd>!git add --interactive<CR>
 nnoremap <Space>gu <Cmd>silent !git add --update<CR>
 nnoremap <Space>gc <Cmd>!git commit -v<CR>
 nnoremap <Space>gam <Cmd>!git commit --amend<CR>
 " 単純なコミットメッセージの場合: gn
 nnoremap <Space>gn :!git commit --all -v -m ""<Left>
+nnoremap <Space>gN <Cmd>!git commit --all -v<CR>
 
 " 直前のコミットを master にする場合: gbr -> g-
 " rename current branch

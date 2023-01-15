@@ -18,9 +18,9 @@ hook_add = '''
 '''
 
 # }}}1  LSP {{{1
+# 遅延読込を実現しようとすると色々と大変。
 [[plugins]]
 repo = 'prabirshrestha/vim-lsp'
-# on_ft を使うとうまく動かなかった
 hook_add = '''
   " hook_source だとうまく動かなかった
 
@@ -31,6 +31,10 @@ hook_add = '''
   let g:lsp_document_highlight_enabled = 0
   " A> 非表示
   let g:lsp_document_code_action_signs_enabled = 0
+  " Use denops-signature_help
+  let g:lsp_signature_help_enabled = 0
+  " do not use fold
+  let g:lsp_fold_enabled = 0
 
   " https://vim-jp.slack.com/archives/CQ57P4XU4/p1614523430139700
   function! s:lsp_format() abort
@@ -46,14 +50,14 @@ hook_add = '''
     setlocal signcolumn=yes
 
     " keymap
-    nmap <buffer> <Space>al <plug>(lsp-document-diagnostics)
+    nnoremap <buffer> <Space>al <plug>(lsp-document-diagnostics)
     " 言語によっては LS が対応していない機能もあり、その場合は元の機能を使いたいので確実なものだけ設定。
     if &filetype is# 'go' || &filetype is# 'python'
-      nmap <buffer> K <plug>(lsp-hover)
-      nmap <buffer> gd <plug>(lsp-definition)
-      nmap <buffer> <C-]> <plug>(lsp-definition)
-      nmap <buffer> <Space>ar <plug>(lsp-rename)
-      nmap <buffer> <Space>aR <plug>(lsp-references)
+      nnoremap <buffer> K <plug>(lsp-hover)
+      nnoremap <buffer> gd <plug>(lsp-definition)
+      nnoremap <buffer> <C-]> <plug>(lsp-definition)
+      nnoremap <buffer> <Space>ar <plug>(lsp-rename)
+      nnoremap <buffer> <Space>aR <plug>(lsp-references)
     endif
 
     " submode
@@ -72,6 +76,10 @@ hook_add = '''
         autocmd BufWritePre <buffer> call s:lsp_format()
       augroup END
     endif
+
+    " For denops-signature_help
+    call signature_help#enable()
+
   endfunction
   autocmd vimrc User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 '''
@@ -101,6 +109,14 @@ hook_add = '''
     \  blocklist: ['javascript'],
     \}
   let g:lsp_settings_enable_suggestions = 0
+'''
+
+[[plugins]]
+repo = 'matsui54/denops-signature_help'
+depends = 'denops.vim'
+on_func = 'signature_help#'
+hook_source = '''
+  call signature_help#enable()
 '''
 
 # [[plugins]]
@@ -154,78 +170,80 @@ on_map = {ox = ['iu', 'au']}
 
 [[plugins]]
 repo = 'machakann/vim-sandwich'
+on_event = 'ModeChanged'
 hook_add = '''
   let g:operator_sandwich_no_default_key_mappings = v:true
 
   BulkMap nx s <Nop>
 
-  nmap sc  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
-  nmap scc <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
-  nmap cs  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
-  nmap css <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nnoremap sc  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
+  nnoremap scc <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nnoremap cs  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
+  nnoremap css <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
   BulkMap xo sc <Plug>(operator-sandwich-replace)
 
-  nmap sr  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
-  nmap srr <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
-  " nmap rss <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nnoremap sr  <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
+  nnoremap srr <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  " nnoremap rss <Plug>(operator-sandwich-replace)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
   BulkMap xo sr <Plug>(operator-sandwich-replace)
 
-  nmap sd  <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
-  nmap sdd <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
-  nmap ds  <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
-  nmap dss <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nnoremap sd  <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
+  nnoremap sdd <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nnoremap ds  <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
+  nnoremap dss <Plug>(operator-sandwich-delete)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
   BulkMap xo sd <Plug>(operator-sandwich-delete)
 
-  nmap saa <Plug>(operator-sandwich-add)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nnoremap saa <Plug>(operator-sandwich-add)<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
   BulkMap nxo sa <Plug>(operator-sandwich-add)
   " https://github.com/machakann/vimrc/blob/3dc16ac1ae31197e35bebdf3f0fbf275117478bd/.vimrc#L1127-L1152
-  nmap s( <Plug>(operator-sandwich-add-query1st)(
-  nmap s8 <Plug>(operator-sandwich-add-query1st)(
-  nmap s) <Plug>(operator-sandwich-add-query1st))
-  nmap s9 <Plug>(operator-sandwich-add-query1st))
-  xmap s( <Plug>(operator-sandwich-add)(
-  xmap s8 <Plug>(operator-sandwich-add)(
-  xmap s) <Plug>(operator-sandwich-add))
-  xmap s9 <Plug>(operator-sandwich-add))
-  nmap s[ <Plug>(operator-sandwich-add-query1st)[
-  nmap s] <Plug>(operator-sandwich-add-query1st)]
-  xmap s[ <Plug>(operator-sandwich-add)[
-  xmap s] <Plug>(operator-sandwich-add)]
-  nmap s{ <Plug>(operator-sandwich-add-query1st){
-  nmap s} <Plug>(operator-sandwich-add-query1st)}
-  xmap s{ <Plug>(operator-sandwich-add){
-  xmap s} <Plug>(operator-sandwich-add)}
-  nmap s" <Plug>(operator-sandwich-add-query1st)"
-  nmap s2 <Plug>(operator-sandwich-add-query1st)"
-  xmap s" <Plug>(operator-sandwich-add)"
-  xmap s2 <Plug>(operator-sandwich-add)"
-  nmap s' <Plug>(operator-sandwich-add-query1st)'
-  nmap s7 <Plug>(operator-sandwich-add-query1st)'
-  xmap s' <Plug>(operator-sandwich-add)'
-  xmap s7 <Plug>(operator-sandwich-add)'
-  nmap sf <Plug>(operator-sandwich-add-query1st)f
-  xmap sf <Plug>(operator-sandwich-add)f
-
+  nnoremap s( <Plug>(operator-sandwich-add-query1st)(
+  nnoremap s8 <Plug>(operator-sandwich-add-query1st)(
+  nnoremap s) <Plug>(operator-sandwich-add-query1st))
+  nnoremap s9 <Plug>(operator-sandwich-add-query1st))
+  xnoremap s( <Plug>(operator-sandwich-add)(
+  xnoremap s8 <Plug>(operator-sandwich-add)(
+  xnoremap s) <Plug>(operator-sandwich-add))
+  xnoremap s9 <Plug>(operator-sandwich-add))
+  nnoremap s[ <Plug>(operator-sandwich-add-query1st)[
+  nnoremap s] <Plug>(operator-sandwich-add-query1st)]
+  xnoremap s[ <Plug>(operator-sandwich-add)[
+  xnoremap s] <Plug>(operator-sandwich-add)]
+  nnoremap s{ <Plug>(operator-sandwich-add-query1st){
+  nnoremap s} <Plug>(operator-sandwich-add-query1st)}
+  xnoremap s{ <Plug>(operator-sandwich-add){
+  xnoremap s} <Plug>(operator-sandwich-add)}
+  nnoremap s" <Plug>(operator-sandwich-add-query1st)"
+  nnoremap s2 <Plug>(operator-sandwich-add-query1st)"
+  xnoremap s" <Plug>(operator-sandwich-add)"
+  xnoremap s2 <Plug>(operator-sandwich-add)"
+  nnoremap s' <Plug>(operator-sandwich-add-query1st)'
+  nnoremap s7 <Plug>(operator-sandwich-add-query1st)'
+  xnoremap s' <Plug>(operator-sandwich-add)'
+  xnoremap s7 <Plug>(operator-sandwich-add)'
+  nnoremap sf <Plug>(operator-sandwich-add-query1st)f
+  xnoremap sf <Plug>(operator-sandwich-add)f
+'''
+hook_source = '''
   let g:textobj#sandwich#stimeoutlen = 100
 
   let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
   let g:sandwich#recipes += [
-        \   {'buns': ['（', '）'], 'nesting': 1, 'input': ['j(', 'j)', 'jp']},
-        \   {'buns': ['「', '」'], 'nesting': 1, 'input': ['j[', 'j]', 'jb']},
-        \   {'buns': ['『', '』'], 'nesting': 1, 'input': ['j{', 'j}', 'jB']},
-        \   {'buns': ['【', '】'], 'nesting': 1, 'input': ['j<', 'j>', 'jk']},
+        \   #{buns: ['（', '）'], nesting: 1, input: ['j(', 'j)', 'jp']},
+        \   #{buns: ['「', '」'], nesting: 1, input: ['j[', 'j]', 'jb']},
+        \   #{buns: ['『', '』'], nesting: 1, input: ['j{', 'j}', 'jB']},
+        \   #{buns: ['【', '】'], nesting: 1, input: ['j<', 'j>', 'jk']},
         \ ]
 
   " function surrouding をコマンドラインモードでなくインサートモードで使う
   " https://github.com/machakann/vim-sandwich/wiki/Magic-characters#function-surroundings
   let g:sandwich#recipes += [
-        \   {
-        \     'buns': ['(', ')'],
-        \     'cursor': 'head',
-        \     'command': ['startinsert'],
-        \     'kind': ['add', 'replace'],
-        \     'action': ['add'],
-        \     'input': ['f']
+        \   #{
+        \     buns: ['(', ')'],
+        \     cursor: 'head',
+        \     command: ['startinsert'],
+        \     kind: ['add', 'replace'],
+        \     action: ['add'],
+        \     input: ['f']
         \   },
         \ ]
 
@@ -245,6 +263,7 @@ on_map = {ox = ['ii', 'ai', 'iI']}
 
 [[plugins]]
 repo = 'glts/vim-textobj-comment'
+on_map = {ox = ['ac', 'aC', 'ic']}
 depends = 'vim-textobj-user'
 
 [[plugins]]
@@ -253,20 +272,21 @@ on_map = {ox = ['i=', 'a=']}
 hook_source = '''
   let g:equal_operator_default_mappings = 0
 
-  omap i=h <Plug>(operator-lhs)
-  omap a=h <Plug>(operator-Lhs)
-  xmap i=h <Plug>(visual-lhs)
-  xmap a=h <Plug>(visual-Lhs)
+  onoremap i=h <Plug>(operator-lhs)
+  onoremap a=h <Plug>(operator-Lhs)
+  xnoremap i=h <Plug>(visual-lhs)
+  xnoremap a=h <Plug>(visual-Lhs)
 
-  omap i=l <Plug>(operator-rhs)
-  omap a=l <Plug>(operator-Rhs)
-  xmap i=l <Plug>(visual-rhs)
-  xmap a=l <Plug>(visual-Rhs)
+  onoremap i=l <Plug>(operator-rhs)
+  onoremap a=l <Plug>(operator-Rhs)
+  xnoremap i=l <Plug>(visual-rhs)
+  xnoremap a=l <Plug>(visual-Rhs)
 '''
 
 [[plugins]]
 repo = 'machakann/vim-textobj-functioncall'
 on_map = {ox = ['if', 'af']}
+on_souce = 'vim-sandwich'
 hook_source = '''
   let g:textobj_functioncall_no_default_key_mappings = 1
 
@@ -274,14 +294,22 @@ hook_source = '''
   " <-------> af
   "      <-> if
   " https://scrapbox.io/vim-jp/sandwich,_textobj%E3%81%A7Generics%E3%82%92%E6%89%B1%E3%81%86
-  xmap if <Plug>(textobj-functioncall-innerparen-i)
-  omap if <Plug>(textobj-functioncall-innerparen-i)
-  xmap af <Plug>(textobj-functioncall-i)
-  omap af <Plug>(textobj-functioncall-i)
+  xnoremap if <Plug>(textobj-functioncall-innerparen-i)
+  onoremap if <Plug>(textobj-functioncall-innerparen-i)
+  xnoremap af <Plug>(textobj-functioncall-i)
+  onoremap af <Plug>(textobj-functioncall-i)
 '''
 
 [[plugins]]
 repo = 'machakann/vim-textobj-delimited'
+on_map = {ox = ['ad', 'aD', 'id', 'iD']}
+
+[[plugins]]
+repo = 'kana/vim-textobj-line'
+on_map = {ox = ['al', 'il']}
+hook_add = '''
+  nmap <Space>yy "+yil
+'''
 
 # }}}1  Language, Format, Filetype {{{1
 
@@ -345,18 +373,18 @@ frozen = 1
 on_ft = 'rst'
 [plugins.ftplugin]
 rst = '''
-  nmap <buffer> <Space><Space>1 <Plug>(rst-section1)
-  nmap <buffer> <Space><Space>2 <Plug>(rst-section2)
-  nmap <buffer> <Space><Space>3 <Plug>(rst-section3)
-  nmap <buffer> <Space><Space>4 <Plug>(rst-section4)
-  nmap <buffer> <Space><Space>5 <Plug>(rst-section5)
-  nmap <buffer> <Space><Space>6 <Plug>(rst-section6)
+  nnoremap <buffer> <Space><Space>1 <Plug>(rst-section1)
+  nnoremap <buffer> <Space><Space>2 <Plug>(rst-section2)
+  nnoremap <buffer> <Space><Space>3 <Plug>(rst-section3)
+  nnoremap <buffer> <Space><Space>4 <Plug>(rst-section4)
+  nnoremap <buffer> <Space><Space>5 <Plug>(rst-section5)
+  nnoremap <buffer> <Space><Space>6 <Plug>(rst-section6)
 
-  imap <buffer> <C-CR> <Plug>(rst-insert-samebullet)
-  imap <buffer> <S-CR> <Plug>(rst-insert-childbullet)
-  imap <buffer> <C-S-CR> <Plug>(rst-insert-parentbullet)
+  inoremap <buffer> <C-CR> <Plug>(rst-insert-samebullet)
+  inoremap <buffer> <S-CR> <Plug>(rst-insert-childbullet)
+  inoremap <buffer> <C-S-CR> <Plug>(rst-insert-parentbullet)
 
-  imap <buffer> <M-CR> <Plug>(rst-insert-lineblock)
+  inoremap <buffer> <M-CR> <Plug>(rst-insert-lineblock)
 '''
 
 [[plugins]]
@@ -373,23 +401,23 @@ hook_add = '''
   let g:qfloc_disable_default_mappings = v:true
   let g:qfloc_disable_hover = v:true
 
-  nmap Q <Plug>(qfloc-cswitch)
-  nmap L <Plug>(qfloc-lswitch)
-  " nmap <expr> ]c &diff ? ']c' : '<Plug>(qfloc-cnext)'
-  " nmap <expr> [c &diff ? '[c' : '<Plug>(qfloc-cprevious)'
-  " nmap ]l <Plug>(qfloc-lnext)
-  " nmap [l <Plug>(qfloc-lprevious)
+  nnoremap Q <Plug>(qfloc-cswitch)
+  nnoremap L <Plug>(qfloc-lswitch)
+  " nnoremap <expr> ]c &diff ? ']c' : '<Plug>(qfloc-cnext)'
+  " nnoremap <expr> [c &diff ? '[c' : '<Plug>(qfloc-cprevious)'
+  " nnoremap ]l <Plug>(qfloc-lnext)
+  " nnoremap [l <Plug>(qfloc-lprevious)
 '''
 [plugins.ftplugin]
 qf = '''
   " qf.vim
-  " nmap <buffer> j <Plug>(qfloc-j)
-  " nmap <buffer> k <Plug>(qfloc-k)
-  " nmap <buffer> s <Plug>(qfloc-sbuffer)
-  " nmap <buffer> p <Plug>(qfloc-preview)
-  nmap <buffer> u <Plug>(qfloc-undo)
-  nmap <buffer> dd <Plug>(qfloc-delete)
-  xmap <buffer> d  <Plug>(qfloc-delete)
+  " nnoremap <buffer> j <Plug>(qfloc-j)
+  " nnoremap <buffer> k <Plug>(qfloc-k)
+  " nnoremap <buffer> s <Plug>(qfloc-sbuffer)
+  " nnoremap <buffer> p <Plug>(qfloc-preview)
+  nnoremap <buffer> u <Plug>(qfloc-undo)
+  nnoremap <buffer> dd <Plug>(qfloc-delete)
+  xnoremap <buffer> d  <Plug>(qfloc-delete)
 '''
 
 [[plugins]]
@@ -409,9 +437,9 @@ qf = '''
 repo = 'mattn/vim-qfnavigate'
 on_map = '<Plug>'
 hook_add = '''
-  nmap <silent> <F10> <plug>(qfnavigate-next)
-  nmap <silent> <S-F10> <plug>(qfnavigate-previous)
-  nmap <silent> <F11> <plug>(qfnavigate-previous)
+  nnoremap <silent> <F10> <plug>(qfnavigate-next)
+  nnoremap <silent> <S-F10> <plug>(qfnavigate-previous)
+  nnoremap <silent> <F11> <plug>(qfnavigate-previous)
 '''
 
 # QuickFixでジャンプするときに直前のWindowを使う
@@ -505,13 +533,13 @@ hook_add = '''
   let g:vimfiler_force_overwrite_statusline = 0
   let g:vimshell_force_overwrite_statusline = 0
 
-  let g:lightline = {
-        \   'colorscheme': 'spring_night',
-        \   'active': {
-        \     'left': [['mode', 'paste'], ['readonly', 'filename', 'modified', 'pwd']],
-        \     'right': [['lineinfo'], ['fileformat', 'fenc', 'filetype']]
+  let g:lightline = #{
+        \   colorscheme: 'spring_night',
+        \   active: #{
+        \     left: [['mode', 'paste'], ['readonly', 'filename', 'modified', 'pwd']],
+        \     right: [['lineinfo'], ['fileformat', 'fenc', 'filetype']]
         \   },
-        \   'mode_map': {
+        \   mode_map: {
         \     'n' : 'N',
         \     'i' : 'I',
         \     'R' : 'R',
@@ -524,19 +552,19 @@ hook_add = '''
         \     "\<C-s>": 'SB',
         \     't': 'T',
         \   },
-        \   'component': {
-        \     'lineinfo': ':%-2v',
+        \   component: #{
+        \     lineinfo: ':%-2v',
         \   },
-        \   'component_function': {
-        \     'swap': 'Swap',
-        \     'pwd': 'getcwd',
-        \     'fenc': 'LightlineFenc',
-        \     'filename': 'LightlineFilename',
-        \     'fileformat': 'LightlineFileformat',
-        \     'filetype': 'LightlineFiletype',
+        \   component_function: #{
+        \     swap: 'Swap',
+        \     pwd: 'getcwd',
+        \     fenc: 'LightlineFenc',
+        \     filename: 'LightlineFilename',
+        \     fileformat: 'LightlineFileformat',
+        \     filetype: 'LightlineFiletype',
         \   },
-        \   'component_type': {
-        \     'buffers': 'tabsel',
+        \   component_type: #{
+        \     buffers: 'tabsel',
         \   },
         \ }
 
@@ -580,7 +608,7 @@ hook_add = '''
   let g:matchup_surround_enabled = 0
 
   " popup で表示
-  let g:matchup_matchparen_offscreen = {'method': 'popup'}
+  let g:matchup_matchparen_offscreen = #{method: 'popup'}
 
   " 関数内部の return などに移動せず関数先頭と末尾を行き来する。
   let g:matchup_delim_nomids = 1
@@ -621,6 +649,7 @@ repo = 'lambdalisue/readablefold.vim'
 repo = 'BourgeoisBear/clrzr'
 on_cmd = 'ClrzrOn'
 hook_add = '''
+  " FIXME: ClrzrOn と ClrzrRefresh を連続実行できるように
   call extend(g:vimrc_altercmd_dic, {
         \   'colorh\%[ighlight]': 'ClrzrOn | ClrzrRefresh',
         \ })
@@ -637,53 +666,6 @@ hook_add = '''
 repo = 'rbtnn/vim-ambiwidth'
 hook_add = '''
   let g:ambiwidth_cica_enabled = v:false
-'''
-
-# https://github.com/4513ECHO/dotfiles/blob/9e043064780a15f8926faeba42b49f8f4358a102/config/nvim/dein/plugin.toml#L569-L598
-[[plugins]]
-repo = 'thinca/vim-partedit'
-on_func = 'partedit#'
-hook_add = '''
-  function! s:operator_partedit() abort
-    let context = context_filetype#get()
-    if context.range == [[0, 0], [0, 0]]
-      echohl WarningMsg
-      echomsg '[partedit] Context is not found'
-      echohl NONE
-      return
-    endif
-    call partedit#start(context.range[0][0], context.range[1][0],
-          \ {'filetype': context.filetype})
-    nnoremap <buffer> qq <Cmd>ParteditEnd<CR>
-  endfunction
-  nnoremap <Space>i <Cmd>call <SID>operator_partedit()<CR>
-'''
-[plugins.ftplugin]
-help = '''
-  let b:partedit_filetype = 'vim'
-  let b:partedit_prefix = '<Tab>'
-'''
-toml = '''
-  let b:partedit_filetype = 'vim'
-'''
-
-# https://github.com/4513ECHO/dotfiles/blob/9e043064780a15f8926faeba42b49f8f4358a102/config/nvim/dein/plugin.toml#L456-L472
-[[plugins]]
-repo = 'Shougo/context_filetype.vim'
-on_func = ['context_filetype#get']
-hook_source = '''
-  let g:context_filetype#filetypes = extend(
-        \ copy(context_filetype#default_filetypes()),
-        \ {'markdown': values(map(
-        \   {'\(\h\w*\)': '\1', 'viml': 'vim'},
-        \   { key, val -> {
-        \     'start': '^\s*```\s*' .. key,
-        \     'end': '^\s*```$',
-        \     'filetype': val,
-        \ } }))})
-  let g:context_filetype#ignore_patterns = {
-        \ 'toml': ['^\s*#\s*'],
-        \ }
 '''
 
 # }}}1  Input & Edit {{{1
@@ -707,10 +689,10 @@ hook_source = '''
     let input_space = '<C-w>' .. a:altanative .. '<Space>'
     let input_cr    = '<C-w>' .. a:altanative .. '<CR>'
 
-    let rule = {
-    \ 'mode': ':',
-    \ 'at': '^\(''<,''>\)\?' .. a:original .. '\%#$',
-    \ }
+    let rule = #{
+        \   mode: ':',
+        \   at: '^\(''<,''>\)\?' .. a:original .. '\%#$',
+        \ }
 
     call lexima#add_rule(extend(rule, #{char: '<Space>', input: input_space }))
     call lexima#add_rule(extend(rule, #{char: '<CR>',    input: input_cr }))
@@ -752,15 +734,15 @@ hook_source = '''
 repo = 'uplus/vim-clurin'
 on_map = '<Plug>'
 hook_add = '''
-  nmap + <Plug>(clurin-next)
-  nmap - <Plug>(clurin-prev)
+  nnoremap + <Plug>(clurin-next)
+  nnoremap - <Plug>(clurin-prev)
 '''
 # 設定に ''' が入っているので """ """ でくくらないと駄目。
 hook_source = """
   let g:clurin = {
-        \   '-': {
-        \     'use_default': 0,
-        \     'def': [
+        \   '-': #{
+        \     use_default: 0,
+        \     def: [
         \       ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         \       ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
         \       ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -777,12 +759,12 @@ hook_source = """
         \       ['-', ' - '],
         \       ['*', ' * '],
         \       ['/', ' / '],
-        \       ['pick', 'reword', 'edit', 'squash', 'fixup'],
+        \       ['pick', 'squash', 'fixup', 'reword', 'edit'],
         \   ]},
-        \   'toml vim': {
-        \     'def': [[
-        \       {'pattern': '"\([^"]*\)"'  , 'replace': '"\1"'},
-        \       {'pattern': '''\([^'']*\)''', 'replace': '''\1'''},
+        \   'toml vim': #{
+        \     def: [[
+        \       #{pattern: '"\([^"]*\)"'  , replace: '"\1"'},
+        \       #{pattern: '''\([^'']*\)''', replace: '''\1'''},
         \   ]]},
         \}
 """
@@ -792,7 +774,7 @@ repo = 'junegunn/vim-easy-align'
 on_cmd = 'EasyAlign'
 on_map = '<Plug>(EasyAlign'
 hook_add = '''
-  vmap <Enter> <Plug>(EasyAlign)
+  vnoremap <Enter> <Plug>(EasyAlign)
 '''
 
 [[plugins]]
@@ -871,6 +853,19 @@ hook_add = '''
     nnoremap <Space>,c <Cmd>call vimrc#EditHowmNew(g:howm_dir)<CR>
   endif
 
+  " vim-jp slack 2021-11-02 Hasu
+  " テンプレート候補をポップアップで表示
+  " function! s:sonictemplateSelector() abort
+  "     let s:candidate = getcompletion('Template ', 'cmdline')
+  "     call popup_menu(s:candidate,#{callback: function('s:sonictemplateSelector_apply')})
+  " endfunction
+  " function! s:sonictemplateSelector_apply(id,result) abort
+  "     if s:candidate[a:result] ==# ' '
+  "         return
+  "     endif
+  "     exec printf(":Template %s",s:candidate[a:result])
+  " endfunction
+
   autocmd vimrc FileType toml imap <buffer> <C-t> .plugin<C-R>=sonictemplate#postfix()<CR>
 '''
 
@@ -896,19 +891,21 @@ hook_add = '''
 
 [[plugins]]
 repo = 'machakann/vim-swap'
+on_map = {ox = ['a,', 'i,'], n = ['gs', 'g<', 'g>']}
 hook_add = '''
   BulkMap xo i, <Plug>(swap-textobject-i)
   BulkMap xo a, <Plug>(swap-textobject-a)
 
-  " タブ区切りも要素とする。
-  let g:swap#rules = deepcopy(g:swap#default_rules)
-  let g:swap#rules += [{
-        \   "delimiter": ['\t'],
-        \   "body": '\h\w*\(\t\h\w*\)\+',
-        \ }]
-
   " 行内の要素をソートする
   command! SortLine execute 'normal gss<ESC>'
+'''
+hook_source = '''
+  " タブ区切りも要素とする。
+  let g:swap#rules = deepcopy(g:swap#default_rules)
+  let g:swap#rules += [#{
+        \   delimiter: ['\t'],
+        \   body: '\h\w*\(\t\h\w*\)\+',
+        \ }]
 '''
 
 # 選択した行すべてに対して I, A を反映させる。
@@ -937,27 +934,71 @@ repo = 'matze/vim-move'
 on_map = '<Plug>Move'
 hook_add = '''
   let g:move_map_keys = 0
-  nmap <C-Up> <Plug>MoveLineUp
-  xmap <C-Up> <Plug>MoveBlockUp
-  nmap <C-Down> <Plug>MoveLineDown
-  xmap <C-Down> <Plug>MoveBlockDown
-  nmap <A-l> <Plug>MoveCharRight
-  xmap <A-l> <Plug>MoveBlockRight
-  nmap <A-h> <Plug>MoveCharLeft
-  xmap <A-h> <Plug>MoveBlockLeft
+  nnoremap <C-Up> <Plug>MoveLineUp
+  xnoremap <C-Up> <Plug>MoveBlockUp
+  nnoremap <C-Down> <Plug>MoveLineDown
+  xnoremap <C-Down> <Plug>MoveBlockDown
+  nnoremap <A-l> <Plug>MoveCharRight
+  xnoremap <A-l> <Plug>MoveBlockRight
+  nnoremap <A-h> <Plug>MoveCharLeft
+  xnoremap <A-h> <Plug>MoveBlockLeft
 '''
 
 [[plugins]]
 repo = 'sentriz/vim-print-debug'
 on_func = 'print_debug#print_debug'
 hook_source = '''
-  let g:print_debug_templates = {
-    \   'go':         'fmt.Printf("+++ {}\n")',
-    \   'python':     'print(f"+++ {}")',
-    \   'javascript': 'console.log(`+++ {}`);',
-    \   'c':          'printf("+++ {}\n");',
-    \   'vim':        'echom "+++"',
+  let g:print_debug_templates = #{
+    \   go:         'fmt.Printf("+++ {}\n")',
+    \   python:     'print(f"+++ {}")',
+    \   javascript: 'console.log(`+++ {}`);',
+    \   c:          'printf("+++ {}\n");',
+    \   vim:        'echom "+++"',
     \ }
+'''
+
+# https://github.com/4513ECHO/dotfiles/blob/9e043064780a15f8926faeba42b49f8f4358a102/config/nvim/dein/plugin.toml#L569-L598
+[[plugins]]
+repo = 'thinca/vim-partedit'
+on_func = 'partedit#'
+hook_add = '''
+  function! s:operator_partedit() abort
+    let context = context_filetype#get()
+    if context.range == [[0, 0], [0, 0]]
+      echohl WarningMsg
+      echomsg '[partedit] Context is not found'
+      echohl NONE
+      return
+    endif
+    call partedit#start(context.range[0][0], context.range[1][0], #{filetype: context.filetype})
+    nnoremap <buffer> qq <Cmd>ParteditEnd<CR>
+  endfunction
+  nnoremap <Space>i <Cmd>call <SID>operator_partedit()<CR>
+
+  let g:partedit#prefix_pattern = '\s*'
+'''
+
+# https://github.com/4513ECHO/dotfiles/blob/9e043064780a15f8926faeba42b49f8f4358a102/config/nvim/dein/plugin.toml#L456-L472
+[[plugins]]
+repo = 'Shougo/context_filetype.vim'
+on_func = ['context_filetype#get']
+hook_source = '''
+  let g:context_filetype#filetypes = #{markdown: g:context_filetype#defaults#_filetypes.markdown}
+  call add(g:context_filetype#filetypes.markdown, #{
+        \   start: '^\s*```\s*viml',
+        \   end: '^\s*```$',
+        \   filetype: 'vim',
+        \ })
+  " [plugins.ftplugins] の書式にも対応するため設定上書き
+  let g:context_filetype#filetypes.toml = [#{
+        \   start: '\w\+\s*=\s*\(''\{3}\|"\{3}\)',
+        \   end: '\1',
+        \   filetype: 'vim',
+        \ }]
+
+  let g:context_filetype#ignore_patterns = #{
+        \   toml: ['^\s*#\s*'],
+        \ }
 '''
 
 # }}}1  Motion {{{1
@@ -1002,24 +1043,24 @@ hook_source = '''
 repo = 'haya14busa/vim-edgemotion'
 on_map = '<Plug>'
 hook_add = '''
-  BulkMap x <Space>j <Plug>(edgemotion-j)
-  BulkMap x <Space>k <Plug>(edgemotion-k)
-  nmap <expr> <Space>j &diff ? ']c' : '<Plug>(edgemotion-j)'
-  nmap <expr> <Space>k &diff ? '[c' : '<Plug>(edgemotion-k)'
+  xnoremap <Space>j <Plug>(edgemotion-j)
+  xnoremap <Space>k <Plug>(edgemotion-k)
+  nnoremap <expr> <Space>j &diff ? ']c' : '<Plug>(edgemotion-j)'
+  nnoremap <expr> <Space>k &diff ? '[c' : '<Plug>(edgemotion-k)'
 '''
 
 [[plugins]]
 repo = 'haya14busa/vim-asterisk'
 on_map = '<Plug>'
 hook_add = '''
-  map * <Plug>(asterisk-gz*)
-  map g* <Plug>(asterisk-z*)
-  map z* <Plug>(asterisk-*)
-  map gz* <Plug>(asterisk-g*)
+  noremap * <Plug>(asterisk-gz*)
+  noremap g* <Plug>(asterisk-z*)
+  noremap z* <Plug>(asterisk-*)
+  noremap gz* <Plug>(asterisk-g*)
 
   " replace
-  map # <Plug>(asterisk-gz*)cgn
-  map g# <Plug>(asterisk-z*)cgn
+  noremap # <Plug>(asterisk-gz*)cgn
+  noremap g# <Plug>(asterisk-z*)cgn
 '''
 
 [[plugins]]
@@ -1027,8 +1068,9 @@ repo = 'hrsh7th/vim-searchx'
 on_func = 'searchx#run'
 hook_add = '''
   " Overwrite / and ?.
-  BulkMap nx ? <Cmd>call searchx#start({ 'dir': 0 })<CR>
-  BulkMap nx / <Cmd>call searchx#start({ 'dir': 1 })<CR>
+  BulkMap nx ? <Cmd>call searchx#start(#{ dir: 0 })<CR>
+  BulkMap nx / <Cmd>call searchx#start(#{ dir: 1 })<CR>
+  nnoremap g/ /
 
   " Move to next/prev match.
   BulkMap nx N <Cmd>call searchx#prev_dir()<CR>
@@ -1049,10 +1091,7 @@ hook_add = '''
 
   " Convert search pattern.
   function g:searchx.convert(input) abort
-    if a:input !~# '\k'
-      return '\V' .. a:input
-    endif
-    return join(split(a:input, ' '), '.\{-}')
+    return a:input !~# '\k' ? ('\V' .. a:input) : (join(split(a:input, ' '), '.\{-}'))
   endfunction
 
   " auto nohlsearch after cursor is moved.
@@ -1072,8 +1111,8 @@ hook_add = '''
   let g:milfeulle_enable_InsertLeave = 0
   autocmd vimrc CursorMoved * MilfeulleOverlay
 
-  nmap <C-Left> <Plug>(milfeulle-prev)
-  nmap <C-Right> <Plug>(milfeulle-next)
+  nnoremap <C-Left> <Plug>(milfeulle-prev)
+  nnoremap <C-Right> <Plug>(milfeulle-next)
 '''
 
 [[plugins]]
@@ -1097,6 +1136,7 @@ hook_add = '''
 [[plugins]]
 repo = 'osyo-manga/vim-operator-stay-cursor'
 depends = 'vim-operator-user'
+on_func = 'operator#stay_cursor#wrapper'
 hook_add = '''
   map <expr> y operator#stay_cursor#wrapper("y")
 '''
@@ -1117,16 +1157,27 @@ hook_add = '''
   let g:bookmark_auto_close = 1
 
   let g:bookmark_no_default_key_mappings = 1
-  nmap mm <Plug>BookmarkToggle
-  nmap mi <Plug>BookmarkAnnotate
-  nmap ma <Plug>BookmarkShowAll
-  nmap <Space>fm <Plug>BookmarkShowAll
-  nmap mj <Plug>BookmarkNext
-  nmap mn <Plug>BookmarkNext
-  nmap mk <Plug>BookmarkPrev
-  nmap mp <Plug>BookmarkPrev
-  nmap mc <Plug>BookmarkClear
-  nmap mx <Plug>BookmarkClearAll
+  nnoremap mm <Plug>BookmarkToggle
+  nnoremap mi <Plug>BookmarkAnnotate
+  nnoremap ma <Plug>BookmarkShowAll
+  nnoremap <Space>fm <Plug>BookmarkShowAll
+  nnoremap mj <Plug>BookmarkNext
+  nnoremap mn <Plug>BookmarkNext
+  nnoremap mk <Plug>BookmarkPrev
+  nnoremap mp <Plug>BookmarkPrev
+  nnoremap mc <Plug>BookmarkClear
+  nnoremap mx <Plug>BookmarkClearAll
+'''
+
+[[plugins]]
+repo = 'Allianaab2m/jumpout.vim'
+rev = 'dev'
+on_func = 'jumpout#'
+hook_add = '''
+  nnoremap <expr> <C-h> jumpout#jumpable('h') ? '<C-w>h' : '<Cmd>call jumpout#hook_jump("h", "vsplit")<CR>'
+  nnoremap <expr> <C-j> jumpout#jumpable('j') ? '<C-w>j' : '<Cmd>call jumpout#hook_jump("j", "split")<CR>'
+  nnoremap <expr> <C-k> jumpout#jumpable('k') ? '<C-w>k' : '<Cmd>call jumpout#hook_jump("k", "split")<CR>'
+  nnoremap <expr> <C-l> jumpout#jumpable('l') ? '<C-w>l' : '<Cmd>call jumpout#hook_jump("l", "vsplit")<CR>'
 '''
 
 # }}}1  Buffer {{{1
@@ -1245,9 +1296,9 @@ hook_add = '''
   " exculde mru
   let g:ctrlp_mruf_exclude = '^C:\\Users\\.*\\AppData\\Local\\Temp\\.*'
 
-  let g:ctrlp_custom_ignore = {
-    \ 'dir':  '\v[\/](\.(bzr|git|hg|svn)|node_modules|_venv)$',
-    \ 'file': '\v\.(dll|exe|so)$',
+  let g:ctrlp_custom_ignore = #{
+    \ dir:  '\v[\/](\.(bzr|git|hg|svn)|node_modules|_venv)$',
+    \ file: '\v\.(dll|exe|so)$',
     \ }
 
   " mapping
@@ -1268,12 +1319,14 @@ hook_add = '''
         \ 'PrtDeleteEnt()'      : ['<F7>', '<c-w>'],
         \ }
 
-  nnoremap <Space>b <Cmd>CtrlPBuffer<CR>
+  nnoremap <Space>b  <Cmd>CtrlPBuffer<CR>
   nnoremap <Space>f/ <Cmd>CtrlPLine %<CR>
   nnoremap <Space>fo <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', '{{{ ')<CR>
-  nnoremap <Space>u <Cmd>CtrlPMRUFiles<CR>
+  nnoremap <Space>*  <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', expand('<cword>') .. ' ')<CR>
+  xnoremap <Space>*  <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', vimrc#get_current_selection() .. ' ')<CR>
+  nnoremap <Space>u  <Cmd>CtrlPMRUFiles<CR>
   nnoremap <Space>ff <Cmd>CtrlP<CR>
-  nnoremap <Space>fn <Cmd>call vimrc#CtrlPFilenameInsert('', '')<CR>
+  nnoremap <Space>fn <Cmd>call vimrc#CtrlPOpenfunc('CtrlP', 'vimrc#CtrlPPasteFunc')<CR>
   nnoremap <Space>fq <Cmd>CtrlPQuickfix<CR>
   nnoremap <Space>fr <Cmd>call vimrc#CtrlPRepository('n')<CR>
   xnoremap <Space>fr <Cmd>call vimrc#CtrlPRepository('x')<CR>
@@ -1290,7 +1343,7 @@ hook_add = '''
 [plugins.ftplugin]
 rst = '''
   nnoremap <buffer> <Space>fo <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', 'list-table ')<CR>
-  nnoremap <buffer> <Space>fn <Cmd>call vimrc#CtrlPFilenameInsert('.. image:: ', '')<CR>
+  nnoremap <buffer> <Space>fn <Cmd>call vimrc#CtrlPOpenfunc('CtrlP', 'vimrc#CtrlPPasteFunc', '.. image:: ')<CR>
 '''
 go = '''
   command! -buffer -nargs=0 FuncGrep :execute 'vimgrep /^\s*func\s\+/j **/*.go'
@@ -1301,13 +1354,16 @@ javascript = '''
 vim = '''
   command! -buffer -nargs=0 FuncGrep :execute 'vimgrep /^\s*fu\%[nction]!\?\s\+\zs[a-zA-Z0-9_#:]\+\ze\s*(/j **/*.vim'
 '''
+toml = '''
+  nnoremap <buffer> <Space>fg <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', 'repo= ')<CR>
+'''
 
 [[plugins]]
 repo = 'hokorobi/ctrlp-sessions'
 on_cmd = ['CtrlPSession', 'MkS']
 hook_add = '''
   " nnoremap <Space>fs <Cmd>CtrlPSessions<CR>
-  " call extend(g:vimrc_altercmd_dic, {'ss': 'MkS'})
+  " call extend(g:vimrc_altercmd_dic, #{ss: 'MkS'})
 
   let g:ctrlp_session_dir = expand('~/_vim/sessions')
 '''
@@ -1327,7 +1383,7 @@ on_cmd = 'CtrlPHelp'
 hook_add = '''
   nnoremap <Space>fh <Cmd>CtrlPHelp<CR>
 
-  call extend(g:vimrc_altercmd_dic, {'hh': 'CtrlPHelp'})
+  call extend(g:vimrc_altercmd_dic, #{hh: 'CtrlPHelp'})
 '''
 
 [[plugins]]
@@ -1362,14 +1418,7 @@ hook_add = '''
 [[plugins]]
 repo = 'mattn/ctrlp-matchfuzzy'
 hook_add = '''
-  let g:ctrlp_match_func = {'match': 'ctrlp_matchfuzzy#matcher'}
-'''
-
-[[plugins]]
-repo = 'kaneshin/ctrlp-git-log'
-on_cmd = 'CtrlPGitLog'
-hook_add = '''
-  nnoremap <Space>gl <Cmd>CtrlPGitLog<CR>
+  let g:ctrlp_match_func = #{match: 'ctrlp_matchfuzzy#matcher'}
 '''
 
 # }}}1  Git {{{1
@@ -1382,13 +1431,24 @@ hook_add = '''
 
   nnoremap <Space>gbl <Cmd>Gina blame<CR>
   nnoremap <Space>gg :Gina log -p -G""<Left>
+  " nnoremap <Space>gD <Cmd>Gina diff --opener=tabnew<CR>
+  " nnoremap <Space>gl <Cmd>Gina log --all --graph -100 --oneline<CR>
+  " nnoremap <Space>gL <Cmd>Gina log --all --patch --graph -100<CR>
+  " 指定したコミット、ブランチのバッファのファイルを表示。
+  " FIXME: これだと Gina の読み込みがされない。
+  " call util#addLeft('nnoremap <Space>gbo :Gina compare --opener="tab vsplit" ', ':%')
 
   call extend(g:vimrc_altercmd_dic, {
         \   'bro\%[wse]': 'Gina browse --exact :',
         \ })
 
   let g:sayonara_filetypes['gina-blame'] = 'tabclose'
+  let g:sayonara_filetypes['gina-diff'] = 'tabclose'
   let g:sayonara_filetypes['gina-log'] = 'bdelete'
+
+  call extend(g:vimrc_altercmd_dic, #{
+        \   gina: 'Gina',
+        \ })
 '''
 hook_source = '''
   " alias
@@ -1402,12 +1462,18 @@ hook_source = '''
   call gina#custom#command#option('gl', '--graph')
 
   " key mapping
-  call gina#custom#mapping#nmap('status', 'cc', ':<C-u>Gina commit -v --group=status<CR>', {'noremap': 1, 'silent': 1, 'buffer': 1, 'nowait': 1})
+  call gina#custom#mapping#nmap('status', 'cc', ':<C-u>Gina commit -v --group=status<CR>', #{noremap: 1, silent: 1, buffer: 1, nowait: 1})
   " show から戻るときは <C-o>
-  call gina#custom#mapping#nmap('blame', 's', ':<C-u>Gina show<CR>', {'noremap': 1, 'silent': 1, 'buffer': 1, 'nowait': 1})
-  call gina#custom#mapping#nmap('blame', 'e', '<Plug>(gina-blame-echo)', {'noremap': 0, 'buffer': 1, 'nowait': 1})
+  call gina#custom#mapping#nmap('blame', 's', ':<C-u>Gina show<CR>', #{noremap: 1, silent: 1, buffer: 1, nowait: 1})
+  call gina#custom#mapping#nmap('blame', 'e', '<Plug>(gina-blame-echo)', #{noremap: 0, buffer: 1, nowait: 1})
   " copy revision
-  call gina#custom#mapping#nmap('log', 'yr', '<Plug>(gina-yank-rev)', {'noremap': 0, 'buffer': 1, 'nowait': 1})
+  call gina#custom#mapping#nmap('log', 'yr', '<Plug>(gina-yank-rev)', #{noremap: 0, buffer: 1, nowait: 1})
+
+  " vim-jp 2021-03-12 obcat
+  " PR を作成するコマンド。一応書置き。
+  " command! -nargs=? PR Gina browse --scheme=pr <args>
+  " nnoremap <leader>aw :PR<CR>
+  " call extend(g:gina#command#browse#translation_patterns['github\.com'][1], #{pr: 'https://\1/\2/\3/pull/new/%c0'})
 '''
 
 [[plugins]]
@@ -1420,18 +1486,31 @@ hook_add = '''
 
 [[plugins]]
 repo = 'lambdalisue/gin.vim'
-on_cmd = ['Gin', 'GinBranch', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinPatch', 'GinStatus']
+on_cmd = ['Gin', 'GinBranch', 'GinBuffer', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinPatch', 'GinStatus']
 depends = 'denops.vim'
 hook_add = '''
-  call extend(g:vimrc_altercmd_dic, {
-        \   'gin': 'Gin',
+  call extend(g:vimrc_altercmd_dic, #{
+        \   gin: 'Gin',
         \ })
 
   nnoremap <Space>gD <Cmd>GinDiff ++opener=tabnew<CR>
-  nnoremap <Space>gL <Cmd>GinBuffer log --all --patch --graph -100 ++opener=tabnew<CR>
+  nnoremap <Space>gl <Cmd>GinBuffer log --all --graph -100 --oneline --decorate<CR>
+  nnoremap <Space>gL <Cmd>GinBuffer log --all --patch --graph -100<CR>
   nnoremap <Space>gaD <Cmd>GinPatch ++opener=tabnew %<CR>
   " 指定したコミット、ブランチのファイルを表示。
-  call util#addLeft('nnoremap <Space>gbo :GinEdit % ', ' ++opener=vsplit')
+  call util#addLeft('nnoremap <Space>gbo :GinEdit ++opener=vsplit ', ' %')
+'''
+hook_source = '''
+  " !git の動作に支障をきたすため環境変数 GIT_EDITOR の書き換えを禁止
+  let g:gin_proxy_disable_editor = v:true
+
+  " Sayonara
+  let g:sayonara_filetypes.gin = 'bdelete'
+'''
+[plugins.ftplugin]
+gin = '''
+  nnoremap <buffer> <CR> <Cmd>call vimrc#ginCR()<CR>
+  nnoremap <expr><buffer> <Space><CR> printf('<Cmd>GinBuffer show ++opener=split -r ' .. expand('<cword>') .. '<CR>')
 '''
 
 [[plugins]]
@@ -1469,7 +1548,7 @@ repo = 'tyru/open-browser.vim'
 on_map = '<Plug>(openbrowser-'
 on_func = 'openbrowser#open'
 hook_add = '''
-  nmap <Space>oo <Plug>(openbrowser-open)
+  nnoremap <Space>oo <Plug>(openbrowser-open)
   BulkMap nx <Space>o <Plug>(openbrowser-open)
 
   nnoremap <Space>og <Cmd>call vimrc#openGithubRepository('n')<CR>
@@ -1479,7 +1558,7 @@ hook_add = '''
 '''
 [plugins.ftplugin]
 help = '''
-  nmap <silent> <buffer> o <Plug>(openbrowser-open)
+  nnoremap <silent> <buffer> o <Plug>(openbrowser-open)
 '''
 
 [[plugins]]
@@ -1497,7 +1576,7 @@ hook_add = '''
   let g:prettyprint_width = 78
   let g:prettyprint_indent = 2
 
-  call extend(g:vimrc_altercmd_dic, {'pp': 'PP'})
+  call extend(g:vimrc_altercmd_dic, #{pp: 'PP'})
 '''
 
 [[plugins]]
@@ -1582,7 +1661,7 @@ on_cmd = ['LayoutLoad', 'LayoutSave']
 hook_add = '''
   let g:layout_path = '~/_vim/.layout/layout.json'
 
-  call extend(g:vimrc_altercmd_dic, {'ss': 'call LayoutWrap()'})
+  call extend(g:vimrc_altercmd_dic, #{ss: 'call LayoutWrap()'})
 
   nnoremap <Space>fs <Cmd>CtrlPLayout<CR>
   command! -nargs=* CtrlPLayout call CtrlPGeneric(glob(fnamemodify(g:layout_path, ':p:h') .. '/*', v:true, v:true), 'LayoutCallback')
