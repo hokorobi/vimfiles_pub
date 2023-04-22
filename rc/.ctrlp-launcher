@@ -21,3 +21,4 @@ zenn-preview	!start cmd /c \%USERPROFILE\%\Documents\zenn\zenn-preview.bat
 zenn-new	cd \%USERPROFILE\%\Documents\zenn | !npx zenn new:article
 sphinx-autobuild	FloatermNew! sphinx-autobuild.exe %:p:h %:p:h\autobuild --open-browser --ignore .git/* --ignore _build/* --ignore bakgit/* --ignore _image/* --ignore _static/*
 jupyter-terminal	!start cmd /k "cd \%USERPROFILE\%\Documents\jupyter & \%USERPROFILE\%\Documents\jupyter\_venv\Scripts\activate.bat & jupyter notebook"
+Vimium	execute('Gista open ' .. g:gist_vimium)

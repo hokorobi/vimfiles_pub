@@ -445,9 +445,6 @@ let g:loaded_netrwFileHandlers = 1
 let g:changelog_username=''
 let g:changelog_dateformat='%Y-%m-%d (%a)'
 let g:changelog_new_date_format="%d\n\n%c\n"
-" changelog の syntax を適用させないように書いてみたけど駄目だった。
-" タイミングがこれより前じゃないと駄目なんだろうな。
-" autocmd vimrc Filetype changelog let b:current_syntax = 'changelog'
 
 " }}}2  dein {{{2
 let s:dein_home = expand('~/_vim/dein')
@@ -462,11 +459,14 @@ let g:dein#enable_hook_function_cache = v:true
 
 if dein#min#load_state(s:dein_home)
   call dein#begin(s:dein_home)
-  call dein#load_toml('~/vimfiles/rc/plugins.toml')
+  " call dein#load_toml('~/vimfiles/rc/plugins.toml')
+  source ~/vimfiles/rc/dein/_plugins.vim
   " call dein#load_toml('~/vimfiles/rc/asyncomplete.toml')
-  call dein#load_toml('~/vimfiles/rc/ddc.toml')
-  call dein#load_toml('~/vimfiles/rc/ddu.toml', {'lazy': 1})
-  call dein#load_toml('~/vimfiles/rc/deinft.toml')
+  " call dein#load_toml('~/vimfiles/rc/ddc.toml')
+  source ~/vimfiles/rc/dein/_ddc.vim
+  " call dein#load_toml('~/vimfiles/rc/ddu.toml', {'lazy': 1})
+  source ~/vimfiles/rc/dein/_ddu.vim
+  " call dein#load_toml('~/vimfiles/rc/dein/deinft.toml')
   call dein#end()
   call dein#save_state()
 endif
@@ -563,7 +563,7 @@ noremap <C-n> <Cmd>enew<CR>
 
 " open vimrc
 noremap <F4> <Cmd>edit $MYVIMRC<CR>
-noremap <S-F4> <Cmd>edit ~/vimfiles/rc/plugins.toml<CR>
+noremap <S-F4> <Cmd>edit ~/vimfiles/rc/dein/_plugins.vim<CR>
 
 nnoremap qt <Cmd>tabclose<CR>
 
