@@ -32,5 +32,6 @@ setlocal expandtab shiftwidth=2 tabstop=4 softtabstop=2
 # iW などでいいかも？　と思ったけど、func(g:hoge とかは先頭まで対象になるから駄目だ。
 vim = '''
 setlocal iskeyword+=58
+setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
 '''
 

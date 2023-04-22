@@ -114,22 +114,19 @@ call extend(g:vimrc_altercmd_dic, {
       \ 'gw': 'GrepWrap',
       \ 'grepw\%[rap]': 'GrepWrap'})
 
-" コマンドの結果をスクラッチバッファに表示
-command! -nargs=1 -complete=command L call vimrc#L(<q-args>)
-
-command! Map   L map
-command! Nmap  L nmap
-command! Vmap  L vmap
-command! Xmap  L xmap
-command! Smap  L smap
-command! Tmap  L tmap
-command! Omap  L omap
-command! Imap  L imap
-command! Lmap  L lmap
-command! Cmap  L cmap
+command! Map   Capture map
+command! Nmap  Capture nmap
+command! Vmap  Capture vmap
+command! Xmap  Capture xmap
+command! Smap  Capture smap
+command! Tmap  Capture tmap
+command! Omap  Capture omap
+command! Imap  Capture imap
+command! Lmap  Capture lmap
+command! Cmap  Capture cmap
 call extend(g:vimrc_altercmd_dic, {
-      \   'scriptn\%[ames]': 'L scriptnames',
-      \   'ml': 'L messages',
+      \   'scriptn\%[ames]': 'Capture scriptnames',
+      \   'ml': 'Capture messages',
       \ })
 
 " Vim ヘルプファイル編集用設定反映
@@ -380,15 +377,7 @@ autocmd vimrc QuickfixCmdPost l* lwin
 " 印刷設定: 余白を狭く、シンタックスハイライトなし syntax:n、行番号あり number:y
 set printoptions=left:2pc,right:3pc,top:3pc,bottom:2pc,syntax:n,number:y
 
-
-" Swap
-" https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L651-L687
 setglobal swapfile
-autocmd vimrc SwapExists * call vimrc#on_SwapExists()
-" swapfile からリカバリー
-command! SwapfileRecovery call vimrc#swapfile_recovery()
-" swapfile を削除
-command! SwapfileDelete call vimrc#swapfile_delete()
 
 " Improve diff
 set diffopt& diffopt+=algorithm:histogram,indent-heuristic,followwrap,vertical
@@ -486,7 +475,7 @@ call extend(g:vimrc_altercmd_dic, {
       \   'du': 'call dein#update()',
       \   'dc': 'call dein#check_update(v:true)',
       \   'di': 'call dein#install()',
-      \   'dr': 'call dein#recache_runtimepath()',
+      \   'dr': 'call dein#recache_runtimepath() | :q',
       \ })
 
 autocmd vimrc VimEnter * call dein#call_hook('post_source')
@@ -798,7 +787,7 @@ cnoremap <M-j> <C-g>
 cnoremap <M-k> <C-t>
 
 " 現在のバッファから grep
-call util#addLeft('nnoremap <Space>/ :vimgrep /', '/ %')
+" call util#addLeft('nnoremap <Space>/ :vimgrep /', '/ %')
 
 " }}}2
 
@@ -819,7 +808,7 @@ nnoremap <Space>gp :!git push origin @
 
 " コミット対象の hunk を選択する場合: gad -> gc
 " コミットメッセージに詳細を書く場合: gu -> gc
-nnoremap <Space>gad :!git add --patch<Space>
+nnoremap <Space>gad :!git add --patch<CR>
 nnoremap <Space>gai <Cmd>!git add --interactive<CR>
 nnoremap <Space>gu <Cmd>silent !git add --update<CR>
 nnoremap <Space>gc <Cmd>!git commit -v<CR>
@@ -830,7 +819,7 @@ nnoremap <Space>gN <Cmd>!git commit --all -v<CR>
 
 " 直前のコミットを master にする場合: gbr -> g-
 " rename current branch
-nnoremap <Space>gbr :!git branch -m temp
+nnoremap <Space>gbm :!git branch -m temp
 " switch new branch (default: master) from last commit (default: master)
 call util#addLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')
 " restore temp branch

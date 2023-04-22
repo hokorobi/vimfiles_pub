@@ -1,0 +1,4 @@
+git log all files	execute('GinBuffer log --all --graph -100 --oneline --decorate')
+git log all files patch	execute('GinBuffer log --all --patch --graph -100')
+git log CtrlP file	call ctrlp#filter#do('CtrlP', #{filtermethods: ['printf', 'execute'], methodsargs: #{printf: ['GinBuffer log ++opener=tabnew --all --graph -100 --oneline --decorate %s']}})
+

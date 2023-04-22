@@ -1,6 +1,5 @@
 scriptencoding utf-8
 
-
 " Show cursor info / buffer info in popup
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
 function! vimrc#popup_cursor_info()
@@ -255,12 +254,12 @@ endfunction
 " endfunction
 
 " コマンドの結果をスクラッチバッファに表示
-function! vimrc#L(args)
-  new
-  setlocal buftype=nofile bufhidden=delete noswapfile
-  nnoremap <buffer> qq <Cmd>close<CR>
-  call setline(1, split(execute(a:args), '\n'))
-endfunction
+" function! vimrc#L(args)
+"   new
+"   setlocal buftype=nofile bufhidden=delete noswapfile
+"   nnoremap <buffer> qq <Cmd>close<CR>
+"   call setline(1, split(execute(a:args), '\n'))
+" endfunction
 
 " ycino@vim-jp slack
 function! vimrc#option_to_edit() abort
@@ -337,41 +336,9 @@ function! vimrc#blank_below(type = '') abort
 endfunction
 "}}}
 
-" Swap {{{
-" https://github.com/thinca/config/blob/a8e3ee41236fcdbfcfa77c954014bc977bc6d1c6/dotfiles/dot.vim/vimrc#L651-L687
-function! vimrc#on_SwapExists() abort
-  if !filereadable(expand('<afile>'))
-    let v:swapchoice = 'd'
-    return
-  endif
-  let v:swapchoice = get(b:, 'swapfile_choice', 'o')
-  unlet! b:swapfile_choice
-  if v:swapchoice !=# 'd'
-    let b:swapfile_exists = 1
-  endif
-endfunction
-
-function! vimrc#swapfile_recovery() abort
-  if get(b:, 'swapfile_exists', 0)
-    let b:swapfile_choice = 'r'
-    unlet b:swapfile_exists
-    edit
-  endif
-endfunction
-
-function! vimrc#swapfile_delete() abort
-  if get(b:, 'swapfile_exists', 0)
-    let b:swapfile_choice = 'd'
-    unlet b:swapfile_exists
-    edit
-  endif
-endfunction
-" }}}
-
-
 " plugin {{{1
 " '' か "" で括られた文字列か選択範囲を user/repogitory のリポジトリ名と想定して取得
-function! s:getRepogitoryName(mode) abort
+function! vimrc#getRepositoryName(mode) abort
   let backregz = getreg('z')
   call setreg('z', '')
   if a:mode ==# 'n'
@@ -390,119 +357,5 @@ function! s:getRepogitoryName(mode) abort
     return ''
   endif
 endfunction
-
-" gf-user {{{2
-" http://d.hatena.ne.jp/thinca/20140324/1395590910
-" Windows foo.c:23 などでも gf で foo.c を開けるようにする
-function! vimrc#GfFile() abort
-  let path = expand('<cfile>')
-  let line = 0
-  if path =~# ':\d\+:\?$'
-    let line = matchstr(path, '\d\+:\?$')
-    let path = matchstr(path, '.*\ze:\d\+:\?$')
-  endif
-  let path = findfile(path, getcwd() .. ';')  " 追加
-  if !filereadable(path)
-    return 0
-  endif
-  return #{
-        \   path: path,
-        \   line: line,
-        \   col:  0,
-        \ }
-endfunction
-
-" }}}2 template {{{2
-function! vimrc#EditHowmNew(dir) abort
-  let dir = a:dir .. strftime('/%Y/%m')
-  if isdirectory(dir) == 0
-    call mkdir(dir, 'p')
-  endif
-  let file = strftime('/%Y%m%d%H%M%S.howm')
-  execute printf('edit %s%s', dir, file)
-  Template howm
-  " 行末尾追加でインサートモードへ
-  startinsert!
-endfunction
-
-" }}}2 open-browser {{{2
-function! vimrc#openGithubRepository(mode) abort
-  let repo = s:getRepogitoryName(a:mode)
-  if repo ==# '' || stridx(repo, '/') == -1
-    echo 'リポジトリ名は取得できませんでした。'
-    return
-  endif
-
-  call openbrowser#open('https://github.com/' .. repo)
-endfunction
-
-function! vimrc#openUrlInBuffer() abort
-  if &filetype != '' && confirm("Open URLs in buffer?", "&Yes\n&No\n&Cancel") != 1
-    return
-  endif
-
-  for line in getline(0, line("$"))
-    let head = stridx(line, "https:\/\/")
-    if head >= 0
-      call openbrowser#open(line[head:])
-    endif
-  endfor
-endfunction
-
-" }}}2 CtrlP {{{2
-
-function! vimrc#CtrlPRepository(mode) abort
-  execute printf('CtrlP ~/_vim/dein/repos/github.com/%s', s:getRepogitoryName(a:mode))
-endfunction
-
-" CtrlP のコマンドと初期入力値を指定して実行
-function! vimrc#CtrlPDefaultInput(cmd, input)
-  try
-    let l:default_input_save = get(g:, 'ctrlp_default_input', '')
-    let g:ctrlp_default_input = a:input
-    execute a:cmd
-  finally
-    if exists('l:default_input_save')
-      let g:ctrlp_default_input = l:default_input_save
-    endif
-  endtry
-endfunction
-
-" CtrlP で選択した内容を加工してバッファに挿入
-function! vimrc#CtrlPPasteFunc(action, line) abort
-  call ctrlp#exit()
-
-  let backregz = getreg('z')
-  call setreg('z', join([s:ctrlp_affix[0], a:line, s:ctrlp_affix[1]], ''))
-  noautocmd normal! "zp
-  call setreg('z', backregz)
-  let g:ctrlp_open_func = {}
-endfunction
-function! vimrc#CtrlPOpenfunc(ctrlp, openfunc, prefix='', suffix='') abort
-  if exists(":" .. a:ctrlp) != 2
-    echohl WarningMsg | echomsg a:ctrlp .. ": 存在しないコマンドです。" | echohl None
-    return
-  endif
-  if exists("?" .. a:openfunc)
-    echohl WarningMsg | echomsg a:openfunc .. ": 存在しない関数です。" | echohl None
-    return
-  endif
-
-  let s:ctrlp_affix = [a:prefix, a:suffix]
-  let g:ctrlp_open_func = #{ files: a:openfunc }
-  execute a:ctrlp
-endfunction
-
-" }}}2 gin {{{2
-
-function! vimrc#ginCR()
-  if v:count > 0
-    execute printf('normal! %iG', v:count)
-  else
-    execute join(['!git show -r', expand('<cword>')])
-  endif
-endfunction
-" }}}
-
 " }}}1
 

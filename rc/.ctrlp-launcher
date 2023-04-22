@@ -1,6 +1,5 @@
 fenrir instant.ini	execute(join(['edit ', g:fenrir_dir, '/data/instant.ini'], ''))
 fenrir path	execute('edit ' .. g:fenrir_dir .. '/data/path')
-autohotkey ahk	execute('edit ' .. g:ahk_path)
 _vimrc.local	execute('edit ' .. g:vimrc_local)
 vimplugins.rst	edit ~/Documents/Sphinx/github.io/vimplugins.rst
 webschedule	execute('edit ' .. g:webschedule_path)
@@ -9,16 +8,16 @@ cheatsheet	CtrlPLauncher cheat
 PPX.CFG	execute('edit ' .. g:ppx_dir .. '/PPX.CFG')
 gitconfig	edit ~/.gitconfig
 Gist	Gista list
-cVim - Gist	execute('Gista open ' .. g:gist_cvim .. ' cVimrc.vim')
 lexima.vim vimrc	edit ~/vimfiles/rc/lexima.vim
 twicli regexp - Gist	execute('Gista open ' .. g:gist_twicli_regexp)
 twicli plugins - Gist	execute('Gista open ' .. g:gist_twicli_plugins)
 debug_print	call print_debug#print_debug()
+launcher filetype	execute('CtrlPLauncher ' .. &filetype)
 snippet filetype	execute(join(['edit ', expand('~/vimfiles/rc/vsnip/'), &filetype, '.json'], ''))
 ftplugin	execute(join(['edit ', expand('~/vimfiles/after/ftplugin/', &filetype, '.vim']), ''))
 autoload vimrc	edit ~/vimfiles/autoload/vimrc.vim
+autohotkey ahk	execute('edit ' .. g:ahk_path)
 zenn-preview	!start cmd /c \%USERPROFILE\%\Documents\zenn\zenn-preview.bat
 zenn-new	cd \%USERPROFILE\%\Documents\zenn | !npx zenn new:article
 sphinx-autobuild	FloatermNew! sphinx-autobuild.exe %:p:h %:p:h\autobuild --open-browser --ignore .git/* --ignore _build/* --ignore bakgit/* --ignore _image/* --ignore _static/*
 jupyter-terminal	!start cmd /k "cd \%USERPROFILE\%\Documents\jupyter & \%USERPROFILE\%\Documents\jupyter\_venv\Scripts\activate.bat & jupyter notebook"
-launcher filetype	execute('CtrlPLauncher ' .. &filetype)

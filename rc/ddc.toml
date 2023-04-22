@@ -21,7 +21,6 @@ hook_source = '''
   let s:ddc_sourceOptions['file'] = #{
       \   mark: 'F',
       \   isVolatile: v:true,
-      \   mode: 'win32',
       \ }
   " https://github.com/kuuote/dotvim/blob/7fbd83a2aedb1e30405f9bd1d8126b04dc5fe72e/conf/vim-lsp.toml#L50
   " メソッド呼び出しを補完
@@ -32,17 +31,21 @@ hook_source = '''
       \ }
   let s:ddc_sourceOptions['vsnip'] = #{
       \   mark: 'S',
-      \   dup: v:true,
+      \   dup: 'keep',
       \ }
 
   call ddc#custom#patch_global('sourceOptions', s:ddc_sourceOptions)
+
+  call ddc#custom#patch_global('sourceParams', #{
+      \   file: #{mode: 'win32'},
+      \ })
 
   call ddc#custom#patch_filetype(
       \ ['rst'], #{sources: ['buffer', 'around', 'file', 'vsnip']})
   call ddc#custom#patch_filetype(
       \ ['go', 'python', 'typescript'], #{sources: ['vim-lsp', 'file', 'vsnip']})
   call ddc#custom#patch_filetype(
-      \ ['autohotkey', 'cfg', 'git', 'gitcommit', 'javascript', 'markdown', 'plantuml', 'snippet', 'toml', 'vb', 'xsl'], #{sources: ['buffer', 'around', 'file']})
+      \ ['cfg', 'git', 'gitcommit', 'javascript', 'markdown', 'snippet', 'toml', 'vb', 'xsl'], #{sources: ['buffer', 'around', 'file']})
 
 
   " ddc.vim を使用しない filetype では <Tab>
@@ -108,6 +111,7 @@ repo = 'Shougo/pum.vim'
 lazy = 1
 hook_source = '''
   call pum#set_option('use_complete', v:true)
+  call pum#set_option('use_setline', v:true)
 '''
 
 [[plugins]]
@@ -178,7 +182,30 @@ hook_source = '''
   call popup_preview#enable()
 '''
 
-# [[plugins]]
-# repo = 'hokorobi/neco-syntax'
-# on_source = 'ddc.vim'
+[[plugins]]
+repo = 'Shougo/neco-syntax'
+lazy = 1
+
+[[plugins]]
+repo = 'hokorobi/ddc-source-neco-syntax'
+on_ft = ['autohotkey']
+frozen = 1
+depends = ['neco-syntax', 'ddc.vim']
+hook_source = '''
+  call ddc#custom#patch_global(#{sourceOptions: #{necosyntax: #{mark: 'X'}}})
+  call ddc#custom#patch_filetype(['autohotkey'], #{sources: ['buffer', 'around', 'vsnip', 'necosyntax', 'file']})
+'''
+
+[[plugins]]
+repo = 'hokorobi/ddc-source-plantuml'
+on_ft = ['plantuml']
+frozen = 1
+depends = ['ddc.vim']
+hook_add = '''
+  let g:ddc_source_plantuml_cmd = 'C:/ols/Graphic/plantuml.jar'
+'''
+hook_source = '''
+  call ddc#custom#patch_global(#{sourceOptions: #{plantuml: #{mark: 'U'}}})
+  call ddc#custom#patch_filetype(['plantuml'], #{sources: ['buffer', 'around', 'vsnip', 'plantuml', 'file']})
+'''
 

@@ -1,0 +1,4 @@
+= [{{_expr_:strftime('%Y-%m-%d')}}]+ {{_cursor_}}
+
+[{{_expr_:strftime('%Y-%m-%d %H:%M')}}]
+

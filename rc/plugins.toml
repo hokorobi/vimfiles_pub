@@ -26,7 +26,7 @@ hook_add = '''
 
   " let g:lsp_log_verbose = 1
   " let g:lsp_log_file = expand('~/_vim/.log/vim-lsp.log')
-  let g:lsp_diagnostics_float_cursor = 1
+  let g:lsp_diagnostics_float_cursor = 0
   let g:lsp_diagnostics_float_delay = 200
   let g:lsp_document_highlight_enabled = 0
   " A> 非表示
@@ -36,6 +36,12 @@ hook_add = '''
   " do not use fold
   let g:lsp_fold_enabled = 0
 
+  let g:lsp_diagnostics_echo_cursor = 0
+  let g:lsp_diagnostics_virtual_text_enabled = 1
+  let g:lsp_diagnostics_virtual_text_insert_mode_enabled = 0
+  " let lsp_diagnostics_virtual_text_align = 'right'
+  let g:lsp_diagnostics_virtual_text_padding_left = 2
+  let g:lsp_diagnostics_virtual_text_prefix = "🐛 "
   " https://vim-jp.slack.com/archives/CQ57P4XU4/p1614523430139700
   function! s:lsp_format() abort
     silent LspDocumentFormatSync
@@ -268,7 +274,7 @@ depends = 'vim-textobj-user'
 
 [[plugins]]
 repo = 'romgrk/equal.operator'
-on_map = {ox = ['i=', 'a=']}
+on_map = {ox = ['<Plug>']}
 hook_source = '''
   let g:equal_operator_default_mappings = 0
 
@@ -285,9 +291,9 @@ hook_source = '''
 
 [[plugins]]
 repo = 'machakann/vim-textobj-functioncall'
-on_map = {ox = ['if', 'af']}
+on_map = {ox = ['<Plug>']}
 on_souce = 'vim-sandwich'
-hook_source = '''
+hook_add = '''
   let g:textobj_functioncall_no_default_key_mappings = 1
 
   " func(arg)
@@ -666,6 +672,13 @@ hook_add = '''
 repo = 'rbtnn/vim-ambiwidth'
 hook_add = '''
   let g:ambiwidth_cica_enabled = v:false
+  " «» 除外
+  let g:ambiwidth_add_list = [
+  \   [0x00a1, 0x00aa, 2],
+  \   [0x00ac, 0x00ba, 2],
+  \   [0x00bc, 0x00ff, 2],
+  \   [0x2010, 0x2026, 2],
+  \ ]
 '''
 
 # }}}1  Input & Edit {{{1
@@ -681,25 +694,16 @@ hook_source = '''
   source ~/vimfiles/rc/lexima.vim
   " 継続行の改行時に \ を入力するため
   autocmd vimrc FileType vim nmap <buffer> o A<CR>
+'''
 
-  " alter altercmd
-  " https://github.com/yuki-yano/dotfiles/blob/7062b0f72d191d15fe403bf43f6e7b54d4c64089/.vimrc#L3335-L3346
-  " https://scrapbox.io/vim-jp/lexima.vim%E3%81%A7Better_vim-altercmd%E3%82%92%E5%86%8D%E7%8F%BE%E3%81%99%E3%82%8B
-  function! s:lexima_alter_command(original, altanative) abort
-    let input_space = '<C-w>' .. a:altanative .. '<Space>'
-    let input_cr    = '<C-w>' .. a:altanative .. '<CR>'
-
-    let rule = #{
-        \   mode: ':',
-        \   at: '^\(''<,''>\)\?' .. a:original .. '\%#$',
-        \ }
-
-    call lexima#add_rule(extend(rule, #{char: '<Space>', input: input_space }))
-    call lexima#add_rule(extend(rule, #{char: '<CR>',    input: input_cr }))
-  endfunction
-
+# https://scrapbox.io/vim-jp/lexima.vim%E3%81%A7Better_vim-altercmd%E3%82%92%E5%86%8D%E7%8F%BE%E3%81%99%E3%82%8B
+[[plugins]]
+repo = 'yuki-yano/lexima-alter-command.vim'
+on_event = ['CmdlineEnter']
+depends = 'lexima.vim'
+hook_source = '''
   for [key, value] in items(g:vimrc_altercmd_dic)
-    call s:lexima_alter_command(key, value)
+    call lexima_alter_command#add_rule(key, value)
   endfor
 '''
 
@@ -796,9 +800,8 @@ hook_source = '''
 repo = 'osyo-manga/vim-jplus'
 on_map = '<Plug>'
 hook_add = '''
-  " 空白を削除して行を結合
-  " 空白ありで連結のほうが使うことが多い。
-  "BulkMap nx J <Plug>(jplus-input)<CR>
+  " 空白、行継続を削除して行を結合
+  BulkMap nx J <Plug>(jplus)
 
   " 空白を削除した上で任意の文字を挿入して行を結合
   BulkMap nx <Space>J <Plug>(jplus-input)
@@ -850,21 +853,8 @@ hook_add = '''
     \]
 
   if exists('g:howm_dir') && isdirectory(g:howm_dir)
-    nnoremap <Space>,c <Cmd>call vimrc#EditHowmNew(g:howm_dir)<CR>
+    nnoremap <Space>,c <Cmd>call plugin#sonictemplate#editHowmNew(g:howm_dir)<CR>
   endif
-
-  " vim-jp slack 2021-11-02 Hasu
-  " テンプレート候補をポップアップで表示
-  " function! s:sonictemplateSelector() abort
-  "     let s:candidate = getcompletion('Template ', 'cmdline')
-  "     call popup_menu(s:candidate,#{callback: function('s:sonictemplateSelector_apply')})
-  " endfunction
-  " function! s:sonictemplateSelector_apply(id,result) abort
-  "     if s:candidate[a:result] ==# ' '
-  "         return
-  "     endif
-  "     exec printf(":Template %s",s:candidate[a:result])
-  " endfunction
 
   autocmd vimrc FileType toml imap <buffer> <C-t> .plugin<C-R>=sonictemplate#postfix()<CR>
 '''
@@ -886,12 +876,12 @@ repo = 'lambdalisue/vim-findent'
 on_cmd = ['Findent', 'FindentRestore']
 hook_add = '''
   let g:findent#enable_messages = 0
-  autocmd vimrc FileType autohotkey,javascript,json,neosnippet,plantuml,python,ruby,vim Findent
+  autocmd vimrc FileType autohotkey,javascript,json,neosnippet,plantuml,python,ruby,typescript,vim Findent
 '''
 
 [[plugins]]
 repo = 'machakann/vim-swap'
-on_map = {ox = ['a,', 'i,'], n = ['gs', 'g<', 'g>']}
+on_map = {ox = ['<Plug>'], n = ['gs', 'g<', 'g>']}
 hook_add = '''
   BulkMap xo i, <Plug>(swap-textobject-i)
   BulkMap xo a, <Plug>(swap-textobject-a)
@@ -962,18 +952,7 @@ hook_source = '''
 repo = 'thinca/vim-partedit'
 on_func = 'partedit#'
 hook_add = '''
-  function! s:operator_partedit() abort
-    let context = context_filetype#get()
-    if context.range == [[0, 0], [0, 0]]
-      echohl WarningMsg
-      echomsg '[partedit] Context is not found'
-      echohl NONE
-      return
-    endif
-    call partedit#start(context.range[0][0], context.range[1][0], #{filetype: context.filetype})
-    nnoremap <buffer> qq <Cmd>ParteditEnd<CR>
-  endfunction
-  nnoremap <Space>i <Cmd>call <SID>operator_partedit()<CR>
+  nnoremap <Space>i <Cmd>call plugin#partedit#operator_partedit()<CR>
 
   let g:partedit#prefix_pattern = '\s*'
 '''
@@ -1010,7 +989,7 @@ hook_add = '''
 
   " bd: bidirection
   " ?l: current line
-  BulkMap nxo ss <Plug>(easymotion-overwin-f2)
+  BulkMap nxo <Space>/ <Plug>(easymotion-overwin-f2)
   BulkMap nxo f <Plug>(easymotion-bd-fl)
   BulkMap nxo F <Plug>(easymotion-Fl)
   BulkMap nxo t <Plug>(easymotion-bd-tl)
@@ -1053,6 +1032,8 @@ hook_add = '''
 repo = 'haya14busa/vim-asterisk'
 on_map = '<Plug>'
 hook_add = '''
+  let g:asterisk#keeppos = 1
+
   noremap * <Plug>(asterisk-gz*)
   noremap g* <Plug>(asterisk-z*)
   noremap z* <Plug>(asterisk-*)
@@ -1071,6 +1052,8 @@ hook_add = '''
   BulkMap nx ? <Cmd>call searchx#start(#{ dir: 0 })<CR>
   BulkMap nx / <Cmd>call searchx#start(#{ dir: 1 })<CR>
   nnoremap g/ /
+  nnoremap gn n
+  nnoremap gN N
 
   " Move to next/prev match.
   BulkMap nx N <Cmd>call searchx#prev_dir()<CR>
@@ -1171,13 +1154,12 @@ hook_add = '''
 
 [[plugins]]
 repo = 'Allianaab2m/jumpout.vim'
-rev = 'dev'
 on_func = 'jumpout#'
 hook_add = '''
-  nnoremap <expr> <C-h> jumpout#jumpable('h') ? '<C-w>h' : '<Cmd>call jumpout#hook_jump("h", "vsplit")<CR>'
-  nnoremap <expr> <C-j> jumpout#jumpable('j') ? '<C-w>j' : '<Cmd>call jumpout#hook_jump("j", "split")<CR>'
-  nnoremap <expr> <C-k> jumpout#jumpable('k') ? '<C-w>k' : '<Cmd>call jumpout#hook_jump("k", "split")<CR>'
-  nnoremap <expr> <C-l> jumpout#jumpable('l') ? '<C-w>l' : '<Cmd>call jumpout#hook_jump("l", "vsplit")<CR>'
+  nnoremap <C-h> <Cmd>call jumpout#jump('h', 'vsplit')<CR>
+  nnoremap <C-j> <Cmd>call jumpout#jump('j', 'split')<CR>
+  nnoremap <C-k> <Cmd>call jumpout#jump('k', 'split')<CR>
+  nnoremap <C-l> <Cmd>call jumpout#jump('l', 'vsplit')<CR>
 '''
 
 # }}}1  Buffer {{{1
@@ -1186,7 +1168,7 @@ repo = 'hokorobi/vim-sayonara'
 on_func = 'sayonara#'
 frozen = 1
 hook_add = '''
-  noremap <expr> qq '<Cmd>' .. (&diff ? 'diffoff' : 'call sayonara#sayonara(v:true)') .. '<CR>'
+  noremap <expr> qq printf('<Cmd>%s<CR>', &diff ? 'diffoff' : 'call sayonara#sayonara(v:true)')
 '''
 hook_source = '''
   let g:sayonara_filetypes.qf = 'bdelete'
@@ -1200,6 +1182,21 @@ hook_add ='''
   nnoremap <Space>q <Cmd>call closesubwin#close_sub_window()<CR>
 '''
 
+[[plugins]]
+repo = 'tyru/capture.vim'
+on_cmd = 'Capture'
+hook_add = '''
+  call extend(g:vimrc_altercmd_dic, {
+        \   'cap[ture]': 'Capture',
+        \ })
+'''
+hook_source = '''
+  let g:capture_override_buffer = 'replace'
+
+  " Sayonara
+  let g:sayonara_filetypes.capture = 'bdelete'
+'''
+
 # }}}1  File {{{1
 [[plugins]]
 repo = 'kana/vim-gf-user'
@@ -1207,7 +1204,7 @@ on_map = {n = 'gf'}
 hook_source = '''
   " Windows でも行数指定の記述を gf で開けるようにする
   " http://thinca.hatenablog.com/entry/20140324/1395590910
-  call gf#user#extend('vimrc#GfFile', 1000)
+  call gf#user#extend('plugin#gfUser#file', 1000)
 '''
 
 # diff でも gf を可能にする
@@ -1221,7 +1218,6 @@ depends = 'vim-gf-user'
 #        ファイル末尾にファイルの先頭からの内容が表示される。本当に先頭からではなく2行目からの様子
 #        sample: :e https://raw.githubusercontent.com/Mathiasb17/mathias/f3ad028eafcc56ddd4d72019cb6a1818e456d099/.config/nvim/init.vim
 repo = 'lambdalisue/vim-protocol'
-on_path = '^https\?://'
 
 [[plugins]]
 repo = 'mattn/vim-findroot'
@@ -1230,8 +1226,8 @@ hook_source = '''
   let g:findroot_not_for_subdir = 0
 '''
 
-# [[plugins]]
-# repo = 'lambdalisue/mr.vim'
+[[plugins]]
+repo = 'chrisbra/Recover.vim'
 
 # }}}1  Terminal {{{1
 # terminal 上で、未入力時に ESC, : が効くようにする
@@ -1256,7 +1252,7 @@ repo = 'voldikss/vim-floaterm'
 on_cmd = 'FloatermNew'
 on_func = 'floaterm#'
 hook_add = '''
-  nnoremap <expr> <M-t> '<Cmd>' .. (floaterm#buflist#first() == -1 ? 'FloatermNew' : 'FloatermToggle') .. '<CR>'
+  nnoremap <expr> <M-t> printf('<Cmd>%s<CR>', floaterm#buflist#first() == -1 ? 'FloatermNew' : 'FloatermToggle')
 '''
 hook_source = '''
   " exit してもウィンドウが残ると閉じないといけないので
@@ -1299,6 +1295,7 @@ hook_add = '''
   let g:ctrlp_custom_ignore = #{
     \ dir:  '\v[\/](\.(bzr|git|hg|svn)|node_modules|_venv)$',
     \ file: '\v\.(dll|exe|so)$',
+    \ link: 'SOME_BAD_SYMBOLIC_LINKS',
     \ }
 
   " mapping
@@ -1319,17 +1316,19 @@ hook_add = '''
         \ 'PrtDeleteEnt()'      : ['<F7>', '<c-w>'],
         \ }
 
+  " FIXME: <Space>fr で候補が出なくなる。
+  " let g:ctrlp_user_command = ['.git', 'git ls-files -co --exclude-standard']
+
   nnoremap <Space>b  <Cmd>CtrlPBuffer<CR>
-  nnoremap <Space>f/ <Cmd>CtrlPLine %<CR>
-  nnoremap <Space>fo <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', '{{{ ')<CR>
-  nnoremap <Space>*  <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', expand('<cword>') .. ' ')<CR>
-  xnoremap <Space>*  <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', vimrc#get_current_selection() .. ' ')<CR>
+  " nnoremap <Space>f/ <Cmd>CtrlPLine<CR>
+  nnoremap <Space>fo <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', '{{{ ')<CR>
+  nnoremap <Space>*  <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', expand('<cword>') .. ' ')<CR>
+  xnoremap <Space>*  <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', vimrc#get_current_selection() .. ' ')<CR>
   nnoremap <Space>u  <Cmd>CtrlPMRUFiles<CR>
   nnoremap <Space>ff <Cmd>CtrlP<CR>
-  nnoremap <Space>fn <Cmd>call vimrc#CtrlPOpenfunc('CtrlP', 'vimrc#CtrlPPasteFunc')<CR>
-  nnoremap <Space>fq <Cmd>CtrlPQuickfix<CR>
-  nnoremap <Space>fr <Cmd>call vimrc#CtrlPRepository('n')<CR>
-  xnoremap <Space>fr <Cmd>call vimrc#CtrlPRepository('x')<CR>
+  " nnoremap <Space>fq <Cmd>CtrlPQuickfix<CR>
+  " nnoremap <Space>fr <Cmd>call plugin#ctrlp#repository('n')<CR>
+  xnoremap <Space>fr <Cmd>call plugin#ctrlp#repository('x')<CR>
 
   " CtrlP-funky だとカレントのバッファしか対象にできないので
   nnoremap <Space>fu <Cmd>call Funcquickfix()<CR>
@@ -1342,8 +1341,7 @@ hook_add = '''
 '''
 [plugins.ftplugin]
 rst = '''
-  nnoremap <buffer> <Space>fo <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', 'list-table ')<CR>
-  nnoremap <buffer> <Space>fn <Cmd>call vimrc#CtrlPOpenfunc('CtrlP', 'vimrc#CtrlPPasteFunc', '.. image:: ')<CR>
+  nnoremap <buffer> <Space>fo <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', 'list-table ')<CR>
 '''
 go = '''
   command! -buffer -nargs=0 FuncGrep :execute 'vimgrep /^\s*func\s\+/j **/*.go'
@@ -1355,7 +1353,7 @@ vim = '''
   command! -buffer -nargs=0 FuncGrep :execute 'vimgrep /^\s*fu\%[nction]!\?\s\+\zs[a-zA-Z0-9_#:]\+\ze\s*(/j **/*.vim'
 '''
 toml = '''
-  nnoremap <buffer> <Space>fg <Cmd>call vimrc#CtrlPDefaultInput('CtrlPLine %', 'repo= ')<CR>
+  nnoremap <buffer> <Space>fg <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', 'repo= ')<CR>
 '''
 
 [[plugins]]
@@ -1397,16 +1395,24 @@ hook_add = '''
 repo = 'christoomey/ctrlp-generic'
 on_func = 'CtrlPGeneric'
 hook_add = '''
-  function! PasteCallback(selected_value) abort
-    call setreg('z', a:selected_value)
-    noautocmd normal! "zp
-  endfunction
-  command! -nargs=* CtrlPCmdPaste call CtrlPGeneric(systemlist(<q-args>), 'PasteCallback')
+  command! -nargs=* CtrlPCmdPaste call CtrlPGeneric(systemlist(<q-args>), 'plugin#ctrlpGeneric#paste')
+  nnoremap <Space>fc <Cmd>call CtrlPGeneric(systemlist('ghq list -p'), 'plugin#ctrlpGeneric#cd')<CR>
+  " ghq からリポジトリのディレクトリを選択して、その中のファイルを選択
+  nnoremap <Space>fr <Cmd>call CtrlPGeneric(systemlist('ghq list -p'), 'plugin#ctrlpGeneric#ctrlp')<CR>
+  " git log からコミットを選択して、そのコミット時点のカレントバッファのファイルを開く
+  nnoremap <Space>gbo <Cmd>call CtrlPGeneric(systemlist('git log --date=short --pretty=format:"%h %cd %s"'), 'plugin#ctrlpGeneric#ginEdit')<CR>
+'''
 
-  function! CdCallback(selected_value) abort
-    execute printf('cd %s', a:selected_value)
-  endfunction
-  nnoremap <Space>fc <Cmd>call CtrlPGeneric(systemlist('ghq list -p'), 'CdCallback')<CR>
+[[plugins]]
+repo = 'hokorobi/ctrlp-filter'
+on_func = 'ctrlp#filter#do'
+frozen = 1
+hook_add = '''
+  nnoremap <Space>fn <Cmd>call ctrlp#filter#do('CtrlP')<CR>
+'''
+[plugins.ftplugin]
+rst = '''
+  nnoremap <buffer> <Space>fn <Cmd>call ctrlp#filter#do('CtrlP', #{filtermethods: ['substitute', 'printf'], methodsargs: #{substitute: ['\\', '/', 'g'], printf: ['.. figure:: %s']}})<CR>
 '''
 
 [[plugins]]
@@ -1420,6 +1426,28 @@ repo = 'mattn/ctrlp-matchfuzzy'
 hook_add = '''
   let g:ctrlp_match_func = #{match: 'ctrlp_matchfuzzy#matcher'}
 '''
+
+[[plugins]]
+repo = 'ompugao/ctrlp-kensaku'
+depends = ['denops.vim', 'kensaku.vim']
+on_cmd = 'CtrlPKensaku'
+hook_add = '''
+  nnoremap <Space>f/ <Cmd>CtrlPKensaku 'CtrlPLine'<CR>
+  nnoremap <Space>fq <Cmd>CtrlPKensaku 'CtrlPQuickfix'<CR>
+'''
+hook_source = '''
+  function! s:kensaku(ctrlp) abort
+    let l:oldmatcher = g:ctrlp_match_func
+    let g:ctrlp_match_func = {'match': 'ctrlp_kensaku#matcher'}
+    execute(a:ctrlp)
+    let g:ctrlp_match_func = l:oldmatcher
+  endfunction
+  command! -nargs=1 CtrlPKensaku call <SID>kensaku(<args>)
+'''
+
+[[plugins]]
+repo = 'lambdalisue/kensaku.vim'
+lazy = 1
 
 # }}}1  Git {{{1
 [[plugins]]
@@ -1476,29 +1504,30 @@ hook_source = '''
   " call extend(g:gina#command#browse#translation_patterns['github\.com'][1], #{pr: 'https://\1/\2/\3/pull/new/%c0'})
 '''
 
-[[plugins]]
-repo = 'kuuote/gina-preview.vim'
-depends = 'gina.vim'
-on_cmd = 'GinaPreview'
-hook_add = '''
-  nnoremap <Space>gS <Cmd>GinaPreview<CR>
-'''
+# [[plugins]]
+# repo = 'kuuote/gina-preview.vim'
+# depends = 'gina.vim'
+# on_cmd = 'GinaPreview'
+# hook_add = '''
+#   nnoremap <Space>gS <Cmd>GinaPreview<CR>
+# '''
 
 [[plugins]]
 repo = 'lambdalisue/gin.vim'
-on_cmd = ['Gin', 'GinBranch', 'GinBuffer', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinPatch', 'GinStatus']
+on_cmd = ['Gin', 'GinBranch', 'GinBuffer', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinLog', 'GinPatch', 'GinStatus']
 depends = 'denops.vim'
 hook_add = '''
   call extend(g:vimrc_altercmd_dic, #{
         \   gin: 'Gin',
         \ })
 
+  nnoremap <Space>gbr <Cmd>GinBranch --all<CR>
   nnoremap <Space>gD <Cmd>GinDiff ++opener=tabnew<CR>
-  nnoremap <Space>gl <Cmd>GinBuffer log --all --graph -100 --oneline --decorate<CR>
-  nnoremap <Space>gL <Cmd>GinBuffer log --all --patch --graph -100<CR>
+  nnoremap <Space>gl <Cmd>GinLog ++opener=tabnew --all --graph --max-count=100 --oneline --decorate<CR>
+  nnoremap <Space>gL <Cmd>GinLog --all --patch --graph --max-count=100<CR>
   nnoremap <Space>gaD <Cmd>GinPatch ++opener=tabnew %<CR>
   " 指定したコミット、ブランチのファイルを表示。
-  call util#addLeft('nnoremap <Space>gbo :GinEdit ++opener=vsplit ', ' %')
+  " call util#addLeft('nnoremap <Space>gbo :GinEdit ++opener=vsplit ', ' %')
 '''
 hook_source = '''
   " !git の動作に支障をきたすため環境変数 GIT_EDITOR の書き換えを禁止
@@ -1506,11 +1535,31 @@ hook_source = '''
 
   " Sayonara
   let g:sayonara_filetypes.gin = 'bdelete'
+
+  function! GinCR()
+    if v:count > 0
+      execute printf('normal! %iG', v:count)
+    else
+      execute join(['!git show -r', expand('<cword>')])
+    endif
+  endfunction
 '''
 [plugins.ftplugin]
 gin = '''
-  nnoremap <buffer> <CR> <Cmd>call vimrc#ginCR()<CR>
-  nnoremap <expr><buffer> <Space><CR> printf('<Cmd>GinBuffer show ++opener=split -r ' .. expand('<cword>') .. '<CR>')
+  nnoremap <buffer> <CR> <Cmd>call GinCR()<CR>
+  nnoremap <expr><buffer> <Space><CR> printf('<Cmd>GinBuffer show ++opener=split -r %s<CR>', expand('<cword>'))
+'''
+gitcommit = '''
+  nnoremap <buffer> <Space>gl <Cmd>GinLog ++opener=vsplit --max-count=100 --oneline --decorate<CR>
+'''
+
+[[plugins]]
+repo = 'kuuote/gin-preview.vim'
+depends = 'gin.vim'
+frozen = 1
+on_cmd = 'GinPreview'
+hook_add = '''
+  nnoremap <Space>gS <Cmd>GinPreview<CR>
 '''
 
 [[plugins]]
@@ -1551,14 +1600,9 @@ hook_add = '''
   nnoremap <Space>oo <Plug>(openbrowser-open)
   BulkMap nx <Space>o <Plug>(openbrowser-open)
 
-  nnoremap <Space>og <Cmd>call vimrc#openGithubRepository('n')<CR>
-  xnoremap <Space>og <Cmd>call vimrc#openGithubRepository('v')<CR>
-
-  nnoremap <Space>ob <Cmd>call vimrc#openUrlInBuffer()<CR>
-'''
-[plugins.ftplugin]
-help = '''
-  nnoremap <silent> <buffer> o <Plug>(openbrowser-open)
+  nnoremap <Space>og <Cmd>call plugin#openBrowser#gitrepo('n')<CR>
+  xnoremap <Space>og <Cmd>call plugin#openBrowser#gitrepo('v')<CR>
+  nnoremap <Space>ob <Cmd>call plugin#openBrowser#openUrlInBuffer()<CR>
 '''
 
 [[plugins]]
@@ -1659,7 +1703,7 @@ depends = 'ctrlp-generic'
 on_func = ['layout#', 'LayoutWrap', 'LayoutCallback']
 on_cmd = ['LayoutLoad', 'LayoutSave']
 hook_add = '''
-  let g:layout_path = '~/_vim/.layout/layout.json'
+  let g:layout_path = '~/_vim/.layout/now.json'
 
   call extend(g:vimrc_altercmd_dic, #{ss: 'call LayoutWrap()'})
 
@@ -1668,11 +1712,12 @@ hook_add = '''
 '''
 hook_source = '''
   function! LayoutWrap() abort
-    let str = input('Filename: ')
+    let str = input('Filename: ', 'now')
     if len(str) == 0
+      echo 'Stop LayoutWrap()'
       return 1
     endif
-    call layout#save(fnamemodify(g:layout_path, ':p:h') .. '/' .. str .. '.json')
+    call layout#save(printf('%s/%s.json', fnamemodify(g:layout_path, ':p:h'), str))
   endfunction
 
   function! LayoutCallback(selected_value) abort

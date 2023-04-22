@@ -1,1 +1,1 @@
-rst insert image	execute('call vimrc#CtrlPOpenfunc("CtrlP", "vimrc#CtrlPPasteFunc", ".. image:: ")')
+rst insert image	call ctrlp#filter#do('CtrlP', #{filtermethods: ['substitute', 'printf'], methodsargs: #{substitute: ['\\', '/', 'g'], printf: ['.. figure:: %s']}})
