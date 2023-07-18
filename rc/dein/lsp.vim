@@ -20,11 +20,11 @@ let g:lsp_diagnostics_virtual_text_insert_mode_enabled = 0
 let g:lsp_diagnostics_virtual_text_padding_left = 2
 let g:lsp_diagnostics_virtual_text_prefix = "🐛 "
 " https://vim-jp.slack.com/archives/CQ57P4XU4/p1614523430139700
-function! s:lsp_format() abort
+function s:lsp_format() abort
   silent LspDocumentFormatSync
   LspCodeActionSync source.organizeImports
 endfunction
-function! s:on_lsp_buffer_enabled() abort
+function s:on_lsp_buffer_enabled() abort
   if &l:buftype isnot# '' || win_gettype() isnot# ''
     return
   endif

@@ -4,7 +4,7 @@
 " let g:empty_prompt#pattern = '\$ $'
 
 " Enter command-line / normal-mode if current line is empty prompt
-function! s:empty_prompt_mappings() abort
+function s:empty_prompt_mappings() abort
   call empty_prompt#map(#{lhs: ';', rhs: "<C-w>:"})
   call empty_prompt#map(#{lhs: '<Esc>', rhs: "<C-w>N"})
 endfunction

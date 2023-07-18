@@ -410,7 +410,7 @@ Others
 コマンド定義 ::
 
    command! -nargs=* Profile call s:command_profile('<args>')
-   function! s:command_profile(section) abort
+   function s:command_profile(section) abort
      profile start ~/profile.txt
      profile func *
      execute printf('profile file %s', empty(a:section) ? '*' : a:section)
@@ -426,7 +426,7 @@ Others
 コマンド定義 ::
 
    command! Profile call s:command_profile()
-   function! s:command_profile() abort
+   function s:command_profile() abort
      profile start ~/profile.txt
      profile func *
      profile file *
@@ -478,22 +478,22 @@ set verbose=3 するとsourceしてるものが出る
 
 現在の選択範囲を取得::
 
-  function! s:get_current_selection() abort
+  function s:get_current_selection() abort
     if mode() !~# '^[vV\x16]'
       " not in visual mode
       return ''
     endif
-  
+
     " save current z register
     let save_reg = getreginfo('z')
-  
+
     " get selection through z register
     noautocmd normal! "zygv
     let result = @z
-  
+
     " restore z register
     call setreg('z', save_reg)
-  
+
     return result
   endfunction
 

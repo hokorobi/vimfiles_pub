@@ -26,10 +26,9 @@ export def Popup_cursor_info()
   # https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
   const highlight =
     synstack(line('.'), col('.'))
-    # E720: 辞書型にコロンがありません: , id -> synIDattr(id, 'name') == synIDtrans(id)->synIDattr('name')
-    ->map({_, id -> synIDattr(id, 'name') == synIDtrans(id)->synIDattr('name')
+    ->map((_, id) => synIDattr(id, 'name') == synIDtrans(id)->synIDattr('name')
           ? synIDattr(id, 'name')
-          : printf('%s(%s)', synIDattr(id, 'name'), synIDtrans(id)->synIDattr('name'))})
+          : printf('%s(%s)', synIDattr(id, 'name'), synIDtrans(id)->synIDattr('name')))
     ->join(' -> ')
 
   const vsep = '--------------------------------'
@@ -37,7 +36,7 @@ export def Popup_cursor_info()
   # format output
   const lines = ['h ' .. highlight, vsep, line2, vsep, line3]
   # open temporary popup
-  call popup_atcursor(lines, #{
+  call popup_atcursor(lines, {
     border: [1, 1, 1, 1],
     pos: 'topleft',
     moved: 'any',
@@ -53,3 +52,6 @@ def GenLine(list: list<string>, sep: string): string
   return line[0 : -strlen(sep)]
 enddef
 
+# debug
+# def で定義している関数を変更、追加した場合は一時的にコメントを外す。
+# defcompile

@@ -158,9 +158,15 @@ dein#add('thinca/vim-qfreplace', {
 })
 
 # preview Quickfix at popup
-dein#add('AndrewRadev/quickpeek.vim', {
+# dein#add('AndrewRadev/quickpeek.vim', {
+#   on_ft: 'qf',
+#   hooks_file: '~/vimfiles/rc/dein/quickpeek.vim',
+# })
+
+# preview Quickfix at popup
+dein#add('bfrg/vim-qf-preview', {
   on_ft: 'qf',
-  hooks_file: '~/vimfiles/rc/dein/quickpeek.vim',
+  hooks_file: '~/vimfiles/rc/dein/qf-preview.vim',
 })
 
 dein#add('mattn/vim-qfnavigate', {
@@ -171,6 +177,11 @@ dein#add('mattn/vim-qfnavigate', {
 # QuickFixでジャンプするときに直前のWindowを使う
 dein#add('yssl/QFEnter', {
   on_ft: 'qf',
+})
+
+dein#add('bfrg/vim-qf-history', {
+  on_cmd: ['Chistory', 'Lhistory'],
+  hooks_file: '~/vimfiles/rc/dein/qf-history.vim',
 })
 
 # }}}2 Vim {{{2
@@ -194,9 +205,7 @@ dein#add('rbtnn/vim-vimscript_indentexpr', {
 
 dein#add('pangloss/vim-javascript')
 
-dein#add('tsuyoshicho/plantuml-previewer.vim', {
-  rev: '57dd426',
-  frozen: 1,
+dein#add('weirongxu/plantuml-previewer.vim', {
   depends: 'open-browser.vim',
   on_cmd: 'PlantumlOpen',
   hooks_file: '~/vimfiles/rc/dein/plantuml-previewer.vim',
@@ -222,9 +231,9 @@ dein#add('hokorobi/vim-howm-syntax-mini', {
   frozen: 1,
 })
 
-dein#add('alvan/vim-closetag', {
-  on_ft: ['html', 'xml'],
-})
+# dein#add('alvan/vim-closetag', {
+#   on_ft: ['html', 'xml'],
+# })
 
 #}}}2
 
@@ -284,6 +293,9 @@ dein#add('rbtnn/vim-ambiwidth', {
   hooks_file: '~/vimfiles/rc/dein/ambiwidth.vim',
 })
 
+dein#add('wellle/context.vim', {
+})
+
 # }}}1  Input & Edit {{{1
 
 dein#add('cohama/lexima.vim', {
@@ -326,7 +338,6 @@ dein#add('osyo-manga/vim-jplus', {
 })
 
 dein#add('hokorobi/yankround.vim', {
-  on_map: {n: '<Space>f', nx: '<Plug>'},
   on_cmd: 'CtrlPYankRound',
   hooks_file: '~/vimfiles/rc/dein/yankround.vim',
 })
@@ -392,12 +403,6 @@ dein#add('sentriz/vim-print-debug', {
   hooks_file: '~/vimfiles/rc/dein/print-debug.vim',
 })
 
-# https://github.com/4513ECHO/dotfiles/blob/9e043064780a15f8926faeba42b49f8f4358a102/config/nvim/dein/plugin.toml#L456-L472
-dein#add('Shougo/context_filetype.vim', {
-  on_func: ['context_filetype#get'],
-  hooks_file: '~/vimfiles/rc/dein/context_filetype.vim',
-})
-
 # }}}1  Motion {{{1
 
 dein#add('easymotion/vim-easymotion', {
@@ -426,7 +431,6 @@ dein#add('osyo-manga/vim-milfeulle', {
 })
 
 dein#add('hokorobi/vim-smarthome', {
-  on_map: {nxi: '<Plug>'},
   frozen: 1,
   hooks_file: '~/vimfiles/rc/dein/smarthome.vim',
 })
@@ -520,11 +524,6 @@ dein#add('mattn/ctrlp-launcher', {
   hooks_file: '~/vimfiles/rc/dein/ctrlp-launcher.vim',
 })
 
-dein#add('zeero/vim-ctrlp-help', {
-  on_cmd: 'CtrlPHelp',
-  hooks_file: '~/vimfiles/rc/dein/ctrlp-help.vim',
-})
-
 dein#add('printesoi/ctrlp-filetype.vim', {
   on_cmd: 'CtrlPFiletype',
   hooks_file: '~/vimfiles/rc/dein/ctrlp-filetype.vim',
@@ -569,13 +568,6 @@ dein#add('lambdalisue/gin.vim', {
   on_cmd: ['Gin', 'GinBranch', 'GinBuffer', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinLog', 'GinPatch', 'GinStatus'],
   dependns: 'denops.vim',
   hooks_file: '~/vimfiles/rc/dein/gin.vim',
-})
-
-dein#add('kuuote/gin-preview.vim', {
-  dependns: 'gin.vim',
-  frozen: 1,
-  on_cmd: 'GinPreview',
-  hooks_file: '~/vimfiles/rc/dein/gin-preview.vim',
 })
 
 dein#add('cohama/agit.vim', {

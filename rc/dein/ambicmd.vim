@@ -1,6 +1,6 @@
 " hook_source {{{
 "https://scrapbox.io/vim-jp/lexima%E3%81%A8ambicmd%E3%82%92cmdline%E3%81%A7%E4%BD%B5%E7%94%A8%E3%81%99%E3%82%8B
-function! s:expand_command(key) abort
+function s:expand_command(key) abort
   let key2char = { "\<Space>": ' ', "\<CR>": "\r" }
   let key2lexima = { "\<Space>": '<Space>', "\<CR>": '<CR>' }
 

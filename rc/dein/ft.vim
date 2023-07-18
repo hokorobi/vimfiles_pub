@@ -6,15 +6,20 @@
 setlocal formatoptions& formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
 " }}}
 
+" changelog {{{
+nnoremap <buffer> <Space>i <Cmd>NewChangelogEntry<CR>
+" }}}
+
 " json {{{
 setlocal conceallevel=0
 setlocal equalprg=jj\ -p
 " }}}
 
-
 " qf {{{
 setlocal nobuflisted
 nnoremap <buffer> <CR> <CR>
+nnoremap <buffer> <Space>j <Cmd>cnfile<CR>
+nnoremap <buffer> <Space>k <Cmd>cpfile<CR>
 
 " pt で grep を実行した後に結果をパス順にしたかったので sort
 " QuickFixCmdPost で実行していたけど w:quickfix_title が常に setqflist() になってしまうのでやめ。
@@ -22,14 +27,18 @@ nnoremap <buffer> <CR> <CR>
 nnoremap <buffer> sq <Cmd>call vimrc#SortQuickfix('vimrc#QfStrCmp')<CR>
 " }}}
 
+" rst {{{
+setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=0
+" }}}
+
 " toml {{{
 setlocal nocindent
 setlocal expandtab shiftwidth=2 tabstop=4 softtabstop=2
 " }}}
 
+" vim {{{
 " : を \k などに含める。s:hoge を単語として扱った方が便利なことが多いので
 " iW などでいいかも？　と思ったけど、func(g:hoge とかは先頭まで対象になるから駄目だ。
-" vim {{{
 setlocal iskeyword+=58
 setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
 " }}}

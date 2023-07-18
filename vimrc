@@ -36,13 +36,14 @@ let g:sayonara_filetypes = {}
 " Cached executable
 " https://github.com/DeaR/dotfiles/blob/7c021c276903d93e413bf0b4c7b134b1e0c8f946/.vimrc#L119-L126
 let g:vimrc_executable = {}
-function! Vimrc_executable(expr)
-  if !has_key(g:vimrc_executable, a:expr)
-    let g:vimrc_executable[a:expr] = executable(a:expr)
+def! Vimrc_executable(cmd: string): number
+  if !has_key(g:vimrc_executable, cmd)
+    g:vimrc_executable[cmd] = executable(cmd)
   endif
-  return g:vimrc_executable[a:expr]
-endfunction
+  return g:vimrc_executable[cmd]
+enddef
 
+import autoload 'vimrc9.vim'
 
 " Command {{{1
 
@@ -68,18 +69,17 @@ command! ToLF :set fileformat=unix
 cmap <C-t> <Esc>;s/<C-r>//
 
 " https://zenn.dev/kawarimidoll/articles/513d603681ece9
-function! s:bulkmap(force_map, modes, ...) abort
-  let arg = join(a:000, ' ')
-  let cmd = a:force_map ? 'map' : 'noremap'
-  for mode in split(a:modes, '.\zs')
+def! s:bulkmap(modes: string, ...args: list<string>)
+  const arg = join(args, ' ')
+  for mode in split(modes, '.\zs')
     if index(split('nvsxoilct', '.\zs'), mode) < 0
-      echoerr 'Invalid mode is detected: ' .. mode
+      echoerr $'Invalid mode is detected: {mode}'
       continue
     endif
-    execute mode .. cmd arg
+    execute $'{mode}noremap {arg}'
   endfor
-endfunction
-command! -nargs=+ -bang BulkMap call s:bulkmap(<bang>0, <f-args>)
+enddef
+command! -nargs=+ BulkMap call s:bulkmap(<f-args>)
 
 " My retab
 command! -nargs=? Retab call vimrc#Retab(empty(<q-args>) ? &l:tabstop : <q-args>)
@@ -222,7 +222,7 @@ set showmatch
 set noshowmode
 
 " 常にタブラインを非表示
-set showtabline=0
+set showtabline=1
 
 " コマンド行の高さ
 set cmdheight=2
@@ -245,8 +245,9 @@ set nofoldenable foldmethod=marker foldcolumn=3 fillchars=vert:\|
 " 一行が折り返された場合、折り返した行の先頭に表示する文字
 let &showbreak = '>_'
 
-" マウス有効, 入力中にマウスカーソル非表示
-set mouse=a mousehide
+" マウスはノーマルモードだけで有効化, 入力中にマウスカーソル非表示
+" https://github.com/KentoOgata/dotfiles/blob/06f146495dbbe347f1d6439f7dd77516dc5c1e63/dot_config/nvim/options.vim#L16
+set mouse=n mousehide
 
 " 新規ウィンドウは下、右に開く
 set splitbelow splitright
@@ -395,7 +396,7 @@ set switchbuf=uselast
 " ローカル設定の読み込み
 let g:vimrc_local = '~/_vim/_vimrc.local'
 if filereadable(expand(g:vimrc_local))
-  execute printf('source %s', g:vimrc_local)
+  execute $'source {g:vimrc_local}'
 endif
 
 
@@ -449,24 +450,25 @@ let g:changelog_new_date_format="%d\n\n%c\n"
 " }}}2  dein {{{2
 let s:dein_home = expand('~/_vim/dein')
 " let g:dein#install_log_filename = s:dein_home .. '/dein.log'
-let g:dein#install_github_api_token = g:github_token
-execute printf('set runtimepath& runtimepath+=%s/repos/github.com/Shougo/dein.vim', s:dein_home)
+let g:dein#install_github_api_token = get(g:, 'github_token', '')
+execute $'set runtimepath& runtimepath+={s:dein_home}/repos/github.com/Shougo/dein.vim'
 let g:dein#install_progress_type = 'floating'
 let g:dein#auto_remote_plugins = v:false
 " Strict check updated plugins yesterday
 " let g:dein#install_check_remote_threshold = 24 * 60 * 60
 let g:dein#enable_hook_function_cache = v:true
 
+let s:vimrcs = [
+      \   '~/vimfiles/rc/dein/_plugins.vim',
+      \   '~/vimfiles/rc/dein/_ddc.vim',
+      \   '~/vimfiles/rc/dein/_ddu.vim',
+      \]
 if dein#min#load_state(s:dein_home)
-  call dein#begin(s:dein_home)
-  " call dein#load_toml('~/vimfiles/rc/plugins.toml')
-  source ~/vimfiles/rc/dein/_plugins.vim
+  call dein#begin(s:dein_home, s:vimrcs)
   " call dein#load_toml('~/vimfiles/rc/asyncomplete.toml')
-  " call dein#load_toml('~/vimfiles/rc/ddc.toml')
-  source ~/vimfiles/rc/dein/_ddc.vim
-  " call dein#load_toml('~/vimfiles/rc/ddu.toml', {'lazy': 1})
-  source ~/vimfiles/rc/dein/_ddu.vim
-  " call dein#load_toml('~/vimfiles/rc/dein/deinft.toml')
+  for s:vimrc in s:vimrcs
+    execute $'source {s:vimrc}'
+  endfor
   call dein#end()
   call dein#save_state()
 endif
@@ -475,7 +477,8 @@ call extend(g:vimrc_altercmd_dic, {
       \   'du': 'call dein#update()',
       \   'dc': 'call dein#check_update(v:true)',
       \   'di': 'call dein#install()',
-      \   'dr': 'call dein#recache_runtimepath() | :q',
+      "\   'dr': 'call dein#recache_runtimepath() | :q',
+      \   'dr': '!gvim -c "call dein\#recache_runtimepath() | :q"',
       \ })
 
 autocmd vimrc VimEnter * call dein#call_hook('post_source')
@@ -537,7 +540,7 @@ xnoremap v <C-v>
 
 " Show cursor info / buffer info in popup
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
-nnoremap <C-CR> <Cmd>call vimrc#popup_cursor_info()<CR>
+nnoremap <C-CR> <ScriptCmd>call vimrc9.Popup_cursor_info()<CR>
 
 " https://vim-jp.slack.com/archives/CLKR04BEF/p1667463907309639
 " a = "foo" で ( "foo") でなく ("foo") を選択する
@@ -645,12 +648,12 @@ noremap <C-Tab> <Cmd>tabnext<CR>
 noremap <C-S-Tab> <Cmd>tabprevious<CR>
 
 " http://postd.cc/how-to-boost-your-vim-productivity/ & ycino@vim-jp slack THNX
-function! s:alterG() abort
+def AlterG()
   if v:count > 0
-    execute printf('normal! %iG', v:count)
+    execute $'normal! {v:count}G'
   endif
-endfunction
-nnoremap <CR> <Cmd>call <SID>alterG()<CR>
+enddef
+nnoremap <CR> <Cmd>call AlterG()<CR>
 autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 
 " insert mode から戻るときにカーソルを移動させない
@@ -761,7 +764,7 @@ nnoremap <expr> <A-m> reg_recording() == 'm' ? 'q' : 'qm'
 nnoremap <Space># "zyiw:%s/\<<C-R>z\>/<C-R>z/gc<left><left>
 " xnoremap <Space># "zy:%s/\V<C-R>z/<C-R>z/g<left><left>
 xnoremap <Space># <Cmd>call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
-function! s:set_vsearch()
+function s:set_vsearch()
   silent noautocmd normal! gv"zy
   let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
 endfunction
@@ -771,7 +774,7 @@ endfunction
 onoremap u t_
 " dU で 大文字の前まで削除など
 onoremap U <Cmd>call <SID>numSearchLine('[A-Z]', v:count1, '')<CR>
-function! s:numSearchLine(ptn, num, opt)
+function s:numSearchLine(ptn, num, opt)
   for i in range(a:num)
     call search(a:ptn, a:opt, line('.'))
   endfor
@@ -798,7 +801,10 @@ call extend(g:vimrc_altercmd_dic, {'git': '!git'})
 let $LANG = 'ja_JP.UTF-8'
 
 " nnoremap <Space>gl <Cmd>!git gl -100<CR>
-nnoremap <Space>gd <Cmd>!git diff<CR>
+nnoremap <Space>gd <Cmd>!git diff HEAD<CR>
+" 変更量が多いと表示が溢れてよくわからない。
+" git status でも pager を使えるように設定が必要。
+" git config --global pager.branch "cure"
 nnoremap <Space>gs <Cmd>!git status -v<CR>
 " nnoremap <silent> <Space>gbb :!git branch<CR>
 nnoremap <Space>gbb <Cmd>call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
@@ -883,7 +889,7 @@ if has('gui_running')
 
   " colorscheme {{{
   " https://github.com/vim-jp/reading-vimrc/wiki/vimrcアンチパターン
-  function! DefineMyHighlights()
+  function DefineMyHighlights()
     " IME の有効無効でカーソルの色を変更する。
     if has('multi_byte_ime')
       highlight CursorIM guifg=NONE guibg=Green gui=NONE
@@ -899,3 +905,6 @@ endif
 
 " }}}
 
+" debug
+" def で定義している関数を変更、追加した場合は一時的にコメントを外す。
+" defcompile

@@ -7,8 +7,8 @@ nnoremap gn n
 nnoremap gN N
 
 " Move to next/prev match.
-BulkMap nx N <Cmd>call searchx#prev_dir()<CR>
-BulkMap nx n <Cmd>call searchx#next_dir()<CR>
+BulkMap nx N <Cmd>call searchx#prev()<CR>
+BulkMap nx n <Cmd>call searchx#next()<CR>
 xnoremap <C-k> <Cmd>call searchx#prev()<CR>
 xnoremap <C-j> <Cmd>call searchx#next()<CR>
 cnoremap <expr> <C-k> getcmdtype() ==# ':' ? repeat('<Del>', strchars(getcmdline()[getcmdpos() - 1:])) : '<Cmd>call searchx#prev()<CR>'

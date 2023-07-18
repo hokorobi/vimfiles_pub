@@ -1,6 +1,7 @@
 command
 -------
 
+* `git add -i`: revert で add したものを元に戻せる
 * `git branch -m newbranchname`: change current branchname
 * `git switch -c newbranchname`: newbranchname を作って切り替える
 * `git switch -`: 一つ前のブランチに戻る
@@ -46,6 +47,13 @@ curl -H "Authorization: bearer "<token> -X POST -d@query.json https://api.github
 
 query.json
 { "query": "query {a0:repository(owner:\"markonm\", name: \"traces.vim\"){ pushedAt nameWithOwner }}" }
+
+detached HEAD
+-------------
+
+rebase -i などの後に発生。
+branch <branch名> でブランチ名をつけてやれば解消。
+master への付け替えは、 branch -f master のあとに switch master。
 
 ほか
 ----

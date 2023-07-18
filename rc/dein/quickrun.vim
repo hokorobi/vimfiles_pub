@@ -1,7 +1,7 @@
 " hook_add {{{
 call extend(g:vimrc_altercmd_dic, {
-  \ 'qr\%[un]': 'Quickrun',
-  \ 'r\%[un]': 'Quickrun',
+  \ 'qr\%[un]': 'QuickRun',
+  \ 'r\%[un]': 'QuickRun',
   \})
 " }}}
 " hook_source {{{

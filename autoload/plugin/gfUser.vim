@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 " http://d.hatena.ne.jp/thinca/20140324/1395590910
 " Windows foo.c:23 などでも gf で foo.c を開けるようにする
-function! plugin#gfUser#file() abort
+function plugin#gfUser#file() abort
   let path = expand('<cfile>')
   let line = 0
   if path =~# ':\d\+:\?$'

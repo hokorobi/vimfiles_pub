@@ -1,3 +1,6 @@
+" hook_add {{{
+let g:ddc_source_plantuml_cmd = 'C:/ols/Graphic/plantuml.jar'
+" }}}
 " hook_source {{{
 let s:ddc_sourceOptions = {}
 let s:ddc_sourceOptions['_'] = #{
@@ -5,6 +8,7 @@ let s:ddc_sourceOptions['_'] = #{
     \   converters: ['converter_fuzzy'],
     \   sorters: ['sorter_fuzzy'],
     \   ignoreCase: v:true,
+    \   timeout: 1000,
     \ }
 let s:ddc_sourceOptions['around'] = #{
     \   mark: 'A',
@@ -18,6 +22,9 @@ let s:ddc_sourceOptions['file'] = #{
     \   mark: 'F',
     \   isVolatile: v:true,
     \ }
+let s:ddc_sourceOptions['plantuml'] = #{
+    \   mark: 'U',
+    \ }
 " https://github.com/kuuote/dotvim/blob/7fbd83a2aedb1e30405f9bd1d8126b04dc5fe72e/conf/vim-lsp.toml#L50
 " メソッド呼び出しを補完
 let s:ddc_sourceOptions['vim-lsp'] = #{
@@ -29,20 +36,32 @@ let s:ddc_sourceOptions['vsnip'] = #{
     \   mark: 'S',
     \   dup: 'keep',
     \ }
+let s:ddc_sourceOptions['necovim'] = #{
+    \   mark: 'V',
+    \ }
+let s:ddc_sourceOptions['necosyntax'] = #{
+    \   mark: 'X',
+    \ }
 
-call ddc#custom#patch_global('sourceOptions', s:ddc_sourceOptions)
-
-call ddc#custom#patch_global('sourceParams', #{
-    \   file: #{mode: 'win32'},
+call ddc#custom#patch_global(#{
+    \   sourceOptions: s:ddc_sourceOptions,
+    \   sourceParams: #{
+    \     file: #{mode: 'win32'},
+    \   },
     \ })
 
+call ddc#custom#patch_filetype(
+    \ ['autohotkey'], #{sources: ['buffer', 'around', 'vsnip', 'necosyntax', 'file']})
 call ddc#custom#patch_filetype(
     \ ['rst'], #{sources: ['buffer', 'around', 'file', 'vsnip']})
 call ddc#custom#patch_filetype(
     \ ['go', 'python', 'typescript'], #{sources: ['vim-lsp', 'file', 'vsnip']})
 call ddc#custom#patch_filetype(
     \ ['cfg', 'git', 'gitcommit', 'javascript', 'markdown', 'snippet', 'toml', 'vb', 'xsl'], #{sources: ['buffer', 'around', 'file']})
-
+call ddc#custom#patch_filetype(
+    \ ['vim'], #{sources: ['necovim', 'buffer', 'around', 'file', 'vsnip']})
+call ddc#custom#patch_filetype(
+    \ ['plantuml'], #{sources: ['buffer', 'around', 'vsnip', 'plantuml', 'file']})
 
 " ddc.vim を使用しない filetype では <Tab>
 " popupが表示されている場合、次の候補へ
@@ -86,8 +105,10 @@ imap <silent><expr> <C-p>
      \ '<Cmd>normal! gk<CR>'
 
 " Shougo/pum.vim
-call ddc#custom#patch_global(#{ui: 'pum'})
-call ddc#custom#patch_global(#{backspaceCompletion: v:true})
+call ddc#custom#patch_global(#{
+      \   ui: 'pum',
+      \   backspaceCompletion: v:true,
+      \ })
 " tani/ddc-fuzzy
 call ddc#custom#patch_global(#{filterParams: #{
   \   converter_fuzzy: #{

@@ -1,6 +1,6 @@
 scriptencoding utf-8
 
-function! plugin#openBrowser#gitrepo(mode) abort
+function plugin#openBrowser#gitrepo(mode) abort
   let repo = vimrc#getRepositoryName(a:mode)
   if repo ==# '' || stridx(repo, '/') == -1
     echo 'リポジトリ名は取得できませんでした。'
@@ -10,7 +10,7 @@ function! plugin#openBrowser#gitrepo(mode) abort
   call openbrowser#open('https://github.com/' .. repo)
 endfunction
 
-function! plugin#openBrowser#openUrlInBuffer() abort
+function plugin#openBrowser#openUrlInBuffer() abort
   if &filetype != 'capture' && confirm("Open URLs in buffer?", "&Yes\n&No\n&Cancel") != 1
     return
   endif

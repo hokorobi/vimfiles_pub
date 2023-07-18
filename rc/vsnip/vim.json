@@ -31,7 +31,7 @@
 	},
 	"function": {
 		"prefix": "function",
-		"body": "function! ${1:#:func_name}(${2}) abort\n  ${0:TARGET}\nendfunction",
+		"body": "function ${1:#:func_name}(${2}) abort\n  ${0:TARGET}\nendfunction",
 		"description": "func endfunc",
 		"scope": "vim"
 	},
