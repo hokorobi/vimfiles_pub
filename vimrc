@@ -1,11 +1,11 @@
 "======================================================================================
 " Vim configuration
-" Author:   hokorobi
-" Platform: Windows
-" Vim:      https://github.com/vim/vim-win32-installer/releases gVim
-" CAUTION:  other platform, old version no compatibility. Reloading is not considered.
-" REQUIRE:  xdoc2txt, pt (monochromegane/the_platinum_searcher), jalan/pdftotext,
-"           golang/tools/goimports
+" Author   : hokorobi
+" Platform : Windows
+" Vim      : https://github.com/vim/vim-win32-installer/releases gVim
+" CAUTION  : other platform, old version no compatibility. Reloading is not considered.
+" REQUIRE  : xdoc2txt, pt (monochromegane/the_platinum_searcher), jalan/pdftotext,
+"            golang/tools/goimports
 "======================================================================================
 
 scriptversion 3
@@ -28,6 +28,14 @@ let g:vimrc_altercmd_dic = {
       "\   ウィンドウに表示しているバッファで diffthis
       \   'dt': 'windo diffthis',
       \}
+
+
+call extend(g:vimrc_altercmd_dic, {
+      \   'vn[map]': 'verbose nmap',
+      \   'vi[map]': 'verbose imap',
+      \   'vo[map]': 'verbose omap',
+      \   'vx[map]': 'verbose xmap',
+      \ })
 
 " vim-sayonara
 " https://github.com/mhinz/vim-sayonara
@@ -85,7 +93,12 @@ command! -nargs=+ BulkMap call s:bulkmap(<f-args>)
 command! -nargs=? Retab call vimrc#Retab(empty(<q-args>) ? &l:tabstop : <q-args>)
 
 " インデントを簡単に設定
+" FIXME: 引数なしで使えない
 command! -nargs=? -bang ISetting call vimrc#ISetting(<f-args>)
+
+" 今開いているファイルを削除
+" https://github.com/cohama/.vim/blob/master/.vimrc
+command! -bang -nargs=0 DeleteMe call vimrc#DeleteMe(<bang>0)
 
 " 開いているファイルのディレクトリへ移動
 " http://vim-jp.org/vim-users-jp/2009/09/08/Hack-69.html
@@ -114,23 +127,16 @@ call extend(g:vimrc_altercmd_dic, {
       \ 'gw': 'GrepWrap',
       \ 'grepw\%[rap]': 'GrepWrap'})
 
-command! Map   Capture map
-command! Nmap  Capture nmap
-command! Vmap  Capture vmap
-command! Xmap  Capture xmap
-command! Smap  Capture smap
-command! Tmap  Capture tmap
-command! Omap  Capture omap
-command! Imap  Capture imap
-command! Lmap  Capture lmap
-command! Cmap  Capture cmap
-call extend(g:vimrc_altercmd_dic, {
-      \   'scriptn\%[ames]': 'Capture scriptnames',
-      \   'ml': 'Capture messages',
-      \ })
+" https://github.com/ukiuki-engineer/nvim/blob/f718eb30515f1f4afce172cc9cf9dd25a9648442/lua/config/lazy/commands.lua#L13-L14
+" バッファのフルパスをヤンクする
+command! YankBufFullPath :let @0 = expand('%:p') | :let @+ = expand('%:p')
+" バッファのファイル名をヤンクする
+command! YankBufFileName :let @0 = expand('%:t') | :let @+ = expand('%:t')
 
-" Vim ヘルプファイル編集用設定反映
-command! HelpEdit call vimrc#option_to_edit()
+" コマンドラインモードのカーソル位置を左に移動
+function AddLeft(lhs, rhs, add = 0)
+  execute printf('%s%s%s', a:lhs, a:rhs, repeat('<Left>', len(a:rhs)+a:add))
+endfunction
 
 " }}}1 Option {{{1
 
@@ -290,7 +296,7 @@ autocmd vimrc Syntax * syntax sync minlines=500 maxlines=1000
 " https://vim-jp.slack.com/archives/C03C4RC9F/p1652842090652059
 " https://vim-jp.slack.com/archives/C03C4RC9F/p1652842245469699
 " BufReadPost だと <C-s> で保存できなくなるので BufEnter へ
-autocmd vimrc BufEnter * if getfsize(@%) > 1000 * 1000 | setlocal syntax=OFF | call interrupt() | endif
+autocmd vimrc BufEnter * if getfsize(@%) > 1024 * 1024 * 2 | setlocal syntax=OFF | call interrupt() | endif
 
 " }}}2 edit {{{2
 
@@ -315,8 +321,8 @@ set pumheight=10
 set completeopt-=preview completeopt+=menuone
 " コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
 set wildmenu
-" TODO: wildignore を設定する？　ついでに ctrlp custom ignore も？
-" 参考: https://github.com/DeaR/dotfiles/blob/master/.vimrc
+" TODO: 配列で書いて join する？ 参考: https://github.com/DeaR/dotfiles/blob/master/.vimrc
+set wildignore=.git,.hg,.bzr,.svn,*.264,*.7z,*.aac,*.ac3,*.ape,*.arj,*.asf,*.asx,*.avi,*.avif,*.bmp,*.bz2,*.cab,*.chm,*.com,*.dll,*.doc,*.docx,*.emf,*.exe,*.flac,*.flv,*.fon,*.gca,*.gif,*.gz,*.hlp,*.ish,*.jar,*.jpe,*.jpeg,*.jpg,*.lnk,*.lzh,*.m1v,*.m4a,*.m4b,*.mid,*.mkv,*.mov,*.mp3,*.mp4,*.mpeg,*.mpg,*.msi,*.msu,*.ods,*.odt,*.ogg,*.ogm,*.opus,*.pdf,*.png,*.ppt,*.pptx,*.pyc,*.pyd,*.pyo,*.ram,*.rar,*.rm,*.rmvb,*.svg,*.swf,*.tak,*.tbz,*.tgz,*.tif,*.torrent,*.tta,*.wav,*.webm,*.webp,*.wma,*.wmv,*.wsf,*.wv,*.wvc,*.xls,*.xlsm,*.xlsx,*.xltm,*.xltx,*.xz,*.zip,*.zoo,*.o,*.obj,*.lib,*.so,*.swp,tags
 
 set wildoptions=fuzzy,pum,tagfile
 
@@ -447,47 +453,20 @@ let g:changelog_username=''
 let g:changelog_dateformat='%Y-%m-%d (%a)'
 let g:changelog_new_date_format="%d\n\n%c\n"
 
+const s:base_path = fnamemodify(expand('<sfile>'), ':h')
 " }}}2  dein {{{2
-let s:dein_home = expand('~/_vim/dein')
-" let g:dein#install_log_filename = s:dein_home .. '/dein.log'
-let g:dein#install_github_api_token = get(g:, 'github_token', '')
-execute $'set runtimepath& runtimepath+={s:dein_home}/repos/github.com/Shougo/dein.vim'
-let g:dein#install_progress_type = 'floating'
-let g:dein#auto_remote_plugins = v:false
-" Strict check updated plugins yesterday
-" let g:dein#install_check_remote_threshold = 24 * 60 * 60
-let g:dein#enable_hook_function_cache = v:true
-
-let s:vimrcs = [
-      \   '~/vimfiles/rc/dein/_plugins.vim',
-      \   '~/vimfiles/rc/dein/_ddc.vim',
-      \   '~/vimfiles/rc/dein/_ddu.vim',
-      \]
-if dein#min#load_state(s:dein_home)
-  call dein#begin(s:dein_home, s:vimrcs)
-  " call dein#load_toml('~/vimfiles/rc/asyncomplete.toml')
-  for s:vimrc in s:vimrcs
-    execute $'source {s:vimrc}'
-  endfor
-  call dein#end()
-  call dein#save_state()
-endif
-
-call extend(g:vimrc_altercmd_dic, {
-      \   'du': 'call dein#update()',
-      \   'dc': 'call dein#check_update(v:true)',
-      \   'di': 'call dein#install()',
-      "\   'dr': 'call dein#recache_runtimepath() | :q',
-      \   'dr': '!gvim -c "call dein\#recache_runtimepath() | :q"',
-      \ })
-
-autocmd vimrc VimEnter * call dein#call_hook('post_source')
+execute $'source {s:base_path}/dein.vim'
+" execute $'source {s:base_path}/dpp.vim'
+" }}}2
 
 filetype plugin indent on
 
-" }}}2
-
 " }}}1 Filetype {{{1
+
+" yaml
+" https://vim-jp.slack.com/archives/C03C4RC9F/p1705032728233209 @Ken Takata
+" # でインデントしないように。
+autocmd vimrc FileType yaml setlocal indentkeys-=0#
 
 " バイナリファイルのテキスト化 {{{
 " xlsx などが zip として表示されることを避ける
@@ -544,12 +523,9 @@ nnoremap <C-CR> <ScriptCmd>call vimrc9.Popup_cursor_info()<CR>
 
 " https://vim-jp.slack.com/archives/CLKR04BEF/p1667463907309639
 " a = "foo" で ( "foo") でなく ("foo") を選択する
-onoremap a' 2i'
-xnoremap a' 2i'
-onoremap a" 2i"
-xnoremap a" 2i"
-onoremap a` 2i`
-xnoremap a` 2i`
+BulkMap ox a' 2i'
+BulkMap ox a" 2i"
+BulkMap ox a` 2i`
 
 " Buffer {{{2
 
@@ -566,7 +542,7 @@ noremap <C-n> <Cmd>enew<CR>
 
 " open vimrc
 noremap <F4> <Cmd>edit $MYVIMRC<CR>
-noremap <S-F4> <Cmd>edit ~/vimfiles/rc/dein/_plugins.vim<CR>
+noremap <S-F4> <Cmd>edit ~/vimfiles/rc/dein/_plugins.toml<CR>
 
 nnoremap qt <Cmd>tabclose<CR>
 
@@ -604,6 +580,9 @@ nnoremap [toggle]q <Cmd>call vimrc#toggle_quickfix_window()<CR>
 cnoremap <M-;> <C-f>
 cnoremap <M-i> <C-f>
 cnoremap <M-c> <C-f>
+
+" ウィンドウを閉じたら直前のウィンドウへ移動
+autocmd vimrc WinClosed * wincmd p
 
 " }}}2 Motion {{{2
 
@@ -678,7 +657,7 @@ autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 xnoremap <Space>d "+d
 
 " 貼り付け
-noremap! <C-v> <C-R><C-O>*
+noremap! <C-v> <C-R>*
 nnoremap <C-v> "+gP
 tnoremap <C-v> <C-w>"*
 " コピー
@@ -790,7 +769,7 @@ cnoremap <M-j> <C-g>
 cnoremap <M-k> <C-t>
 
 " 現在のバッファから grep
-" call util#addLeft('nnoremap <Space>/ :vimgrep /', '/ %')
+" call AddLeft('nnoremap <Space>/ :vimgrep /', '/ %')
 
 " }}}2
 
@@ -827,9 +806,9 @@ nnoremap <Space>gN <Cmd>!git commit --all -v<CR>
 " rename current branch
 nnoremap <Space>gbm :!git branch -m temp
 " switch new branch (default: master) from last commit (default: master)
-call util#addLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')
+call AddLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')
 " restore temp branch
-nnoremap <Space>gr :!git restore --source=temp .
+" nnoremap <Space>gr :!git restore --source=temp .
 " delete branch
 nnoremap <Space>gbd :!git branch -D temp
 

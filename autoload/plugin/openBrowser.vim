@@ -1,7 +1,7 @@
 scriptencoding utf-8
 
-function plugin#openBrowser#gitrepo(mode) abort
-  let repo = vimrc#getRepositoryName(a:mode)
+function plugin#openBrowser#gitrepo() abort
+  let repo = vimrc#getRepositoryName()
   if repo ==# '' || stridx(repo, '/') == -1
     echo 'リポジトリ名は取得できませんでした。'
     return

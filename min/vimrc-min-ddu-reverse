@@ -1,0 +1,47 @@
+" gvim -N -u ~/vimfiles/vimrc-min-ddu-reverse -U NONE -i NONE
+" :call ddu#start(#{name: 'file'})
+let $path .= ';' .. '~/.deno/bin'
+" let g:denops#debug = v:true
+" let g:denops#trace = v:true
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\vim-denops\denops.vim
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\ddu.vim
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\ddu-ui-ff
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\ddu-kind-file
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\ddu-filter-matcher_substring
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\ddu-source-file
+
+call ddu#custom#patch_global(#{
+    \   ui: 'ff',
+    \   kindOptions: #{
+    \     file: #{
+    \       defaultAction: 'open',
+    \     },
+    \   },
+    \   sourceOptions: #{
+    \     _: #{
+    \       ignoreCase: v:true,
+    \       matchers: ['matcher_substring'],
+    \     },
+    \   },
+    \   sources: [#{name: 'file', params: {}}],
+    \   uiParams: #{
+    \     ff: #{
+    \       startFilter: v:true,
+    \       autoResize: v:true,
+    \       reversed: v:true,
+    \       split: 'no',
+    \     }
+    \   },
+    \ })
+autocmd Filetype ddu-ff nnoremap <buffer><silent> <CR> <Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
+autocmd Filetype ddu-ff nnoremap <buffer><silent> q <Cmd>call ddu#ui#ff#do_action('quit')<CR>
+autocmd Filetype ddu-ff nnoremap <buffer><silent><nowait> <Space> <Cmd>call ddu#ui#do_action('toggleSelectItem')<CR>
+autocmd Filetype ddu-ff-filter inoremap <buffer><silent> <CR> <Esc><Cmd>close<CR><Cmd>call ddu#ui#ff#do_action('itemAction')<CR>
+autocmd Filetype ddu-ff-filter nnoremap <buffer><silent> <CR> <Cmd>close<CR>
+autocmd Filetype ddu-ff-filter nnoremap <buffer><silent> <Esc> <Cmd>close<CR>
+autocmd Filetype ddu-ff-filter inoremap <buffer><silent><expr> <Esc>
+      \ col('.') > 1 ? "<Esc><Cmd>call ddu#ui#do_action('closeFilterWindow')<CR>" :
+      \ "<Esc><Cmd>call ddu#ui#do_action('quit')<CR>"
+
+filetype plugin indent on
+syntax enable

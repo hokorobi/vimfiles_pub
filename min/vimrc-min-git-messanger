@@ -1,4 +1,4 @@
-set nocompatible
+" vim -N -u ~/vimfiles/vimrc-min-git-messanger -U NONE -i NONE
 set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\rhysd\git-messenger.vim
 filetype plugin indent on
 syntax enable

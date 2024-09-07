@@ -1,8 +1,11 @@
 " hook_add {{{
-let g:ddc_source_plantuml_cmd = 'C:/ols/Graphic/plantuml.jar'
+let g:ddc_source_filetype_candidates_files = {}
+let g:ddc_source_filetype_candidates_files['autohotkey'] = expand('~/vimfiles/rc/ddc/autohotkey.txt')
+let g:ddc_source_filetype_candidates_files['plantuml'] = expand('~/vimfiles/rc/ddc/plantuml.txt')
 " }}}
 " hook_source {{{
 let s:ddc_sourceOptions = {}
+let s:ddc_sourceParams = {}
 let s:ddc_sourceOptions['_'] = #{
     \   matchers: ['matcher_fuzzy'],
     \   converters: ['converter_fuzzy'],
@@ -22,6 +25,15 @@ let s:ddc_sourceOptions['file'] = #{
     \   mark: 'F',
     \   isVolatile: v:true,
     \ }
+let s:ddc_sourceParams['file'] = #{
+    \   mode: 'win32',
+    \ }
+let s:ddc_sourceOptions['filetype-candidates'] = #{
+    \   mark: 'D',
+    \ }
+let s:ddc_sourceOptions['necovim'] = #{
+    \   mark: 'V',
+    \ }
 let s:ddc_sourceOptions['plantuml'] = #{
     \   mark: 'U',
     \ }
@@ -36,42 +48,40 @@ let s:ddc_sourceOptions['vsnip'] = #{
     \   mark: 'S',
     \   dup: 'keep',
     \ }
-let s:ddc_sourceOptions['necovim'] = #{
-    \   mark: 'V',
-    \ }
-let s:ddc_sourceOptions['necosyntax'] = #{
-    \   mark: 'X',
-    \ }
 
 call ddc#custom#patch_global(#{
     \   sourceOptions: s:ddc_sourceOptions,
-    \   sourceParams: #{
-    \     file: #{mode: 'win32'},
-    \   },
+    \   sourceParams: s:ddc_sourceParams,
     \ })
 
 call ddc#custom#patch_filetype(
-    \ ['autohotkey'], #{sources: ['buffer', 'around', 'vsnip', 'necosyntax', 'file']})
+    \ ['autohotkey', 'plantuml'],
+    \ #{sources: ['buffer', 'around', 'vsnip', 'filetype-candidates', 'file']})
 call ddc#custom#patch_filetype(
-    \ ['rst'], #{sources: ['buffer', 'around', 'file', 'vsnip']})
+    \ ['rst'],
+    \ #{sources: ['buffer', 'around', 'file', 'vsnip']})
 call ddc#custom#patch_filetype(
-    \ ['go', 'python', 'typescript'], #{sources: ['vim-lsp', 'file', 'vsnip']})
+    \ ['go', 'python', 'typescript'],
+    \ #{sources: ['vim-lsp', 'file', 'vsnip']})
 call ddc#custom#patch_filetype(
-    \ ['cfg', 'git', 'gitcommit', 'javascript', 'markdown', 'snippet', 'toml', 'vb', 'xsl'], #{sources: ['buffer', 'around', 'file']})
+    \ ['cfg', 'git', 'gitcommit', 'howm', 'javascript', 'markdown', 'snippet', 'toml', 'vb', 'xsl'],
+    \ #{sources: ['buffer', 'around', 'file']})
 call ddc#custom#patch_filetype(
-    \ ['vim'], #{sources: ['necovim', 'buffer', 'around', 'file', 'vsnip']})
-call ddc#custom#patch_filetype(
-    \ ['plantuml'], #{sources: ['buffer', 'around', 'vsnip', 'plantuml', 'file']})
+    \ ['vim'],
+    \ #{sources: ['necovim', 'buffer', 'around', 'file', 'vsnip']})
 
-" ddc.vim を使用しない filetype では <Tab>
-" popupが表示されている場合、次の候補へ
-" vsnipのジャンプができる場合、次のジャンプ位置へ
-" 行頭または空白直後の場合、<Tab> そうでなければ補完
+" <Tab> は
+" 1. ddc.vim を使用しない filetype では <Tab>
+" 2. popupが表示されている場合、次の候補へ
+" 3. vsnipのジャンプができる場合、次のジャンプ位置へ
+" 4. 行頭または空白直後の場合、<Tab>
+" 5. それ以外は補完
 imap <silent><expr> <Tab>
       \ !has_key(ddc#custom#get_filetype(), &filetype) ? '<Tab>' :
       \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
       \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
-      \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ? '<Tab>' :
+      \ (col('.') <= 1 ? '<Tab>' :
+      \ getline('.')[col('.') - 2] =~# '\s') ? '<Tab>' :
       \ ddc#map#manual_complete()
 smap <silent><expr> <Tab>
       \ vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' :
@@ -103,6 +113,10 @@ smap <silent><expr> <C-n>
 imap <silent><expr> <C-p>
      \ pum#visible() ? '<Cmd>call pum#map#insert_relative(-1)<CR>' :
      \ '<Cmd>normal! gk<CR>'
+" 直前の insert mode の IME の状態を保持する設定が無効化されるのでコメントアウト
+" imap <silent><expr> <Esc>
+"     \ pum#visible() ? '<Cmd>call pum#map#cancel()<CR>' :
+"     \ '<Esc>'
 
 " Shougo/pum.vim
 call ddc#custom#patch_global(#{

@@ -1,5 +1,4 @@
 " gvim.exe -N -u ~/vimfiles/vimrc-min-dein-hooks_file-vim9 -U NONE -i NONE
-set nocompatible
 set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\dein.vim
 let g:testdic = {}
 if dein#min#load_state(expand('~/_vim/dein'))

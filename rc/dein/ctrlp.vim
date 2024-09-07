@@ -18,6 +18,7 @@ let g:ctrlp_switch_buffer = 0
 
 let g:ctrlp_regexp = 0
 
+let g:ctrlp_show_hidden = 1
 " exculde mru
 let g:ctrlp_mruf_exclude = '^C:\\Users\\.*\\AppData\\Local\\Temp\\.*'
 
@@ -48,7 +49,7 @@ let g:ctrlp_prompt_mappings = {
 " FIXME: <Space>fr で候補が出なくなる。
 " let g:ctrlp_user_command = ['.git', 'git ls-files -co --exclude-standard']
 
-nnoremap b <Cmd>CtrlPBuffer<CR>
+nnoremap <Space>b <Cmd>CtrlPBuffer<CR>
 " nnoremap <Space>f/ <Cmd>CtrlPLine<CR>
 nnoremap <Space>fo <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', '{{{ ')<CR>
 nnoremap <Space>*  <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', expand('<cword>') .. ' ')<CR>

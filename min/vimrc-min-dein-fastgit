@@ -1,5 +1,4 @@
 " vim -N -u ~/vimfiles/vimrc-min-dein-fastgit -U NONE -i NONE
-set nocompatible
 set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\dein.vim
 call dein#begin('~/_vim/dein/.cachetest')
 call dein#add('~/_vim/dein/repos/github.com/Shougo/dein.vim')

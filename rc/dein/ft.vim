@@ -1,13 +1,22 @@
-" +M マルチバイトの連結は空白なし
 " -t 自動折返し止め
 " -c 自動折返して、現在のコメント開始文字列を自動挿入はやめ
 " +j コメントリーダーを除いて連結
+" +M マルチバイトの連結は空白なし
 " _ {{{
-setlocal formatoptions& formatoptions+=M formatoptions-=t formatoptions-=c formatoptions+=j
+setlocal formatoptions& formatoptions-=t formatoptions-=c formatoptions+=jM
 " }}}
 
 " changelog {{{
 nnoremap <buffer> <Space>i <Cmd>NewChangelogEntry<CR>
+" }}}
+
+" gitcommit {{{
+startinsert
+" }}}
+
+" help {{{
+" Vim ヘルプファイル編集用設定反映
+command! HelpEdit call vimrc#helpedit()
 " }}}
 
 " json {{{

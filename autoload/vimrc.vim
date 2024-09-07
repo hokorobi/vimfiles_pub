@@ -108,7 +108,11 @@ endfunction
 
 " json processor
 function vimrc#Jq(...) abort
-  if Vimrc_executable('jj')
+  if Vimrc_executable('deno')
+    " @kawarimidoll, @Milly
+    let l:cmd = 'deno'
+    let l:arg0 = 'fmt --ext json -'
+  elseif Vimrc_executable('jj')
     " http://qiita.com/tekkoc/items/324d736f68b0f27680b8
     let l:cmd = 'jj'
     let l:arg0 = '-p'
@@ -199,12 +203,38 @@ endfunction
 "   call setline(1, split(execute(a:args), '\n'))
 " endfunction
 
+" https://github.com/Shougo/shougo-s-github/blob/bd8eeac18d8eb99c2db7f1edef443ff49016551e/vim/rc/deinft.vim#L136-L154
+function! s:align_right(linenr) abort
+  let m = a:linenr->getline()->matchlist('^\(\S\+\%(\s\S\+\)\?\)\?\s\+\(\*.\+\*\)')
+  if m->empty()
+    return
+  endif
+  call setline(a:linenr, m[1] .. ' '->repeat(&l:textwidth - len(m[1]) - len(m[2])) .. m[2])
+endfunction
+function! s:align_rights(start, end) abort
+  for linenr in range(a:start, a:end)
+    call s:align_right(linenr)
+  endfor
+endfunction
+
+function! s:set_highlight(group) abort
+  for group in ['helpBar', 'helpBacktick', 'helpStar', 'helpIgnore']
+    execute 'highlight link' group a:group
+  endfor
+endfunction
+
 " ycino@vim-jp slack
-function vimrc#option_to_edit() abort
+function vimrc#helpedit() abort
   setlocal buftype= modifiable noreadonly
   setlocal list tabstop=8 shiftwidth=8 softtabstop=8 noexpandtab textwidth=78
   setlocal colorcolumn=+1
   setlocal conceallevel=0
+
+  call s:set_highlight('Special')
+  command! -range -buffer AlignRight call s:align_rights('<line1>'->expand(), '<line2>'->expand())
+
+  nnoremap <silent><buffer> mm <Cmd>AlignRight<CR>
+  xnoremap <silent><buffer> mm :AlignRight<CR>
 endfunction
 
 
@@ -274,20 +304,35 @@ function vimrc#blank_below(type = '') abort
 endfunction
 "}}}
 
-" plugin {{{1
-" '' か "" で括られた文字列か選択範囲を user/repogitory のリポジトリ名と想定して取得
-function vimrc#getRepositoryName(mode) abort
-  let backregz = getreg('z')
-  call setreg('z', '')
-  if a:mode ==# 'n'
-    noautocmd normal! "zyi'
-    if getreg('z') ==# ''
-      noautocmd normal! "zyi"
-    endif
+" 今開いているファイルを削除
+function! vimrc#DeleteMe(force) abort
+  if a:force || !&modified
+    let filename = expand('%')
+    bdelete!
+    call delete(filename)
   else
-    noautocmd normal! gv"zy
+    echomsg 'File modified'
   endif
-  let repo = getreg('z')
+endfunction
+
+" plugin {{{1
+" text-objects の i' か i" か iW か選択範囲を user/repogitory のリポジトリ名と想定して取得
+function vimrc#getRepositoryName() abort
+  const backregz = getreginfo('z')
+  call setreg('z', '')
+  if mode() !~# '^[vV\x16]'
+    " not in visual mode
+
+    for c in ['"', "'", 'W']
+      execute $'noautocmd normal! "zyi{c}'
+      if getreg('z') !=# ''
+        break
+      endif
+    endfor
+  else
+    noautocmd normal! "zygv
+  endif
+  const repo = getreg('z')
   call setreg('z', backregz)
   if match(repo, '[^/]\+/[^/]\+$') == 0
     return repo

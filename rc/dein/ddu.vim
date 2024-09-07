@@ -1,10 +1,20 @@
 " hook_add {{{
 " preload
-call timer_start(10, { _ -> ddu#load('ui', ['ff']) })
+call timer_start(1000, { _ -> LazyDdu() })
+function LazyDdu()
+  call ddu#load('ui', ['ff'])
+  call ddu#load('kind', ['file'])
+endfunction
 
-nnoremap <silent> <Space>dw <Cmd>call ddu#start(#{sources: [#{name: 'window'}], uiParams: #{ff: #{autoAction: #{name: 'preview'}, previewFloating: v:true, previewHeight: 25, startAutoAction: v:true},},})<CR>
-nnoremap <silent> <Space>fw <Cmd>call ddu#start(#{sources: [#{name: 'window'}], uiParams: #{ff: #{autoAction: #{name: 'preview'}, previewFloating: v:true, previewHeight: 25, startAutoAction: v:true},},})<CR>
-nnoremap <silent> <Space>du <Cmd>call ddu#start(#{sources: [#{name: 'dein'}], kindOptions: #{file: #{defaultAction: 'update'},},})<CR>
+call extend(g:vimrc_altercmd_dic, #{
+  \ ddu: 'call ddu#start(#{sources: [#{name: ""}]})<Left><Left><Left><Left><Left>',
+  \})
+nnoremap <silent> <Space>db <Cmd>call ddu#start(#{sources: [#{name: 'buffer'}]})<CR>
+nnoremap <silent> <Space>df <Cmd>call ddu#start(#{sources: [#{name: 'file_rec'}]})<CR>
+nnoremap <silent> <Space>dh <Cmd>call ddu#start(#{sources: [#{name: 'help'}]})<CR>
+nnoremap <silent> <Space>fh <Cmd>call ddu#start(#{sources: [#{name: 'help'}]})<CR>
+nnoremap <silent> <Space>du <Cmd>call ddu#start(#{sources: [#{name: 'dein'}]})<CR>
+nnoremap <silent> <Space>dm <Cmd>call ddu#start(#{sources: [#{name: 'vim-bookmark'}]})<CR>
 " zenn の記事をプレビューで確認できるようにしてみたけど、ディレクトリ内のファイルの title から検索できるようにしたいので PPx から peco を使った方が良さそう。
 " サンプルとしてコメントで残しておく。
 " nnoremap <silent> <Space>fz <Cmd>call ddu#start(#{sources: [#{name: 'file_rec', options: #{path: expand('~/Documents/zenn/articles')}}], uiParams: #{ff: #{autoAction: #{name: 'preview'}, previewFloating: v:true, previewHeight: 5, startAutoAction: v:true, startFilter: v:false},},})<CR>
@@ -18,13 +28,16 @@ call ddu#custom#patch_global(#{
     \     },
     \   },
     \   kindOptions: #{
+    \     action: #{
+    \       defaultAction: 'do',
+    \     },
     \     file: #{
     \       defaultAction: 'open',
     \     },
-    \     help: #{
+    \     bookmark: #{
     \       defaultAction: 'open',
     \     },
-    \     window: #{
+    \     help: #{
     \       defaultAction: 'open',
     \     },
     \     word: #{
@@ -34,7 +47,12 @@ call ddu#custom#patch_global(#{
     \   sourceOptions: #{
     \     _: #{
     \       ignoreCase: v:true,
-    \       matchers: ['matcher_substring'],
+    \       matchers: [
+    \         'matcher_substring'
+    \       ],
+    \     },
+    \     dein: #{
+    \       defaultAction: ['update'],
     \     },
     \     file_rec: #{
     \       converters: ['converter_hl_dir'],
@@ -48,25 +66,20 @@ call ddu#custom#patch_global(#{
     \           cmd: ['git', 'ls-files']
     \       },
     \   },
-    \   sources: [
-    \     #{name: 'buffer'},
-    \     #{name: 'file_external'},
-    \     #{name: 'file_rec'},
-    \     #{name: 'help'},
-    \     #{name: 'line'},
-    \     #{name: 'window', params: #{format: 'tab\|%n:%w:%wn'}},
-    \   ],
     \   ui: 'ff',
     \   uiParams: #{
     \     ff: #{
     \       autoResize: v:true,
     \       filterSplitDirection: 'botright',
-    \       prompt: '>>> ',
+    \       prompt: '> ',
     \       reversed: v:true,
     \       split: 'horizontal',
-    \       startFilter: v:true,
     \       winHeight: '15',
     \     }
     \   },
     \ })
+
+" ddu 起動時に openFilterWindow を表示
+" autocmd vimrc User Ddu:uiReady if &l:filetype ==# 'ddu-ff' | call ddu#ui#do_action('openFilterWindow') | endif
+
 " }}}

@@ -11,12 +11,7 @@ let g:bookmark_auto_close = 1
 let g:bookmark_no_default_key_mappings = 1
 nnoremap mm <Plug>BookmarkToggle
 nnoremap mi <Plug>BookmarkAnnotate
-nnoremap ma <Plug>BookmarkShowAll
 nnoremap <Space>fm <Plug>BookmarkShowAll
 nnoremap mj <Plug>BookmarkNext
-nnoremap mn <Plug>BookmarkNext
 nnoremap mk <Plug>BookmarkPrev
-nnoremap mp <Plug>BookmarkPrev
-nnoremap mc <Plug>BookmarkClear
-nnoremap mx <Plug>BookmarkClearAll
 " }}}

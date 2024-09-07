@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 function plugin#ctrlpGeneric#paste(selected_value) abort
   let backregz = getreg('z')
-  call setreg('z', ctrlp#filter#filtermethods(a:line))
+  call setreg('z', a:selected_value)
   noautocmd normal! "zp
   call setreg('z', backregz)
 endfunction
@@ -24,19 +24,32 @@ endfunction
 " nnoremap <Space>fg <Cmd>call CtrlPGeneric(systemlist('git log --date=short --pretty=format:"%h %cd %s"'), 'plugin#ctrlpGeneric#yank')<CR>
 
 " git log からコミットを選択して、そのコミット時点のファイルを選択して開く
-function plugin#ctrlpGeneric#ginEdit() abort
-  call CtrlPGeneric(systemlist('git log --date=short --pretty=format:"%h %cd %s"'), 'plugin#ctrlpGeneric#getGitHash')
+function plugin#ctrlpGeneric#ginEditSelectHash() abort
+  call systemlist('git log --date=short --pretty=format:"%h %cd %s"')
+  \  ->CtrlPGeneric('plugin#ctrlpGeneric#passGitHash2GinEdit')
 endfunction
-function plugin#ctrlpGeneric#getGitHash(selected_value) abort
+function plugin#ctrlpGeneric#passGitHash2GinEdit(selected_value) abort
   const s:hash = matchstr(a:selected_value, '\w\+')
-  call CtrlPGeneric(systemlist($'git ls-tree -r --name-only {s:hash}'), 'plugin#ctrlpGeneric#ginEditHash')
+  call systemlist($'git ls-tree -r --name-only {s:hash}')
+  \  ->CtrlPGeneric('plugin#ctrlpGeneric#ginEditHash')
 endfunction
 function plugin#ctrlpGeneric#ginEditHash(selected_value) abort
-  call execute($':GinEdit ++opener=vsplit {s:hash} {a:selected_value}')
+  execute $':GinEdit ++opener=vsplit {s:hash} {a:selected_value}'
+endfunction
+
+" git log からコミットを選択して、そのコミットを show
+function plugin#ctrlpGeneric#gitShow() abort
+  call systemlist('git log --date=short --pretty=format:"%h %cd %s"')
+  \  ->CtrlPGeneric('plugin#ctrlpGeneric#ginBufferShow')
+endfunction
+function plugin#ctrlpGeneric#ginBufferShow(hashDateSubject) abort
+  call matchstr(a:hashDateSubject, '\w\+')
+  \  ->printf(':GinBuffer show %s')
+  \  ->execute()
 endfunction
 
 function plugin#ctrlpGeneric#pasteRstFigure(selected_value) abort
-  call substitute('\\', '/', 'g')
+  call substitute(a:selected_value, '\\', '/', 'g')
   \  ->printf('.. figure:: %s')
   \  ->plugin#ctrlpGeneric#paste()
 endfunction

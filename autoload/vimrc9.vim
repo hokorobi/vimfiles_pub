@@ -8,21 +8,20 @@ export def Popup_cursor_info()
   const swap = get(b:, 'swapfile_exists', 0) ? 'swp' : ''
   const fname = &buftype ==# 'quickfix' ? get(w:, 'quickfix_title', '') : fnamemodify(bufname('%'), ':.')
   const modified = &modified ? '+' : ''
-  const line2 = GenLine([modified, ro, swap, fname, getcwd()], ' | ')
+  const line2 = GenLine([modified, ro, swap, fname, getcwd()])
 
   const ftype = &filetype ==# '' ? '' : &filetype
   # get cursor position informations
   const pos = getpos('.')
-  # get charcode informations
-  const char = strcharpart(strpart(getline('.'), col('.') - 1), 0, 1)
-  const charnr = char2nr(char)
   # get encoding
   var fenc = &fileencoding == '' ? &encoding : &fileencoding
-  fenc = fenc !=# 'utf-8' ? fenc : &bomb ? fenc .. ' (BOM)' : fenc
+  fenc = &bomb ? fenc .. ' (BOM)' : fenc
+  const line3 = GenLine([&fileformat, fenc, ftype, pos[1] .. ':' .. pos[2]])
 
-  const line3 = GenLine([&fileformat, fenc, ftype, pos[1] .. ':' .. pos[2]], ' | ')
+  # get charcode informations
+  # const charcode = getline('.')->strpart(col('.') - 1)->strcharpart(0, 1)->char2nr()->printf('charcode: %d')
 
-  # カーソル位置のハイライト名を表示
+  # カーソル位置のハイライト名
   # https://gist.github.com/thinca/9a0d8d1a91d0b5396ab15a632c34e03f
   const highlight =
     synstack(line('.'), col('.'))
@@ -33,10 +32,8 @@ export def Popup_cursor_info()
 
   const vsep = '--------------------------------'
 
-  # format output
-  const lines = ['h ' .. highlight, vsep, line2, vsep, line3]
-  # open temporary popup
-  call popup_atcursor(lines, {
+  [highlight, vsep, line2, vsep, line3]
+  ->popup_atcursor({
     border: [1, 1, 1, 1],
     pos: 'topleft',
     moved: 'any',
@@ -44,12 +41,29 @@ export def Popup_cursor_info()
     wrap: v:false,
     })
 enddef
-def GenLine(list: list<string>, sep: string): string
-  var line = ''
-  for s in list
-    line = s ==# '' ? line : line .. s .. sep
+def GenLine(list: list<string>): string
+  return filter(list, 'v:val !=# ""')->join(' | ')
+enddef
+
+# カーソル下のハイライトの情報表示
+# https://zenn.dev/vim_jp/articles/show-hlgroup-under-cursor
+export def ShowHighlightGroup()
+  var hlgroup = synIDattr(synID(line('.'), col('.'), 1), 'name')
+  var groupChain: list<string> = []
+
+  while hlgroup !=# ''
+    groupChain->add(hlgroup)
+    hlgroup = execute($'highlight {hlgroup}')->trim()->matchstr('\<links\s\+to\>\s\+\zs\w\+$')
+  endwhile
+
+  if empty(groupChain)
+    echo 'No highlight groups'
+    return
+  endif
+
+  for group in groupChain
+    execute 'highlight' group
   endfor
-  return line[0 : -strlen(sep)]
 enddef
 
 # debug

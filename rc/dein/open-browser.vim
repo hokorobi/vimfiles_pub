@@ -1,7 +1,5 @@
 " hook_add {{{
 BulkMap nx <Space>oo <Plug>(openbrowser-open)
-
-nnoremap <Space>og <Cmd>call plugin#openBrowser#gitrepo('n')<CR>
-xnoremap <Space>og <Cmd>call plugin#openBrowser#gitrepo('v')<CR>
+BulkMap nx <Space>og <Cmd>call plugin#openBrowser#gitrepo()<CR>
 nnoremap <Space>ob <Cmd>call plugin#openBrowser#openUrlInBuffer()<CR>
 " }}}

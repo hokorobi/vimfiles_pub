@@ -1,5 +1,4 @@
 = {{_cursor_}}
 [{{_expr_:strftime('%Y-%m-%d %H:%M')}}]
 
-# vim: fenc=cp932
 

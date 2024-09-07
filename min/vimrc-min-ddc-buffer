@@ -1,19 +1,20 @@
-set nocompatible
-let g:vsnip_snippet_dir = expand('~/vimfiles/vsnip')
+" vim -N -u ~/vimfiles/vimrc-min-ddc-buffer -U NONE -i NONE
+" let g:vsnip_snippet_dir = expand('~/vimfiles/vsnip')
 let $path .= ';' .. '~/.deno/bin'
 " let g:denops#debug = v:true
 " let g:denops#trace = v:true
 set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\vim-denops\denops.vim
 set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\ddc.vim
 set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\Shougo\ddc-matcher_head
-set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\hrsh7th\vim-vsnip
-set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\hrsh7th\vim-vsnip-integ
-call ddc#custom#patch_global('sources', ['vsnip'])
+" set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\hrsh7th\vim-vsnip
+" set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\hrsh7th\vim-vsnip-integ
+set runtimepath+=C:\Users\hokorobi\_vim\dein\repos\github.com\matsui54\ddc-buffer
+call ddc#custom#patch_global('sources', ['buffer'])
 call ddc#custom#patch_global('sourceOptions', {
     \ '_': {
     \   'matchers': ['matcher_head'],
     \ },
-    \ 'vsnip': {'mark': 'snip'},
+    \ 'buffer': {'mark': 'buffer'},
     \ })
 call ddc#enable()
 filetype plugin indent on

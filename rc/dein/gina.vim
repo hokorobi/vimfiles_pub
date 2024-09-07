@@ -1,6 +1,7 @@
 " hook_add {{{
 " 開いているファイル、選択行を Github で開く
 BulkMap nx <Space>oG <Cmd>Gina browse :<CR>
+BulkMap nx <Space>go <Cmd>Gina browse :<CR>
 
 nnoremap <Space>gbl <Cmd>Gina blame<CR>
 nnoremap <Space>gg :Gina log -p -G""<Left>
@@ -9,7 +10,7 @@ nnoremap <Space>gg :Gina log -p -G""<Left>
 " nnoremap <Space>gL <Cmd>Gina log --all --patch --graph -100<CR>
 " 指定したコミット、ブランチのバッファのファイルを表示。
 " FIXME: これだと Gina の読み込みがされない。
-" call util#addLeft('nnoremap <Space>gbo :Gina compare --opener="tab vsplit" ', ':%')
+" call AddLeft('nnoremap <Space>gbo :Gina compare --opener="tab vsplit" ', ':%')
 
 call extend(g:vimrc_altercmd_dic, {
       \   'bro\%[wse]': 'Gina browse --exact :',

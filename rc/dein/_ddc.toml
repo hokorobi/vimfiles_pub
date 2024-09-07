@@ -1,0 +1,68 @@
+[[plugins]]
+repo = 'Shougo/ddc.vim'
+depends = 'denops.vim'
+on_event = 'InsertEnter'
+hooks_file = '~/vimfiles/rc/dein/ddc.vim'
+
+# hook_source だけだと遅延読込にならない？　lazy追加。
+[[plugins]]
+repo = 'Shougo/pum.vim'
+lazy = true
+hooks_file = '~/vimfiles/rc/dein/pum.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-ui-pum'
+on_source = 'ddc.vim'
+depends = 'pum.vim'
+
+[[plugins]]
+repo = 'tani/ddc-fuzzy'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/neco-vim'
+depends = 'ddc.vim'
+on_ft = 'vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-around'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'matsui54/ddc-source-buffer'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'LumaKernel/ddc-source-file'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'shun/ddc-source-vim-lsp'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_ft = ['go', 'pyton', 'rst', 'typescript', 'vim']
+hooks_file = '~/vimfiles/rc/dein/vsnip.vim'
+
+[[plugins]]
+repo = 'uga-rosa/ddc-source-vsnip'
+on_source = 'ddc.vim'
+depends = 'vim-vsnip'
+
+# [[plugins]]
+# repo = 'matsui54/denops-popup-preview.vim'
+# depends = 'denops.vim'
+# # rev = '5a62ac7'
+# # on_source = 'ddc.vim'
+# # vsnip: go, python, rst, typescript, vim
+# # lsp: go, python
+# on_ft = ['go', 'pyton', 'rst', 'typescript', 'vim']
+# hooks_file = '~/vimfiles/rc/dein/denops-popup-preview.vim'
+
+[[plugins]]
+repo = 'hokorobi/ddc-source-filetype-candidates'
+on_ft = ['autohotkey', 'plantuml']
+frozen = true
+depends = 'ddc.vim'
+

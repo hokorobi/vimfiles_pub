@@ -4,6 +4,12 @@ let g:submode_timeout = 0
 
 " TODO: submode を抜けるときに <silent> を効かせたいけど方法はないのかな？
 
+" original isearch
+call submode#enter_with('isearch', 'n', '', '<Space>n', 'n')
+call submode#enter_with('isearch', 'n', '', '<Space>N', 'N')
+call submode#map('isearch', 'n', '', 'n', 'n')
+call submode#map('isearch', 'n', '', 'N', 'N')
+
 " tab move
 call submode#enter_with('changetab', 'n', '', 'gt', 'gt')
 call submode#enter_with('changetab', 'n', '', 'gT', 'gT')
@@ -28,12 +34,6 @@ call submode#enter_with('undo/redo', 'n', '', 'g-', 'g-')
 call submode#enter_with('undo/redo', 'n', '', 'g+', 'g+')
 call submode#map('undo/redo', 'n', '', '-', 'g-')
 call submode#map('undo/redo', 'n', '', '+', 'g+')
-
-"https://raw.githubusercontent.com/ryotako/dotfiles/52b1ecb275e577dcb44db367a1f563d471c2cab0/.vimrc
-" x 連打削除を一つの undo で戻るように
-" レジスタに登録しない "_x
-call submode#enter_with('x', 'n', '', 'x', '"_x')
-call submode#map('x', 'n', 's', 'x', ":<C-u>undojoin <bar> noautocmd normal! \"_x<CR>")
 
 " Visual モード時のインクリメント、デクリメント
 " http://vim-jp.org/blog/2015/06/30/visual-ctrl-a-ctrl-x.html

@@ -149,9 +149,8 @@ Add_rules(
   ]
 )
 
+# 改行時に \ 入力 {{{4
 const indent = &l:shiftwidth == 0 ? &l:tabstop : &l:shiftwidth
-
-# 改行時に \ 入力
 for val in ['{:}', '\[:\]']
   const pair = split(val, ':')
 

@@ -5,6 +5,14 @@
 " let g:lsp_log_file = expand('~/_vim/.log/vim-lsp.log')
 let g:lsp_diagnostics_float_cursor = 0
 let g:lsp_diagnostics_float_delay = 200
+
+let g:lsp_diagnostics_echo_cursor = 0
+let g:lsp_diagnostics_virtual_text_enabled = 0
+" let g:lsp_diagnostics_virtual_text_insert_mode_enabled = 0
+" let g:lsp_diagnostics_virtual_text_align = 'right'
+" let g:lsp_diagnostics_virtual_text_padding_left = 2
+" let g:lsp_diagnostics_virtual_text_prefix = "🐛 "
+
 let g:lsp_document_highlight_enabled = 0
 " A> 非表示
 let g:lsp_document_code_action_signs_enabled = 0
@@ -13,12 +21,7 @@ let g:lsp_signature_help_enabled = 0
 " do not use fold
 let g:lsp_fold_enabled = 0
 
-let g:lsp_diagnostics_echo_cursor = 0
-let g:lsp_diagnostics_virtual_text_enabled = 1
-let g:lsp_diagnostics_virtual_text_insert_mode_enabled = 0
-" let lsp_diagnostics_virtual_text_align = 'right'
-let g:lsp_diagnostics_virtual_text_padding_left = 2
-let g:lsp_diagnostics_virtual_text_prefix = "🐛 "
+
 " https://vim-jp.slack.com/archives/CQ57P4XU4/p1614523430139700
 function s:lsp_format() abort
   silent LspDocumentFormatSync

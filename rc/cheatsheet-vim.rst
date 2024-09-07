@@ -11,13 +11,14 @@ Movement
 * `<Space>;`   : 直前の f, F, t, F を繰り返す。 feat. easymotion
 * `<Space>,`   : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
 * `<C-w><C-]>` : ウィンドウを分割してタグにジャンプ
+* `mv -> something -> \`v` : <C-]> や grep などの前にマークして戻れるようにする。v は mv などのマッピングがなければ他のアルファベットでも良い。
 
 
 Select
 -------
 
 * `gv` : 最後に使用したのと同じ範囲を選択してのビジュアルモードを開始する
-* `gp` : 最後に paste したのと同じ範囲を選択してのビジュアルモードを開始する
+* `gp` : 最後に Put したのと同じ範囲を選択してのビジュアルモードを開始する
 
 
 Edit
@@ -29,15 +30,21 @@ Edit
 * `:ExpandSerialNumber`     : hoge [100-120] fuga などと入力して実行すると、hoge 100 fuga, hoge 101 fuga が各行に展開される。 feat. ExpandSerialNumber
                             : [0xa-0xf] 入力後に実行すると a-f を各行に展開 feat. ExpandSerialNumber
 * `:SortLine`               : 行全体で , 区切りの文字列をソートする
-* `<Space>a` / `<Space>x` : (v) 選択範囲をインクリメント / デクリメント
-* `:v/hoge/d`               : hoge を含む行のみを残して削除
-* `:Capture g/hoge/p`       : hoge を含む行のみを Capture バッファへ出力。 feat. Capture
+* `<Space>a` / `<Space>x`   : (v) 選択範囲をインクリメント / デクリメント
 * `:vim // %`               : 直前の検索条件を含む行のみを Quickfix へ出力
-* `:g/hoge/d`               : hoge を含む行を削除
-* `:g/hoge/normal 1dj`      : hoge を含む行+1行を削除
-* `:g/Second/s/bar/foo/g`   : Second を含む行に存在する bar をすべて foo に置換する。
+* `:s/hoge.*/& @fuga`       : hoge.* の後ろに @fuga を追加。& の説明は :h sub-replace-special 参照。
 * `:s//bar/`                : 直前の / 検索の合致内容を bar に置換する。
 * `:g/hoge/cmd`             : hoge を含む行に対して :cmd を実行。例: `:g/^function/normal A abort` functionを含む行の末尾に abort を追加。
+* `:g/hoge/d`               : hoge を含む行を削除
+* `/\v\<\/?\w+>`            : タグを含む行を検索
+* `:g//d`                     その行を削除
+* `:g/hoge/normal 1dj`      : hoge を含む行+1行を削除
+* `:g/Second/s/bar/foo/g`   : Second を含む行に存在する bar をすべて foo に置換する。
+* `<Space>Qa<Space>Q`       : レジスタ a を初期化
+  `:g/TODO/yank A`            レジスタ a にTODOを含む行を追記
+* `:Capture g/hoge/p`       : hoge を含む行のみを Capture バッファへ出力。 feat. Capture
+* `:v/hoge/d`               : hoge を含む行のみを残して削除。v は invert の v。
+* `:v/\(^.*$\)\n\1$/delete` : ソート済みの重複行を一行のみ残して削除。重複行が3行以上ある場合は、その1行だけ削除。
 * `gs`                      : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動、s, S: ソート昇順、降順、r: 反転、g, G: グループ化、解除) に入る。. で繰り返し可能 feat. swap
 * `g>`                      : 要素を右に移動 feat. swap
 * `g<`                      : 要素を左に移動 feat. swap
@@ -49,11 +56,42 @@ Edit
 * `cxx`                     : (v) X で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
 * `#`                       : (n: カーソル下の単語|v: 選択文字列) を置換。 feat. vim-asterisk
 * `^M などの入力`           : vim --clean filename で起動。Insert mode で Ctrl+v Ctrl+m など
-* `<C-R>"`                  : (i) 直前のレジスタから Paste
-* `<C-R>0`                  : (i) 一つ前のレジスタから Paste。cw<C-R>" だと変更前の単語が Paste されるので、こちらを使う。
+* `<C-R>"`                  : (i) 直前の無名レジスタから Put
+* `<C-R>0`                  : (i) 直前の Yank のレジスタから Put。cw<C-R>" だと変更前の単語が Put されるので、こちらを使う。
 * `sdt`                     : HTML のタグだけを削除。 feat. sandwich
 * `dNib`                    : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
-* `:v/\(^.*$\)\n\1$/delete` : ソート済みの重複行を削除。3行以上ある場合は、その1行だけ削除。
+* `/foo\C`                  : 小文字の foo だけにマッチ。
+* `ciwhoge<C-R><C-P>"fuga`  : カーソル文字列をhogeとfugaで囲む。. で別の文字列でも同様に動作する。<C-P>がないと . では最初のカーソル文字が使われる。 https://twitter.com/mattn_jp/status/1088746858933940224
+                              sandwich.vim を使う場合は、 saiwihoge<CR>fuga<CR>
+* `<C-r><C-w>`              : (c) コマンドラインモードでカーソル位置の word を入力する。 <C-r><C-W> なら WORD
+* `/\V`                     : 入力したままを検索
+* `/<the>`                  : 単語の境界を指定して検索。the にマッチして then にマッチしない。
+* `/lang/e`                 : /e でマッチの末尾にカーソル移動。auage で language にできる。その後、 n. で繰り返せる。searchx を使っているので <Space>n. か。実践Vim TIP83
+* `gUgn`                    : 直前のマッチのテキストオブジェクト gn を使って、マッチした範囲を大文字へ。実践Vim TIP84
+* `%s/<C-r>//"\1"/g`        : <C-r>/ 直前のマッチを挿入。実践Vim TIP90
+* `%s//<C-r>0/g`            : <C-r>0 ヤンクした内容で置換。値渡し。実践Vim TIP91
+* `%s//\=@0/g`              : <C-r>0 ヤンクした内容で置換。参照渡し。あんまり有用じゃないかも。実践Vim TIP91
+* `%s//~/&`                 : 直前の置換を繰り返し。%を忘れた場合にこれを追加するなど。実践Vim TIP92
+* `g&`                      : ファイル全体に直前の置換を繰り返し。実践Vim TIP92
+* `/\v^([^,]*),([^,]*),([^,]*)$`
+  `:%s//\3,\2,\1`           : hoge, fuga, homu を homu, fuga, hoge へ置換。実践Vim TIP93
+* `/\v\<\/?h\zs\d`          : <h2>hoge</h2>\n<h3>fuga</h3> を <h1>hoge</h1>\n<h2>fuga</h2> に置換
+  `:%s//\=submatch(0)-1/g`    \zs\d で h2 の 2 などにマッチ。\=submatch(0)-1 でマッチした 2 から -1
+                              実践Vim TIP94
+* `/\v(<man>|<dog>)`
+  `:%s//\={"dog":"man", "man":"dog"}[submatch(1)]/g`
+                            : dog と man を入れ替え。実践Vim TIP95
+* `/Pragmatic/ze Vim`       : 実践Vim TIP96
+  `:vimgrep /<C-r>// **/*.txt`
+  `:Qargs`                    quickfix を args へ代入。 nelstorm/vim-qargs を使用
+  `:argdo %s//Practical/g`    Pragmatic Vim を Practical Vim へ置換。
+  `:argdo update`             保存
+* `vi{`                     : {} の範囲を選択
+  `:'<,'>sort`                {} の範囲の行をソート。実践Vim TIP100
+* `:g/{/ .+1,/}/-1 sort`    : 複数ある {} の範囲すべての行をソート
+                              { にマッチした次の行から (/{/ .+1) } にマッチした前の行までを sort。実践Vim TIP100
+* `:g/{/ .+1,/}/-1 >`       : 複数ある {} の範囲すべての行をインデント
+* ``
 
 複数ファイルに対する処理
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -211,7 +249,7 @@ grep
 
 * `<Space>*`                        : カーソルの単語をファイル内から検索指定 Quickfix へ表示
 * `:vim /{pattern}/ %`              : カレントバッファを
-* `:vim /{pattern}/ **`             : カレントディレクトリの全てのファイル, ディレクトリを対象に
+* `:vim /{pattern}/ **`             : カレントディレクトリの全てのファイル, ディレクトリを対象に。**/* じゃない？
 * `:vim /{pattern}/ *`              : カレントディレクトリの全てのファイルを対象に
 * `:vim /{pattern}/ `git ls-files`` : git の管理対象ファイルに対して
 * `:grep /G \.vim$ {pattern} .`     : カレントディレクトリ配下の `*.vim` から {pattern} を検索。pt 用
@@ -251,15 +289,106 @@ quickfix
 Macro
 -----
 
-* `A-m`       : マクロ m へ記録。A-m で記録を停止。
-* `<Space>Qa` : マクロ a へ記録。<Space>Q で記録を停止
-* `@a`        : マクロ a を実行
-* `@@`        : 直前のマクロを再実行。
+* `A-m`             : マクロ m へ記録。A-m で記録を停止。
+* `<Space>Qa`       : マクロ a へ記録。<Space>Q で記録を停止
+* `<Space>QA`       : マクロ a へ追加記録する。<Space>Q で記録を停止
+* `@a`              : マクロ a を実行
+* `@@`              : 直前のマクロを再実行。
+* `:'<,'>normal @a` : 選択範囲でマクロ a を実行。
+
+
+複数のファイルでマクロを実行する
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#. | マクロを適用するファイルのリストを作成する
+   | `:args .rb`
+#. | 引数リストの先頭に移動
+   | `:first`
+#. マクロ a に記録
+#. マクロの実行
+
+  a. 並列に実行
+
+    A. | マクロの登録に使った変更済みのファイルを元に戻す
+       | `:edit!`
+    B. | 引数リストのすべてのファイルでマクロを実行
+       | `argdo normal @a`
+
+  b. 直列に実行
+
+    A. | マクロ a に追記。:next が失敗すれば止まるので十分な回数（22）繰り返す
+       | `<Space>QA`
+       | `:next`
+       | `<Space>Q`
+       | `22@a`
+
+#. | ファイルの保存
+   | `:argdo write` or `:wall`
+
+
+スクリプトを使ったマクロ
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+a    1) a
+b -> 2) b
+c    3) c
+
+#. 一行目でマクロを記録
+
+  #. `:let i=1`
+  #. `<Space>Qa`
+  #. `I<C-r>=i<CR> <Esc>`
+  #. `:let i+=1`
+  #. `<Space>Q`
+
+#. | 二行目以降を選択して
+   | `:'<,'>normal @a
+
+
+マクロの内容を編集する
+~~~~~~~~~~~~~~~~~~~~~~
+
+#. | マクロ a をバッファに出力する
+   | `:put a`
+#. 必要な変更を加える
+#. | マクロ a へヤンク。末尾の改行を含めないように `"add` は使わない。
+   | `0`, `"ay$`
+
 
 thinca の教え
 ~~~~~~~~~~~~~
 
-例えば q を使う場合、マクロの最後に @q を入れます。
+例えば q をマクロで使う場合、マクロの最後に @q を入れます。
+（あらかじめ qq -> q で q のマクロを空にしておく）
+そうすると同じマクロが再度再生され、エラーが出るまで実行され続けます。
+これは例えばマクロを適用したい場所を検索しておいて、`n@qn@q` とやる代わりに
+マクロの最後を n@q にしておけば 1 度の実行で自動的に全部の箇所に順次適用される感じです
+(最後は検索でジャンプできずに止まる。適用後のテキストも検索で引っかかってしまうとずっと止まらないので注意)
+
+
+Text Object
+-----------
+
+* `ad`, `id` : /\#_-キャメルケースの文字列で区切った文字列. feat. vim-textobj-delimited
+* `ac`, `ic` : コメント
+* `ab`, `ib` : feat. sandwich
+* `a,`, `i,` : , 区切りの要素。feat. swap
+
+
+rst
+---
+
+* `<Space><Space>n` : レベル n のセクションとして指定
+* `<C-CR>`          : 現在行の List bullet を次の行に挿入
+* `<S-CR>`          : 現在行の配下 List bullet を次の行に挿入
+* `<C-S-CR>`        : 現在行の親 List bullet を次の行に挿入
+
+snippet
+thinca の教え
+~~~~~~~~~~~~~
+
+例えば q をマクロで使う場合、マクロの最後に @q を入れます。
+（あらかじめ qq -> q で q のマクロを空にしておく）
 そうすると同じマクロが再度再生され、エラーが出るまで実行され続けます。
 これは例えばマクロを適用したい場所を検索しておいて、`n@qn@q` とやる代わりに
 マクロの最後を n@q にしておけば 1 度の実行で自動的に全部の箇所に順次適用される感じです
@@ -473,6 +602,7 @@ set verbose=3 するとsourceしてるものが出る
 
 `vim -V9log.log`: log.log に色々表示。
 
+
 現在の選択範囲を取得
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -496,4 +626,74 @@ set verbose=3 するとsourceしてるものが出る
 
     return result
   endfunction
+
+
+サブモードの定義
+~~~~~~~~~~~~~~~~
+
+https://vim-jp.slack.com/archives/CJMV3MSLR/p1702391608879069
+atusy 2023-12-12 23:32
+
+gttt::
+
+  nnoremap gt gt<Plug>(gt)
+  nnoremap gT gT<Plug>(gt)
+  nnoremap <Plug>(gt)t gt<Plug>(gt)
+  nnoremap <Plug>(gt)T gT<Plug>(gt)
+
+
+ddu で 現在ディレクトリが git repository だったら git を そうでないならば rg を実行
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+  function! s:ddu_grep() abort
+      if system('git rev-parse --is-inside-work-tree') == "true\n"
+          let l:cmd = 'git'
+          let l:args = ['--no-pager', 'grep', '--line-number', '--column', '--no-color']
+      else
+          let l:cmd = 'rg'
+          let l:args = ["--column", "--no-heading", "--color", "never"]
+      endif
+  
+      call ddu#start(#{
+                  \ sources: ['rg'],
+                  \ sourceParams: #{
+                  \   rg: #{
+                  \     cmd: l:cmd,
+                  \     args: l:args,
+                  \     input: input('Pattern: ')
+                  \   },
+                  \ },
+                  \ })
+  endfunction
+  nnoremap <silent> <Leader>fg <Cmd>call <SID>ddu_grep()<CR>
+
+一度検索して確認したのち、操作を実施。
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+"Vim で始める正規表現 Vim Advent Calendar 2023 25日目 | Medium" https://satorunooshie.medium.com/vim-with-regexp-7baa93d1205c
+
+検索後にマッチする行を削除::
+
+  /^[:space:]*$
+  :g//d
+
+
+正規表現
+--------
+
+* `[^[:keyword:]]\zs(` : (の前にキーワードなし。\zs で ( にカーソルを合わせている。
+
+\zs を使った . の例
+~~~~~~~~~~~~~~~~~~~
+
+https://twitter.com/mattn_jp/status/1734791816829116481
+
+/value: 1$
+で検索できることを確認した後に
+/value: \zs1$
+で検索するとカーソル位置 1 の前に来るので
+検索したあと cw2 みたいに変更した後に
+n.n.n.n. とか出来る。
 

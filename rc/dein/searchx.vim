@@ -2,9 +2,7 @@
 " Overwrite / and ?.
 BulkMap nx ? <Cmd>call searchx#start(#{ dir: 0 })<CR>
 BulkMap nx / <Cmd>call searchx#start(#{ dir: 1 })<CR>
-nnoremap g/ /
-nnoremap gn n
-nnoremap gN N
+nnoremap <Space>/ /
 
 " Move to next/prev match.
 BulkMap nx N <Cmd>call searchx#prev()<CR>

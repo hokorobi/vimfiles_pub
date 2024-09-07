@@ -1,4 +1,4 @@
-" hook_source {{{
+" hook_add {{{
 let g:equal_operator_default_mappings = 0
 
 onoremap i=h <Plug>(operator-lhs)
