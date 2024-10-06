@@ -11,7 +11,9 @@ let g:dein#enable_hook_function_cache = v:true
 " let g:dein#auto_recache = v:true
 
 let s:tomls = [
+      \   '~/vimfiles/rc/dein/_dein.toml',
       \   '~/vimfiles/rc/dein/_plugins.toml',
+      \   '~/vimfiles/rc/dein/_denops.toml',
       \   '~/vimfiles/rc/dein/_ddu.toml',
       \   '~/vimfiles/rc/dein/_ddc.toml',
       "\   '~/vimfiles/rc/dein/_asyncomplete.toml',
@@ -25,12 +27,12 @@ if dein#min#load_state(s:dein_home)
   call dein#save_state()
 endif
 
-call extend(g:vimrc_altercmd_dic, {
-      \   'du': 'call dein#update()',
-      \   'dc': 'call dein#check_update(v:true)',
-      \   'di': 'call dein#install()',
-      "\   'dr': 'call dein#recache_runtimepath() | :q',
-      \   'dr': '!gvim -c "call dein\#recache_runtimepath() | :q"',
+call extend(g:vimrc_altercmd_dic, #{
+      \   du: 'call dein#update()',
+      \   dc: 'call dein#check_update(v:true)',
+      \   di: 'call dein#install()',
+      "\   dr: 'call dein#recache_runtimepath() | :q',
+      \   dr: '!gvim -c "call dein\#recache_runtimepath() | :q"',
       \ })
 
 autocmd vimrc VimEnter * call dein#call_hook('post_source')

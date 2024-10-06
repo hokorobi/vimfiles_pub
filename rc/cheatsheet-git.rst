@@ -22,13 +22,34 @@ command
 * `git checkout 'master@{1979-02-26 18:30:00}'`: 指定した日時の時点をチェックアウト。
 * `git reset --hard ORIG_HEAD`: マージコミット後に元に戻す。
 
+
+GitHub で clone したリポジトリに追従する
+----------------------------------------
+
+1. `git remote add upstream https://github.com/hoge/fuga`
+2. `git fetch upstream`
+3. `git checkout main`
+4. `git merge upstream/main`
+5. `git checkout hoge`
+6. `git rebase main`
+
+
 push した master ブランチのコミットを一つ消す
 ---------------------------------------------
 
-1. git branch -m temp
-2. git co -b master HEAD^
-3. git push -f origin @
-4. git branch -D temp
+1. `git branch -m temp`
+2. `git co -b master HEAD^`
+3. `git push -f origin @`
+4. `git branch -D temp`
+
+
+git で管理していないファイルを試しに作ってみて消す
+--------------------------------------------------
+
+やっぱり使いたいといったときに戻せる
+
+`git stash push -u -m "comment"`
+
 
 git stash
 ----------

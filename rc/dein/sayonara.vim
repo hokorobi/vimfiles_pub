@@ -1,5 +1,5 @@
 " hook_add {{{
-noremap <expr> qq printf('<Cmd>%s<CR>', &diff ? 'diffoff' : 'call sayonara#sayonara(v:true)')
+nnoremap qq <Cmd>call sayonara#sayonara(v:true)<CR>
 " }}}
 " hook_source {{{
 let g:sayonara_filetypes.qf = 'bdelete'

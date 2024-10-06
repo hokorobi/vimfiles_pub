@@ -35,8 +35,7 @@ repo = 'Shougo/ddu-source-line'
 on_source = 'ddu.vim'
 
 [[plugins]]
-repo = 'hokorobi/ddu-source-vim-bookmark'
-# repo = 'nekowasabi/ddu-source-vim-bookmark'
+repo = 'nekowasabi/ddu-source-vim-bookmark'
 depends = 'vim-bookmarks'
 on_source = 'ddu.vim'
 

@@ -11,7 +11,7 @@ command! Lmap  Capture lmap
 command! Cmap  Capture cmap
 
 call extend(g:vimrc_altercmd_dic, {
-      \   'cap[ture]': 'Capture',
+      \   'cap\%[ture]': 'Capture',
       \   'ml': 'Capture messages',
       \   'scriptn\%[ames]': 'Capture scriptnames',
       \ })

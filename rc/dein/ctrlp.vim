@@ -28,6 +28,8 @@ let g:ctrlp_custom_ignore = #{
   \ link: 'SOME_BAD_SYMBOLIC_LINKS',
   \ }
 
+let g:ctrlp_bufcurfile_filter = 1
+
 " mapping
 let g:ctrlp_prompt_mappings = {
       \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>', '<m-m>'],

@@ -1,13 +1,11 @@
 " hook_add {{{
-BulkMap nxi <silent> <Home> <Plug>(smarthome-home)
-BulkMap nxi <silent> <C-a> <Plug>(smarthome-home)
-BulkMap nxi <silent> <M-h> <Plug>(smarthome-home)
-BulkMap nx <silent> <Space>h <Plug>(smarthome-home)
-BulkMap nx <silent> 0 <Plug>(smarthome-home)
+BulkMap nxi <silent> <Home>   <Cmd>call smarthome#home()<CR>
+BulkMap nxi <silent> <C-a>    <Cmd>call smarthome#home()<CR>
+BulkMap nx <silent>  <Space>h <Cmd>call smarthome#home()<CR>
+BulkMap nx <silent>  0        <Cmd>call smarthome#home()<CR>
 
-BulkMap nxi <silent> <End> <Plug>(smarthome-end)
-BulkMap nxi <silent> <C-e> <Plug>(smarthome-end)
-BulkMap nxi <silent> <M-l> <Plug>(smarthome-end)
-BulkMap nx <silent> <Space>l <Plug>(smarthome-end)
-BulkMap nx <silent> $ <Plug>(smarthome-end)
+BulkMap nxi <silent> <End>    <Cmd>call smarthome#end()<CR>
+BulkMap nxi <silent> <C-e>    <Cmd>call smarthome#end()<CR>
+BulkMap nx <silent>  <Space>l <Cmd>call smarthome#end()<CR>
+BulkMap nx <silent>  $        <Cmd>call smarthome#end()<CR>
 " }}}

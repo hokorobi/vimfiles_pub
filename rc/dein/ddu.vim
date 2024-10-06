@@ -83,3 +83,6 @@ call ddu#custom#patch_global(#{
 " autocmd vimrc User Ddu:uiReady if &l:filetype ==# 'ddu-ff' | call ddu#ui#do_action('openFilterWindow') | endif
 
 " }}}
+" hook_post_update {{{
+call ddu#set_static_import_path()
+" }}}

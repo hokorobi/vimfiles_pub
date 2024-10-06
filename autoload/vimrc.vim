@@ -42,7 +42,10 @@ endfunction
 " ISetting t4 => tab で幅4
 " ISetting s2 => space で幅2
 " https://github.com/cohama/.vim/blob/9bcf4c6da9ef538b75ba6052d592290e31d629bb/init.vim#L873-L905
-function vimrc#ISetting(setting) abort
+function vimrc#ISettingCompl(A, L, P) abort
+  return ['s2', 't4']
+endfunction
+function vimrc#ISetting(setting = '') abort
   if empty(a:setting)
     echo printf('indent: %s %s', ((&l:expandtab) ? 'space' : 'tab'), &l:shiftwidth)
     return
@@ -138,12 +141,12 @@ endfunction
 
 
 " ファイラからの起動時に検索文字列を指定するのは使いにくいので、コマンド実行後に検索文字列を入力できるようにする
-function vimrc#GrepWrap(...) abort
-  let path = a:0 == 0 ? '.' : a:1
+function vimrc#GrepWrap(path = '.') abort
   let str = input('Pattern: ')
   if len(str) == 0
     return 1
   endif
+  let path = stridx(&grepprg, 'findstr') == 0 ? a:path .. '/*' : a:path
   execute $'grep "{str}" {path}'
 endfunction
 
@@ -224,15 +227,21 @@ function! s:set_highlight(group) abort
 endfunction
 
 " ycino@vim-jp slack
-function vimrc#helpedit() abort
+function vimrc#helpedittoggle() abort
+  if &conceallevel == 0
+    edit!
+    return
+  endif
+
   setlocal buftype= modifiable noreadonly
   setlocal list tabstop=8 shiftwidth=8 softtabstop=8 noexpandtab textwidth=78
   setlocal colorcolumn=+1
   setlocal conceallevel=0
 
   call s:set_highlight('Special')
-  command! -range -buffer AlignRight call s:align_rights('<line1>'->expand(), '<line2>'->expand())
 
+  " ヘルプ関連タグの右揃え
+  command! -range -buffer AlignRight call s:align_rights('<line1>'->expand(), '<line2>'->expand())
   nnoremap <silent><buffer> mm <Cmd>AlignRight<CR>
   xnoremap <silent><buffer> mm :AlignRight<CR>
 endfunction

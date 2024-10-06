@@ -1,0 +1,4 @@
+[[plugins]]
+repo = 'Shougo/dein.vim'
+# https://github.com/Shougo/dein.vim/pull/515 で CtrlPのhooks_file が読み込めなくなってしまったみたいなので rev = 'a3515eb' で frozen
+frozen = true

@@ -10,13 +10,17 @@ setlocal formatoptions& formatoptions-=t formatoptions-=c formatoptions+=jM
 nnoremap <buffer> <Space>i <Cmd>NewChangelogEntry<CR>
 " }}}
 
+" diff {{{
+nnoremap <buffer> qq <Cmd>diffoff<CR>
+" }}}
+
 " gitcommit {{{
 startinsert
 " }}}
 
 " help {{{
 " Vim ヘルプファイル編集用設定反映
-command! HelpEdit call vimrc#helpedit()
+command! HelpEditToggle call vimrc#helpedittoggle()
 " }}}
 
 " json {{{

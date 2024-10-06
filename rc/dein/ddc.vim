@@ -49,10 +49,23 @@ let s:ddc_sourceOptions['vsnip'] = #{
     \   dup: 'keep',
     \ }
 
-call ddc#custom#patch_global(#{
+let s:ddc_options = #{
     \   sourceOptions: s:ddc_sourceOptions,
     \   sourceParams: s:ddc_sourceParams,
+    \ }
+" Shougo/pum.vim
+call extend(s:ddc_options, #{
+    \   ui: 'pum',
+    \   backspaceCompletion: v:true,
     \ })
+" tani/ddc-fuzzy
+call extend(s:ddc_options, #{
+    \   filterParams: #{
+    \     converter_fuzzy: #{
+    \       hlGroup: 'SpellBad'
+    \     }
+    \ }})
+call ddc#custom#patch_global(s:ddc_options)
 
 call ddc#custom#patch_filetype(
     \ ['autohotkey', 'plantuml'],
@@ -118,17 +131,9 @@ imap <silent><expr> <C-p>
 "     \ pum#visible() ? '<Cmd>call pum#map#cancel()<CR>' :
 "     \ '<Esc>'
 
-" Shougo/pum.vim
-call ddc#custom#patch_global(#{
-      \   ui: 'pum',
-      \   backspaceCompletion: v:true,
-      \ })
-" tani/ddc-fuzzy
-call ddc#custom#patch_global(#{filterParams: #{
-  \   converter_fuzzy: #{
-  \     hlGroup: 'SpellBad'
-  \   }
-  \ }})
 
 call ddc#enable()
+" }}}
+" hook_post_update {{{
+call ddc#set_static_import_path()
 " }}}

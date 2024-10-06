@@ -25,16 +25,18 @@ augroup END
 " Use lexima
 let g:vimrc_altercmd_dic = {
       \   'tagsg\%[en]': '!ctags -R',
-      "\   ウィンドウに表示しているバッファで diffthis
+     "\   ウィンドウに表示しているバッファで diffthis
       \   'dt': 'windo diffthis',
       \}
 
 
 call extend(g:vimrc_altercmd_dic, {
-      \   'vn[map]': 'verbose nmap',
-      \   'vi[map]': 'verbose imap',
-      \   'vo[map]': 'verbose omap',
-      \   'vx[map]': 'verbose xmap',
+      \   'vn\%[map]': 'verbose nmap',
+      \   'vi\%[map]': 'verbose imap',
+      \   'vo\%[map]': 'verbose omap',
+      \   'vv\%[map]': 'verbose vmap',
+      \   'vx\%[map]': 'verbose xmap',
+      \   'vf[unction]': 'verbose function',
       \ })
 
 " vim-sayonara
@@ -50,8 +52,6 @@ def! Vimrc_executable(cmd: string): number
   endif
   return g:vimrc_executable[cmd]
 enddef
-
-import autoload 'vimrc9.vim'
 
 " Command {{{1
 
@@ -93,8 +93,7 @@ command! -nargs=+ BulkMap call s:bulkmap(<f-args>)
 command! -nargs=? Retab call vimrc#Retab(empty(<q-args>) ? &l:tabstop : <q-args>)
 
 " インデントを簡単に設定
-" FIXME: 引数なしで使えない
-command! -nargs=? -bang ISetting call vimrc#ISetting(<f-args>)
+command! -complete=customlist,vimrc#ISettingCompl -nargs=? -bang ISetting call vimrc#ISetting(<f-args>)
 
 " 今開いているファイルを削除
 " https://github.com/cohama/.vim/blob/master/.vimrc
@@ -376,8 +375,8 @@ set grepformat^=%f:%l:%c:%m
 
 " auto quickfix opener
 " https://github.com/monaqa/dotfiles/blob/424b0ab2d7623005f4b79544570b0f07a76e921a/.config/nvim/scripts/autocmd.vim#L100-L104
-autocmd vimrc QuickfixCmdPost [^l]* cwin
-autocmd vimrc QuickfixCmdPost l* lwin
+autocmd vimrc QuickfixCmdPost [^l]* cwindow
+autocmd vimrc QuickfixCmdPost l* lwindow
 
 " }}}2 others {{{2
 
@@ -519,7 +518,7 @@ xnoremap v <C-v>
 
 " Show cursor info / buffer info in popup
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
-nnoremap <C-CR> <ScriptCmd>call vimrc9.Popup_cursor_info()<CR>
+nnoremap <C-CR> <ScriptCmd>call vimrc9#Popup_cursor_info()<CR>
 
 " https://vim-jp.slack.com/archives/CLKR04BEF/p1667463907309639
 " a = "foo" で ( "foo") でなく ("foo") を選択する
@@ -660,6 +659,7 @@ xnoremap <Space>d "+d
 noremap! <C-v> <C-R>*
 nnoremap <C-v> "+gP
 tnoremap <C-v> <C-w>"*
+
 " コピー
 BulkMap nx <Space>y "+y
 
@@ -679,7 +679,12 @@ nnoremap Y y$
 
 " ペーストした内容を選択
 " インデント以外に何か使い道あるのかな？
-nnoremap <expr> gp '`['.strpart(getregtype(),0,1).'`]'
+" https://zenn.dev/vim_jp/articles/43d021f461f3a4#%E7%9B%B4%E5%89%8D%E3%81%AE%E3%83%9A%E3%83%BC%E3%82%B9%E3%83%88%E7%AF%84%E5%9B%B2%E3%82%92%E9%81%B8%E6%8A%9E%E3%81%99%E3%82%8B
+nnoremap gp `[v`]
+
+" Visual ペースト時にレジスタの変更を防止
+" https://zenn.dev/vim_jp/articles/43d021f461f3a4#visual-%E3%83%9A%E3%83%BC%E3%82%B9%E3%83%88%E6%99%82%E3%81%AB%E3%83%AC%E3%82%B8%E3%82%B9%E3%82%BF%E3%81%AE%E5%A4%89%E6%9B%B4%E3%82%92%E9%98%B2%E6%AD%A2
+xnoremap p P
 
 " }}}2 Edit {{{2
 " lexima や neocomplete で C-h と BS を同じ挙動にする
@@ -801,6 +806,7 @@ nnoremap <Space>gam <Cmd>!git commit --amend<CR>
 " 単純なコミットメッセージの場合: gn
 nnoremap <Space>gn :!git commit --all -v -m ""<Left>
 nnoremap <Space>gN <Cmd>!git commit --all -v<CR>
+nnoremap <Space>gh :!git cherry-pick<Space>
 
 " 直前のコミットを master にする場合: gbr -> g-
 " rename current branch
@@ -845,7 +851,8 @@ if has('gui_running')
   " set guifont=UD_デジタル_教科書体_N-R:h11
   " set guifont=HackGenNerd:h11
   " set guifont=HackGen_Console_NFJ:h11
-  set guifont=HackGen:h11
+  " set guifont=HackGen:h11
+  set guifont=HackGen:h14 " 27inch 2560x1440
   " ノートPCモニタ用
   " set guifont=HackGenNerd_Console:h14
 
@@ -877,7 +884,10 @@ if has('gui_running')
   autocmd vimrc ColorScheme * :call DefineMyHighlights()
 
   syntax on
-  colorscheme spring-night
+  let s:favColorscheme = 'spring-night'
+  if !empty(globpath(&rtp, 'colors/' .. s:favColorscheme .. '.vim'))
+    call execute('colorscheme ' .. s:favColorscheme)
+  endif
   " }}}
 
 endif

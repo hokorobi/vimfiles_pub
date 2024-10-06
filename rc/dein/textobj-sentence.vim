@@ -5,6 +5,3 @@ call extend(g:vimrc_altercmd_dic, {
       \ })
 nmap <Space>e "zyiS;Textra en ja z<CR>
 " }}}
-" hook_source {{{
-" }}}
-

@@ -24,9 +24,9 @@ let g:EasyMotion_use_smartsign_us = 1
 let g:EasyMotion_do_shade = 0
 
 " submode
-call submode#enter_with('emn', 'nx', 'r', ':', '<Plug>(easymotion-next)')
+call submode#enter_with('emn', 'nx', 'r', ';;', '<Plug>(easymotion-next)')
 call submode#enter_with('emn', 'nx', 'r', '<Space>;', '<Plug>(easymotion-next)')
-call submode#enter_with('emn', 'nx', 'r', ',', '<Plug>(easymotion-prev)')
+call submode#enter_with('emn', 'nx', 'r', ',,', '<Plug>(easymotion-prev)')
 call submode#map('emn', 'nx', 'rs', ';', '<Plug>(easymotion-next)')
 call submode#map('emn', 'nx', 'rs', ':', '<Plug>(easymotion-next)')
 call submode#map('emn', 'nx', 'rs', ',', '<Plug>(easymotion-prev)')

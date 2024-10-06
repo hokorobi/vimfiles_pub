@@ -43,7 +43,7 @@ Edit
 * `<Space>Qa<Space>Q`       : レジスタ a を初期化
   `:g/TODO/yank A`            レジスタ a にTODOを含む行を追記
 * `:Capture g/hoge/p`       : hoge を含む行のみを Capture バッファへ出力。 feat. Capture
-* `:v/hoge/d`               : hoge を含む行のみを残して削除。v は invert の v。
+* `:v/hoge/d` `:g!/hoge/d`  : hoge を含む行のみを残して削除。v は invert の v。
 * `:v/\(^.*$\)\n\1$/delete` : ソート済みの重複行を一行のみ残して削除。重複行が3行以上ある場合は、その1行だけ削除。
 * `gs`                      : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動、s, S: ソート昇順、降順、r: 反転、g, G: グループ化、解除) に入る。. で繰り返し可能 feat. swap
 * `g>`                      : 要素を右に移動 feat. swap
@@ -383,34 +383,6 @@ rst
 * `<S-CR>`          : 現在行の配下 List bullet を次の行に挿入
 * `<C-S-CR>`        : 現在行の親 List bullet を次の行に挿入
 
-snippet
-thinca の教え
-~~~~~~~~~~~~~
-
-例えば q をマクロで使う場合、マクロの最後に @q を入れます。
-（あらかじめ qq -> q で q のマクロを空にしておく）
-そうすると同じマクロが再度再生され、エラーが出るまで実行され続けます。
-これは例えばマクロを適用したい場所を検索しておいて、`n@qn@q` とやる代わりに
-マクロの最後を n@q にしておけば 1 度の実行で自動的に全部の箇所に順次適用される感じです
-(最後は検索でジャンプできずに止まる。適用後のテキストも検索で引っかかってしまうとずっと止まらないので注意)
-
-
-Text Object
------------
-
-* `ad`, `id` : /\#_-キャメルケースの文字列で区切った文字列. feat. vim-textobj-delimited
-* `ac`, `ic` : コメント
-* `ab`, `ib` : feat. sandwich
-* `a,`, `i,` : , 区切りの要素。feat. swap
-
-
-rst
----
-
-* `<Space><Space>n` : レベル n のセクションとして指定
-* `<C-CR>`          : 現在行の List bullet を次の行に挿入
-* `<S-CR>`          : 現在行の配下 List bullet を次の行に挿入
-* `<C-S-CR>`        : 現在行の親 List bullet を次の行に挿入
 
 snippet
 ~~~~~~~
@@ -514,7 +486,6 @@ Others
 * `:verbose set whichwrap`  : whichwarp を最後に変更したファイルを表示
 * `:cq`                     : vim を不正終了。git コミットのキャンセルなど
 * `:Jq .obj`                : JSON の obj を抽出。引数なしなら整形のみ
-* `:Jj obj`                 : JSON の obj を抽出。引数なしなら整形のみ（Jq より高速。まだ若いのでバグがあるかも）
 * `/[\u3041-\u3096]`        : ひらがな検索 https://so-zou.jp/software/tech/programming/tech/regular-expression/meta-character/variable-width-encoding.htm
 * `vim --clean -u vimrcfile`: Clean な Vim で vimrcfile を vimrc の代わりに読み込む
 * `nnoremap [hoge] <Nop>`
@@ -590,8 +561,8 @@ set verbose=3 するとsourceしてるものが出る
 デバッグプリント
 ~~~~~~~~~~~~~~~~
 
-* `:L PP dict`: 整形して表示してくれる。
-* `:L verbose PP dict`: 辞書関数の中身も見られる。
+* `:Capture PP dict`: 整形して表示してくれる。
+* `:Capture verbose PP dict`: 辞書関数の中身も見られる。
 * `:echom string(dict)` : echom に副作用があるらしい。知らんけど。
 * `:put=string(dict)` : バッファに出力。
 * `:let g:x=dict` : からの `:breakadd expr g:x` ？　よくわからん。

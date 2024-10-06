@@ -1,15 +1,11 @@
-# Plugin Manager {{{1
-
-[[plugins]]
-repo = 'Shougo/dein.vim'
-# https://github.com/Shougo/dein.vim/pull/515 で CtrlPのhooks_file が読み込めなくなってしまったみたいなので rev = 'a3515eb' で frozen
-frozen = true
-hooks_file = '~/vimfiles/rc/dein/ft.vim'
 # memo
 # on_source = このプラグインがリストのプラグインより先に読み込まれる
 # depends = リストのプラグインがこのプラグインより先に読み込まれる
 # on_cmd = 自分で定義したコマンドは登録しない。一度実行したら消えるみたい。
 
+hooks_file = '~/vimfiles/rc/dein/ft.vim'
+
+# Plugin Manager {{{1
 [[plugins]]
 repo = 'hokorobi/vim-templug'
 frozen = true
@@ -26,12 +22,6 @@ hooks_file = '~/vimfiles/rc/dein/lsp.vim'
 repo = 'mattn/vim-lsp-settings'
 depends = 'vim-lsp'
 hooks_file = '~/vimfiles/rc/dein/lsp-settings.vim'
-
-[[plugins]]
-repo = 'matsui54/denops-signature_help'
-depends = 'denops.vim'
-on_func = 'signature_help#'
-hooks_file = '~/vimfiles/rc/dein/denops-signature_help.vim'
 
 # }}}1  REPL {{{1
 
@@ -190,7 +180,6 @@ on_ft = 'qf'
 [[plugins]]
 repo = 'bfrg/vim-qf-history'
 on_cmd = ['Chistory', 'Lhistory']
-hooks_file = '~/vimfiles/rc/dein/qf-history.vim'
 
 # }}}2 Vim {{{2
 
@@ -524,13 +513,8 @@ hooks_file = '~/vimfiles/rc/dein/floaterm.vim'
 
 # }}}1  CtrlP {{{1
 [[plugins]]
-repo = 'ctrlpvim/ctrlp.vim'
+repo = 'hokorobi/ctrlp.vim'
 hooks_file = '~/vimfiles/rc/dein/ctrlp.vim'
-
-[[plugins]]
-repo = 'hokorobi/ctrlp-sessions'
-on_cmd = ['CtrlPSession', 'MkS']
-hooks_file = '~/vimfiles/rc/dein/ctrlp-sessions.vim'
 
 [[plugins]]
 repo = 'mattn/ctrlp-launcher'
@@ -560,27 +544,11 @@ hooks_file = '~/vimfiles/rc/dein/ctrlp-grep.vim'
 repo = 'mattn/ctrlp-matchfuzzy'
 hooks_file = '~/vimfiles/rc/dein/ctrlp-matchfuzzy.vim'
 
-[[plugins]]
-repo = 'ompugao/ctrlp-kensaku'
-depends = ['denops.vim', 'kensaku.vim']
-on_cmd = ['CtrlPKensaku', 'ToggleCtrlPKensaku']
-hooks_file = '~/vimfiles/rc/dein/ctrlp-kensaku.vim'
-
-[[plugins]]
-repo = 'lambdalisue/vim-kensaku'
-lazy = true
-
 # }}}1  Git {{{1
 [[plugins]]
 repo = 'lambdalisue/vim-gina'
 on_cmd = 'Gina'
 hooks_file = '~/vimfiles/rc/dein/gina.vim'
-
-[[plugins]]
-repo = 'lambdalisue/vim-gin'
-on_cmd = ['Gin', 'GinBranch', 'GinBrowse', 'GinBuffer', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinLog', 'GinPatch', 'GinStatus']
-depends = 'denops.vim'
-hooks_file = '~/vimfiles/rc/dein/gin.vim'
 
 [[plugins]]
 repo = 'cohama/agit.vim'
@@ -621,9 +589,9 @@ repo = 'skanehira/code2img.vim'
 on_cmd = 'Code2img'
 
 [[plugins]]
-repo = 'fedorenchik/VimCalc3'
-on_cmd = 'Calc'
-hooks_file = '~/vimfiles/rc/dein/calc3.vim'
+repo = 'fedorenchik/calculator.vim'
+on_cmd = 'Calculator'
+hooks_file = '~/vimfiles/rc/dein/calculator.vim'
 
 # Using vim-lsp, vim-easymotion
 [[plugins]]
@@ -648,20 +616,5 @@ hooks_file = '~/vimfiles/rc/dein/layout.vim'
 [[plugins]]
 repo = 'kawarimidoll/textra.vim'
 hooks_file = '~/vimfiles/rc/dein/textra.vim'
-
-[[plugins]]
-repo = 'vim-denops/denops.vim'
-lazy = true
-hooks_file = '~/vimfiles/rc/dein/denops.vim'
-
-[[plugins]]
-repo = 'vim-denops/denops-shared-server.vim'
-depends = 'denops.vim'
-# denops_shared_server# だと denops_shared_server#install() などの実行に失敗する。
-on_func = ['denops_shared_server#install', 'denops_shared_server#restart', 'denops_shared_server#uninstall']
-
-# [[plugins]]
-# repo = 'vim-denops/denops-startup-recorder.vim'
-# on_source = 'denops.vim'
 
 # }}}1
