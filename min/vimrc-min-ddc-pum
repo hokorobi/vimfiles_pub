@@ -1,4 +1,4 @@
-" gvim -N -u ~/vimfiles/vimrc-min-ddc-pum -U NONE -i NONE
+" gvim -N -u ~/vimfiles/min/vimrc-min-ddc-pum -U NONE -i NONE
 set rtp+=~/_vim/dein/repos/github.com/vim-denops/denops.vim
 set rtp+=~/_vim/dein/repos/github.com/Shougo/ddc.vim
 set rtp+=~/_vim/dein/repos/github.com/Shougo/ddc-source-around
@@ -9,7 +9,6 @@ set rtp+=~/_vim/dein/repos/github.com/Shougo/pum.vim
 set wildoptions+=pum
 " call pum#set_option('use_complete', v:true)
 call ddc#custom#patch_global('ui','pum')
-call ddc#custom#patch_global('completionMenu','pum.vim')
 call ddc#custom#patch_global('sources', ['around'])
 call ddc#custom#patch_global('sourceOptions',#{
       \ _: #{

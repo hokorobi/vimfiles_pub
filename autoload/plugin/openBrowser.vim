@@ -16,9 +16,9 @@ function plugin#openBrowser#openUrlInBuffer() abort
   endif
 
   for line in getline(0, line("$"))
-    let head = stridx(line, "https:\/\/")
-    if head >= 0
-      call openbrowser#open(line[head:])
+    let head = matchstr(line, 'https:\/\/github.com.\+\.\.\..\+')
+    if len(head) >= 1
+      call openbrowser#open(head)
     endif
   endfor
 endfunction

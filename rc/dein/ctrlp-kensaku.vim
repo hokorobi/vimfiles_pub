@@ -4,6 +4,8 @@ nnoremap <Space>fq <Cmd>CtrlPKensaku 'CtrlPQuickfix'<CR>
 nnoremap [toggle]c <Cmd>ToggleCtrlPKensaku<CR>
 " }}}
 " hook_source {{{
+let g:kensaku_dictionary_cache = '~/_vim/kensaku.vim/migemo-compact-dict'
+
 function s:kensaku(ctrlp) abort
   let l:oldmatcher = g:ctrlp_match_func
   let g:ctrlp_match_func = {'match': 'ctrlp_kensaku#matcher'}

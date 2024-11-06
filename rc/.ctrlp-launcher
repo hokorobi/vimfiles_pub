@@ -24,4 +24,5 @@ help builtin-function-list	help builtin-function-list
 fenrir instant.ini	execute $'edit {g:fenrir_dir}/data/instant.ini'
 vimplugins.rst	edit ~/Documents/Sphinx/github.io/vimplugins.rst
 dein.log	edit ~/_vim/dein/dein.log
+dpp.log	edit ~/_vim/dpp/installer-log.txt
 ppc jump	!C:/OLS/File/ppx/PPCW.EXE -single -k \%J"%:p"

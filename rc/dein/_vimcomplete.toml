@@ -1,0 +1,44 @@
+[[plugins]]
+repo = 'hokorobi/vimcomplete'
+hooks_file = '~/vimfiles/rc/dein/vimcomplete.vim'
+merged = false
+extAttrs = { installerFrozen = true }
+rev = 'private'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_event = 'InsertEnter'
+hooks_file = '~/vimfiles/rc/dein/vsnip.vim'
+
+[[multiple_plugins]]
+plugins = ['vimcomplete', 'vim-vsnip']
+hook_source = '''
+imap <silent><expr> <C-l>
+      \ pumvisible() ?
+      \   vsnip#expandable() ? '<Plug>(vsnip-expand)' :
+      \   '' :
+      \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
+      \ ''
+'''
+[[multiple_hooks]]
+plugins = ['vimcomplete', 'vim-vsnip']
+hook_source = '''
+imap <silent><expr> <C-l>
+      \ pumvisible() ?
+      \   vsnip#expandable() ? '<Plug>(vsnip-expand)' :
+      \   '' :
+      \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
+      \ ''
+'''
+
+[[plugins]]
+repo = 'rafamadriz/friendly-snippets'
+rtp = ''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+on_source = 'vim-vsnip'
+
+[[plugins]]
+repo = 'yegappan/lsp'
+hooks_file = '~/vimfiles/rc/dein/lsp.vim'

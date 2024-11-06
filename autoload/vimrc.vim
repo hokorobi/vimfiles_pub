@@ -109,36 +109,42 @@ function vimrc#toggle_option(option_name) abort
   execute $'setlocal {a:option_name}! {a:option_name}?'
 endfunction
 
-" json processor
-function vimrc#Jq(...) abort
-  if Vimrc_executable('deno')
-    " @kawarimidoll, @Milly
-    let l:cmd = 'deno'
-    let l:arg0 = 'fmt --ext json -'
-  elseif Vimrc_executable('jj')
-    " http://qiita.com/tekkoc/items/324d736f68b0f27680b8
-    let l:cmd = 'jj'
-    let l:arg0 = '-p'
-  elseif Vimrc_executable('jq')
-    " https://github.com/stedolan/jq
-    let l:cmd = 'jq'
-    let l:arg0 = '.'
-  else
-    let l:cmd = 'python'
-    let l:arg0 = '-m json.tool'
-  endif
+function vimrc#format() abort
+  let formatters = #{
+        \  css: [
+        \    ['deno', 'fmt --ext css -'],
+        \  ],
+        \  json: [
+        \    ['deno', 'fmt --ext json -'],
+        \    ['jj', '-p'],
+        \    ['jq', '.'],
+        \    ['python', '-m json.tool'],
+        \  ],
+        \  markdown: [
+        \    ['deno', 'fmt --ext markdown -'],
+        \  ],
+        \  toml: [
+        \    ['taplo', 'fmt -'],
+        \  ],
+        \  typescript: [
+        \    ['deno', 'fmt --ext ts -'],
+        \  ],
+        \  yaml: [
+        \    ['deno', 'fmt --ext yaml -'],
+        \  ],
+        \}
 
-  if 0 ==# a:0
-    execute $'%!{l:cmd} {l:arg0}'
+  if !has_key(formatters, &ft)
+    echo 'No formatte'r
     return
   endif
-  if l:cmd ==# 'python'
-    echom 'jj, jq コマンドが見つからないため式は評価できません。'
-    return
-  endif
-  execute $'%!{l:cmd} "{a:1}"'
+  for formatter in formatters[&ft]
+    if Vimrc_executable(formatter[0])
+      execute $'%!{formatter[0]} {formatter[1]}'
+      return
+    endif
+  endfor
 endfunction
-
 
 " ファイラからの起動時に検索文字列を指定するのは使いにくいので、コマンド実行後に検索文字列を入力できるようにする
 function vimrc#GrepWrap(path = '.') abort
@@ -266,8 +272,8 @@ function vimrc#percent_expr() abort
   endif
 endfunction
 
-" https://zenn.dev/kawarimidoll/articles/4357f07f210d2f
 " 現在の選択範囲を取得 {{{
+" https://zenn.dev/kawarimidoll/articles/4357f07f210d2f
 function vimrc#get_current_selection() abort
   if mode() !~# '^[vV\x16]'
     " not in visual mode
@@ -288,8 +294,8 @@ function vimrc#get_current_selection() abort
 endfunction
 " }}}
 
-" https://zenn.dev/vim_jp/articles/8de697fc88e63c
 " Vimで空行挿入+dot repeat {{{
+" https://zenn.dev/vim_jp/articles/8de697fc88e63c
 function vimrc#blank_above(type = '') abort
   if a:type == ''
     set operatorfunc=function('vimrc#blank_above')
@@ -322,6 +328,15 @@ function! vimrc#DeleteMe(force) abort
   else
     echomsg 'File modified'
   endif
+endfunction
+
+" 直前に入力した単語を大文字へ
+" https://zenn.dev/vim_jp/articles/2024-10-07-vim-insert-uppercase
+function vimrc#toupper_prev_word()
+  let col = getpos('.')[2]
+  let substring = getline('.')[0:col-1]
+  let word = matchstr(substring, '\v<(\k(<)@!)*$')
+  return toupper(word)
 endfunction
 
 " plugin {{{1

@@ -13,10 +13,6 @@ let s:ddc_sourceOptions['_'] = #{
     \   ignoreCase: v:true,
     \   timeout: 1000,
     \ }
-let s:ddc_sourceOptions['around'] = #{
-    \   mark: 'A',
-    \   maxKeywordLength: 30,
-    \ }
 let s:ddc_sourceOptions['buffer'] = #{
     \   mark: 'B',
     \   maxKeywordLength: 30,
@@ -31,11 +27,12 @@ let s:ddc_sourceParams['file'] = #{
 let s:ddc_sourceOptions['filetype-candidates'] = #{
     \   mark: 'D',
     \ }
-let s:ddc_sourceOptions['necovim'] = #{
-    \   mark: 'V',
+let s:ddc_sourceOptions['register'] = #{
+    \   mark: 'R',
     \ }
-let s:ddc_sourceOptions['plantuml'] = #{
-    \   mark: 'U',
+let s:ddc_sourceOptions['vim'] = #{
+    \   mark: 'V',
+    \   isVolatile: v:true,
     \ }
 " https://github.com/kuuote/dotvim/blob/7fbd83a2aedb1e30405f9bd1d8126b04dc5fe72e/conf/vim-lsp.toml#L50
 " メソッド呼び出しを補完
@@ -46,7 +43,6 @@ let s:ddc_sourceOptions['vim-lsp'] = #{
     \ }
 let s:ddc_sourceOptions['vsnip'] = #{
     \   mark: 'S',
-    \   dup: 'keep',
     \ }
 
 let s:ddc_options = #{
@@ -69,19 +65,19 @@ call ddc#custom#patch_global(s:ddc_options)
 
 call ddc#custom#patch_filetype(
     \ ['autohotkey', 'plantuml'],
-    \ #{sources: ['buffer', 'around', 'vsnip', 'filetype-candidates', 'file']})
+    \ #{sources: ['vsnip', 'buffer', 'filetype-candidates', 'register', 'file']})
 call ddc#custom#patch_filetype(
     \ ['rst'],
-    \ #{sources: ['buffer', 'around', 'file', 'vsnip']})
+    \ #{sources: ['vsnip', 'buffer', 'register', 'file']})
 call ddc#custom#patch_filetype(
-    \ ['go', 'python', 'typescript'],
-    \ #{sources: ['vim-lsp', 'file', 'vsnip']})
+    \ ['go', 'python', 'toml', 'typescript'],
+    \ #{sources: ['vsnip', 'vim-lsp', 'register', 'file']})
 call ddc#custom#patch_filetype(
-    \ ['cfg', 'git', 'gitcommit', 'howm', 'javascript', 'markdown', 'snippet', 'toml', 'vb', 'xsl'],
-    \ #{sources: ['buffer', 'around', 'file']})
+    \ ['cfg', 'gitcommit', 'howm', 'javascript', 'markdown', 'snippet', 'vb', 'xsl'],
+    \ #{sources: ['buffer', 'register', 'file']})
 call ddc#custom#patch_filetype(
     \ ['vim'],
-    \ #{sources: ['necovim', 'buffer', 'around', 'file', 'vsnip']})
+    \ #{sources: ['vsnip', 'vim', 'buffer', 'register', 'file']})
 
 " <Tab> は
 " 1. ddc.vim を使用しない filetype では <Tab>
@@ -99,6 +95,11 @@ imap <silent><expr> <Tab>
 smap <silent><expr> <Tab>
       \ vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' :
       \ '<Tab>'
+" <C-l> は
+" 1. popup が表示されていて、vsnip の展開ができる場合は展開する
+" 2. popup が表示されていて、vsnip の展開ができない場合は選択している候補を挿入してpopupを閉じる
+" 3. vsnipのジャンプができる場合、次のジャンプ位置へ
+" 4. それ以外は何もしない
 imap <silent><expr> <C-l>
       \ pum#visible() ? vsnip#expandable() ? '<Plug>(vsnip-expand)': '<Cmd>call pum#map#confirm()<CR>' :
       \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
@@ -131,6 +132,7 @@ imap <silent><expr> <C-p>
 "     \ pum#visible() ? '<Cmd>call pum#map#cancel()<CR>' :
 "     \ '<Esc>'
 
+let g:vsnip_snippet_dir = expand('~/vimfiles/rc/vsnip')
 
 call ddc#enable()
 " }}}

@@ -259,7 +259,7 @@ help
 ----
 
 `:help CTRL-]`             : (ノーマルモードの) コントロール文字コマンド CTRL-] のヘルプを表示
-`:help i_CTRL-]`            : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
+`:help i_CTRL-]`           : 挿入モードのコントロール文字コマンド CTRL-] のヘルプを表示
 `:help 'number'`           : オプション number のヘルプを表示
 `:help :help`              : コマンドラインコマンド help のヘルプを表示
 `:helpgrep hoge`           : hoge をヘルプから検索

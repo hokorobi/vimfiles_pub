@@ -19,15 +19,6 @@ repo = 'tani/ddc-fuzzy'
 on_source = 'ddc.vim'
 
 [[plugins]]
-repo = 'Shougo/neco-vim'
-depends = 'ddc.vim'
-on_ft = 'vim'
-
-[[plugins]]
-repo = 'Shougo/ddc-source-around'
-on_source = 'ddc.vim'
-
-[[plugins]]
 repo = 'matsui54/ddc-source-buffer'
 on_source = 'ddc.vim'
 
@@ -36,13 +27,37 @@ repo = 'LumaKernel/ddc-source-file'
 on_source = 'ddc.vim'
 
 [[plugins]]
+repo = 'hokorobi/ddc-source-filetype-candidates'
+on_ft = ['autohotkey', 'plantuml']
+extAttrs = { installerFrozen = true }
+depends = 'ddc.vim'
+
+[[plugins]]
+repo = 'Shougo/ddc-source-vim'
+depends = 'ddc.vim'
+on_ft = 'vim'
+
+# 遅延読込を実現しようとすると色々と大変。
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+hooks_file = '~/vimfiles/rc/dein/vim-lsp.vim'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+depends = 'vim-lsp'
+hooks_file = '~/vimfiles/rc/dein/lsp-settings.vim'
+
+[[plugins]]
 repo = 'shun/ddc-source-vim-lsp'
+on_source = 'ddc.vim'
+
+[[plugins]]
+repo = 'Milly/ddc-source-register'
 on_source = 'ddc.vim'
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip'
 on_ft = ['go', 'pyton', 'rst', 'typescript', 'vim']
-hooks_file = '~/vimfiles/rc/dein/vsnip.vim'
 
 [[plugins]]
 repo = 'uga-rosa/ddc-source-vsnip'
@@ -58,10 +73,3 @@ depends = 'vim-vsnip'
 # # lsp: go, python
 # on_ft = ['go', 'pyton', 'rst', 'typescript', 'vim']
 # hooks_file = '~/vimfiles/rc/dein/denops-popup-preview.vim'
-
-[[plugins]]
-repo = 'hokorobi/ddc-source-filetype-candidates'
-on_ft = ['autohotkey', 'plantuml']
-frozen = true
-depends = 'ddc.vim'
-

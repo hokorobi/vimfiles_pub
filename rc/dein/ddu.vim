@@ -13,8 +13,8 @@ nnoremap <silent> <Space>db <Cmd>call ddu#start(#{sources: [#{name: 'buffer'}]})
 nnoremap <silent> <Space>df <Cmd>call ddu#start(#{sources: [#{name: 'file_rec'}]})<CR>
 nnoremap <silent> <Space>dh <Cmd>call ddu#start(#{sources: [#{name: 'help'}]})<CR>
 nnoremap <silent> <Space>fh <Cmd>call ddu#start(#{sources: [#{name: 'help'}]})<CR>
-nnoremap <silent> <Space>du <Cmd>call ddu#start(#{sources: [#{name: 'dein'}]})<CR>
 nnoremap <silent> <Space>dm <Cmd>call ddu#start(#{sources: [#{name: 'vim-bookmark'}]})<CR>
+nnoremap <expr> <Space>do printf(":call ddu#start(#{ sources: [#{ name: 'output' }], sourceParams: #{output: #{command: '%s'}}})", getreg(':'))
 " zenn の記事をプレビューで確認できるようにしてみたけど、ディレクトリ内のファイルの title から検索できるようにしたいので PPx から peco を使った方が良さそう。
 " サンプルとしてコメントで残しておく。
 " nnoremap <silent> <Space>fz <Cmd>call ddu#start(#{sources: [#{name: 'file_rec', options: #{path: expand('~/Documents/zenn/articles')}}], uiParams: #{ff: #{autoAction: #{name: 'preview'}, previewFloating: v:true, previewHeight: 5, startAutoAction: v:true, startFilter: v:false},},})<CR>

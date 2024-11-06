@@ -4,25 +4,25 @@ rtp = ''
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-lazy'
-on_source = 'dpp.vim'
 rtp = ''
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-toml'
-on_source = 'dpp.vim'
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-local'
-on_source = 'dpp.vim'
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-installer'
-on_source = 'dpp.vim'
 
 [[plugins]]
 repo = 'Shougo/dpp-ext-packspec'
-on_source = 'dpp.vim'
 
 [[plugins]]
 repo = 'Shougo/dpp-protocol-git'
-on_source = 'dpp.vim'
+
+[[multiple_hooks]]
+plugins = ['ddu.vim', 'dpp.vim']
+hook_add = '''
+  nnoremap <silent> <Space>du <Cmd>call ddu#start(#{sources: [#{name: 'dpp', params: #{names: dpp#sync_ext_action('installer', 'getNotUpdated')->map({_, val -> val.name}), },}]})<CR>
+'''

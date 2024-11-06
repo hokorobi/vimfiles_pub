@@ -21,10 +21,10 @@ import type {
   Params as LazyParams,
 } from "jsr:@shougo/dpp-ext-lazy@~1.5.0";
 
-import type { Denops } from "jsr:@denops/std@~7.1.0";
+import type { Denops } from "jsr:@denops/std@~7.3.0";
+import * as vars from "jsr:@denops/std@~7.3.0/variable";
 
-import { expandGlob } from "jsr:@std/fs@~1.0.0/expand-glob";
-
+import { expandGlob } from "jsr:@std/fs@~1.0.5/expand-glob";
 
 export class Config extends BaseConfig {
   override async config(args: {
@@ -32,17 +32,20 @@ export class Config extends BaseConfig {
     contextBuilder: ContextBuilder;
     basePath: string;
   }): Promise<ConfigReturn> {
-
     args.contextBuilder.setGlobal({
       extParams: {
         installer: {
-          checkDiff: true,
-          logFilePath: "~/.cache/dpp/installer-log.txt",
-          githubAPIToken: Deno.env.get("GITHUB_API_TOKEN"),
+          logFilePath: "~/_vim/dpp/installer-log.txt",
+          githubAPIToken: await vars.g.get(
+            args.denops,
+            "github_token",
+            "",
+          ) as string,
         },
       },
       protocols: ["git"],
-      skipMergeFilenamePattern: "^Gemfile$|^LICENSE|^lua$|^Makefile$|^t$|^test$|^tags(?:-\\w\\w)?$|^\\..+$|\\.\(gif|md|png\)$",
+      skipMergeFilenamePattern:
+        "^Gemfile$|^LICENSE|^lua$|^Makefile$|^t$|^test$|^tags(?:-\\w\\w)?$|^\\..+$|\\.\(gif|md|png\)$",
     });
 
     const [context, options] = await args.contextBuilder.get(args.denops);
@@ -67,12 +70,15 @@ export class Config extends BaseConfig {
     if (tomlExt) {
       const action = tomlExt.actions.load;
 
-
       const tomlPromises = [
         { path: baseDir + "_plugins.toml" },
-        { path: baseDir + "_ddc.toml" },
-        { path: baseDir + "_ddu.toml" },
         { path: baseDir + "_dpp.toml" },
+        { path: baseDir + "_denops.toml" },
+        // { path: baseDir + "_ddc.toml" },
+        { path: baseDir + "_ddu.toml" },
+        { path: baseDir + "_reference.toml" },
+        // { path: baseDir + "_asyncomplete.toml" },
+        { path: baseDir + "_vimcomplete.toml" },
       ].map((tomlFile) =>
         action.callback({
           denops: args.denops,
@@ -133,8 +139,21 @@ export class Config extends BaseConfig {
       });
     }
 
+    // *.vim は hooks_file のみなので、dpp.vim が後から追加してくれるから除外
     const checkFiles = [];
-    for await (const file of expandGlob(baseDir+"/*")) {
+    const dpp_basedir = await vars.g.get(
+      args.denops,
+      "dpp_basedir",
+      "",
+    ) as string;
+    for await (
+      const file of expandGlob("*.ts", { root: dpp_basedir + "/rc/dein" })
+    ) {
+      checkFiles.push(file.path);
+    }
+    for await (
+      const file of expandGlob("*.toml", { root: dpp_basedir + "/rc/dein" })
+    ) {
       checkFiles.push(file.path);
     }
 

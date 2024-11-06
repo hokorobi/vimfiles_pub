@@ -59,6 +59,7 @@ let g:sandwich#recipes += [
       \   #{buns: ['「', '」'], nesting: 1, input: ['j[', 'j]', 'jb']},
       \   #{buns: ['『', '』'], nesting: 1, input: ['j{', 'j}', 'jB']},
       \   #{buns: ['【', '】'], nesting: 1, input: ['j<', 'j>', 'jk']},
+      \   #{buns: ['《', '》'], nesting: 1},
       \ ]
 
 " function surrouding をコマンドラインモードでなくインサートモードで使う
@@ -75,6 +76,6 @@ let g:sandwich#recipes += [
       \ ]
 
 " 囲む範囲の両端のうち片方が空白ならそれを無視するように範囲を縮小
-" saa を使うなら不要かも。
+" NOTE: 囲みの閉じ文字が次の行に入ることがあるので、この設定を無効にすると解消するかな？->無効にしても発生したので有効化
 call operator#sandwich#set('add', 'char', 'skip_space', 1)
 " }}}

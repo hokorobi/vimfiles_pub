@@ -17,7 +17,18 @@ lazy = true
 
 [[plugins]]
 repo = 'lambdalisue/vim-gin'
-on_cmd = ['Gin', 'GinBranch', 'GinBrowse', 'GinBuffer', 'GinChaperon', 'GinDiff', 'GinEdit', 'GinLog', 'GinPatch', 'GinStatus']
+on_cmd = [
+  'Gin',
+  'GinBranch',
+  'GinBrowse',
+  'GinBuffer',
+  'GinChaperon',
+  'GinDiff',
+  'GinEdit',
+  'GinLog',
+  'GinPatch',
+  'GinStatus',
+]
 depends = 'denops.vim'
 hooks_file = '~/vimfiles/rc/dein/gin.vim'
 
@@ -30,9 +41,12 @@ hooks_file = '~/vimfiles/rc/dein/denops.vim'
 repo = 'vim-denops/denops-shared-server.vim'
 depends = 'denops.vim'
 # denops_shared_server# だと denops_shared_server#install() などの実行に失敗する。
-on_func = ['denops_shared_server#install', 'denops_shared_server#restart', 'denops_shared_server#uninstall']
+on_func = [
+  'denops_shared_server#install',
+  'denops_shared_server#restart',
+  'denops_shared_server#uninstall',
+]
 
 # [[plugins]]
 # repo = 'vim-denops/denops-startup-recorder.vim'
 # on_source = 'denops.vim'
-

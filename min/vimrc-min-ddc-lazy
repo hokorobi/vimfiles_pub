@@ -1,0 +1,10 @@
+" gvim -N -u ~/vimfiles/min/vimrc-min-ddc-lazy -U NONE -i NONE
+set rtp+=~/_vim/dein/repos/github.com/Shougo/dein.vim
+if dein#min#load_state('~/_vim/dein')
+  call dein#begin('~/_vim/dein')
+  call dein#load_toml('~/vimfiles/min/vimrc-min-ddc-lazy.toml')
+  call dein#end()
+  call dein#save_state()
+endif
+filetype plugin indent on
+syntax enable

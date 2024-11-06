@@ -27,6 +27,9 @@ let g:vimrc_altercmd_dic = {
       \   'tagsg\%[en]': '!ctags -R',
      "\   ウィンドウに表示しているバッファで diffthis
       \   'dt': 'windo diffthis',
+      \   'fmt': 'call vimrc#format()',
+      \   'jj': 'call vimrc#format()',
+      \   'jq': 'call vimrc#format()',
       \}
 
 
@@ -36,7 +39,7 @@ call extend(g:vimrc_altercmd_dic, {
       \   'vo\%[map]': 'verbose omap',
       \   'vv\%[map]': 'verbose vmap',
       \   'vx\%[map]': 'verbose xmap',
-      \   'vf[unction]': 'verbose function',
+      \   'v\%[function]': 'verbose function',
       \ })
 
 " vim-sayonara
@@ -112,14 +115,6 @@ command! -nargs=0 DiffXdoc2txt call vimrc#DiffXdoc2txt()
 " command! -nargs=1 VimGrepCurrent vimgrep <args> %
 " nnoremap <expr> <Space>* '<Cmd>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
 
-" json processor
-command! -nargs=? Jq call vimrc#Jq(<f-args>)
-call extend(g:vimrc_altercmd_dic, {
-      \ 'jj': 'Jq',
-      \ 'jq': 'Jq',
-      \ 'js\%[ontool]': 'Jq',
-      \ })
-
 " ファイラからの起動時に検索文字列を指定するのは使いにくいので、コマンド実行後に検索文字列を入力できるようにする
 command! -nargs=? GrepWrap call vimrc#GrepWrap(<f-args>)
 call extend(g:vimrc_altercmd_dic, {
@@ -134,7 +129,7 @@ command! YankBufFileName :let @0 = expand('%:t') | :let @+ = expand('%:t')
 
 " コマンドラインモードのカーソル位置を左に移動
 function AddLeft(lhs, rhs, add = 0)
-  execute printf('%s%s%s', a:lhs, a:rhs, repeat('<Left>', len(a:rhs)+a:add))
+  return printf('%s%s%s', a:lhs, a:rhs, repeat('<Left>', len(a:rhs)+a:add))
 endfunction
 
 " }}}1 Option {{{1
@@ -432,11 +427,6 @@ let g:loaded_netrwPlugin       = 1
 let g:loaded_netrwSettings     = 1
 let g:loaded_netrwFileHandlers = 1
 
-" curl で HTTP301 などでも移動先を追跡するように
-" これがないと github の raw が取得できなかった。
-" let g:netrw_http_cmd='curl -k --post301 --post302 -L'
-" let g:netrw_http_xcmd='-o'
-
 " 静かに転送処理
 " :e url の実行で curl がダウンロードした後にキーを押してコマンドプロンプトを閉じる必要がなくなる
 " let g:netrw_silent=1
@@ -452,10 +442,10 @@ let g:changelog_username=''
 let g:changelog_dateformat='%Y-%m-%d (%a)'
 let g:changelog_new_date_format="%d\n\n%c\n"
 
+" }}}2  dein/dpp {{{2
 const s:base_path = fnamemodify(expand('<sfile>'), ':h')
-" }}}2  dein {{{2
-execute $'source {s:base_path}/dein.vim'
-" execute $'source {s:base_path}/dpp.vim'
+" execute $'source {s:base_path}/dein.vim'
+execute $'source {s:base_path}/dpp.vim'
 " }}}2
 
 filetype plugin indent on
@@ -661,7 +651,7 @@ nnoremap <C-v> "+gP
 tnoremap <C-v> <C-w>"*
 
 " コピー
-BulkMap nx <Space>y "+y
+" BulkMap nx <Space>y "+y
 
 " バッファのフルパス
 nnoremap <expr> <Space>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
@@ -672,10 +662,10 @@ nnoremap <Space>ye <Cmd>%y+<CR>
 " 現在行 (行頭空白、行末空白・改行を除く)
 " nnoremap <Space>yy <Cmd>call vimrc#linecopy()<CR>
 
-nnoremap <Space>Y "+y$
+" nnoremap <Space>Y "+y$
 "}}}3
 
-nnoremap Y y$
+" nnoremap Y y$
 
 " ペーストした内容を選択
 " インデント以外に何か使い道あるのかな？
@@ -764,6 +754,9 @@ function s:numSearchLine(ptn, num, opt)
   endfor
 endfunction
 
+" 直前に入力した単語を大文字へ
+inoremap <expr> <C-u> $'<C-w>{vimrc#toupper_prev_word()}'
+
 " }}}2 Search {{{2
 
 " clear hlsearch
@@ -774,7 +767,7 @@ cnoremap <M-j> <C-g>
 cnoremap <M-k> <C-t>
 
 " 現在のバッファから grep
-" call AddLeft('nnoremap <Space>/ :vimgrep /', '/ %')
+" call execute(AddLeft('nnoremap <Space>/ :vimgrep /', '/ %'))
 
 " }}}2
 
@@ -812,7 +805,7 @@ nnoremap <Space>gh :!git cherry-pick<Space>
 " rename current branch
 nnoremap <Space>gbm :!git branch -m temp
 " switch new branch (default: master) from last commit (default: master)
-call AddLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')
+call AddLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')->execute()
 " restore temp branch
 " nnoremap <Space>gr :!git restore --source=temp .
 " delete branch

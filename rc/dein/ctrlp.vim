@@ -28,7 +28,7 @@ let g:ctrlp_custom_ignore = #{
   \ link: 'SOME_BAD_SYMBOLIC_LINKS',
   \ }
 
-let g:ctrlp_bufcurfile_filter = 1
+let g:ctrlp_open_single_match = ['buf']
 
 " mapping
 let g:ctrlp_prompt_mappings = {
