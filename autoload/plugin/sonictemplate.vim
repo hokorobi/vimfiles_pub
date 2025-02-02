@@ -12,7 +12,7 @@ function plugin#sonictemplate#editHowmNew(dir) abort
   startinsert!
 endfunction
 
-function plugin#sonictemplate#editHowmNewTodo(dir = g:howm_dir .. "/todo") abort
+function plugin#sonictemplate#editHowmNewTodo(dir = $'{g:howm_dir}/todo') abort
   let file = strftime('/%Y-%m-%d-%H%M%S.howm')
   execute $'edit {a:dir}{file}'
   Template howmtodo

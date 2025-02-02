@@ -3,7 +3,6 @@ repo = 'hokorobi/vimcomplete'
 hooks_file = '~/vimfiles/rc/dein/vimcomplete.vim'
 merged = false
 extAttrs = { installerFrozen = true }
-rev = 'private'
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip'
@@ -33,12 +32,14 @@ imap <silent><expr> <C-l>
 
 [[plugins]]
 repo = 'rafamadriz/friendly-snippets'
+merged = false
 rtp = ''
 
 [[plugins]]
 repo = 'hrsh7th/vim-vsnip-integ'
 on_source = 'vim-vsnip'
 
+# 案の定、単純に on_event = 'InsertEnter' だと動かないことは確認。
 [[plugins]]
 repo = 'yegappan/lsp'
 hooks_file = '~/vimfiles/rc/dein/lsp.vim'

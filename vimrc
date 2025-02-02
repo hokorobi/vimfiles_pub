@@ -30,17 +30,14 @@ let g:vimrc_altercmd_dic = {
       \   'fmt': 'call vimrc#format()',
       \   'jj': 'call vimrc#format()',
       \   'jq': 'call vimrc#format()',
-      \}
-
-
-call extend(g:vimrc_altercmd_dic, {
       \   'vn\%[map]': 'verbose nmap',
+      \   'vc\%[map]': 'verbose cmap',
       \   'vi\%[map]': 'verbose imap',
       \   'vo\%[map]': 'verbose omap',
       \   'vv\%[map]': 'verbose vmap',
       \   'vx\%[map]': 'verbose xmap',
       \   'v\%[function]': 'verbose function',
-      \ })
+      \}
 
 " vim-sayonara
 " https://github.com/mhinz/vim-sayonara
@@ -165,9 +162,6 @@ set hidden
 
 " 新規バッファの改行コードを LF にする
 set fileformats=unix,dos
-
-" 余分なパスは削除
-set packpath=
 
 " undoファイルを保存するディレクトリの設定
 let &undodir = expand('~/_vim/info/undo')
@@ -381,7 +375,7 @@ set printoptions=left:2pc,right:3pc,top:3pc,bottom:2pc,syntax:n,number:y
 setglobal swapfile
 
 " Improve diff
-set diffopt& diffopt+=algorithm:histogram,indent-heuristic,followwrap,vertical
+set diffopt& diffopt+=algorithm:histogram,closeoff,followwrap,indent-heuristic,linematch:60,vertical
 
 " ja の後に en を探しに行く
 set helplang=ja,en
@@ -414,8 +408,6 @@ let g:loaded_vimball          = 1
 let g:loaded_vimballPlugin    = 1
 let g:loaded_zip              = 1
 let g:loaded_zipPlugin        = 1
-" use matchup
-let g:loaded_matchit = 1
 
 let g:skip_defaults_vim = 1
 
@@ -431,9 +423,6 @@ let g:loaded_netrwFileHandlers = 1
 " :e url の実行で curl がダウンロードした後にキーを押してコマンドプロンプトを閉じる必要がなくなる
 " let g:netrw_silent=1
 
-let g:loaded_netrwPlugin       = 1
-let g:loaded_netrwSettings     = 1
-let g:loaded_netrwFileHandlers = 1
 " }}}3
 
 " }}}2  changelog {{{2
@@ -447,6 +436,8 @@ const s:base_path = fnamemodify(expand('<sfile>'), ':h')
 " execute $'source {s:base_path}/dein.vim'
 execute $'source {s:base_path}/dpp.vim'
 " }}}2
+
+autocmd vimrc TextYankPost * call highlightedyank#HighlightedYank()
 
 filetype plugin indent on
 
@@ -516,6 +507,10 @@ BulkMap ox a' 2i'
 BulkMap ox a" 2i"
 BulkMap ox a` 2i`
 
+
+BulkMap nx <Space>og <Cmd>call vimrc#openBrowserGitrepo()<CR>
+" nnoremap <Space>ob <Cmd>call vimrc#openBrowserOpenUrlInBuffer()<CR>
+
 " Buffer {{{2
 
 " 直前に閉じたファイルを開き直す
@@ -566,9 +561,10 @@ nnoremap [toggle]q <Cmd>call vimrc#toggle_quickfix_window()<CR>
 
 " コマンドラインウィンドウを開く
 " cedit に <M-i> が設定できない
+nnoremap <M-;> q:
 cnoremap <M-;> <C-f>
+nnoremap <M-i> q:
 cnoremap <M-i> <C-f>
-cnoremap <M-c> <C-f>
 
 " ウィンドウを閉じたら直前のウィンドウへ移動
 autocmd vimrc WinClosed * wincmd p
@@ -631,12 +627,11 @@ autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 " inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
 
 " popup 表示中は C-k, C-j で上下候補選択
-" rc/ddc.toml
+" ddc.vim
 " inoremap <expr> <C-k> pumvisible() ? '<C-p>' : '<C-k>'
 " inoremap <expr> <C-j> pumvisible() ? '<C-n>' : '<C-j>'
 
-" rbtnn@vim-jp slack
-" https://vim-jp.slack.com/archives/CLKR04BEF/p1642317296122600
+" matchup.vim
 " nnoremap <expr> %  vimrc#percent_expr()
 
 " }}}2 Yank, Paste {{{2
@@ -646,7 +641,7 @@ autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 xnoremap <Space>d "+d
 
 " 貼り付け
-noremap! <C-v> <C-R>*
+noremap! <C-v> <C-r><C-o>*
 nnoremap <C-v> "+gP
 tnoremap <C-v> <C-w>"*
 
@@ -700,7 +695,7 @@ nnoremap <expr> <M-o> vimrc#blank_below()
 nnoremap <expr> <M-O> vimrc#blank_above()
 
 " 日付入力
-inoremap <C-r><C-d> <C-R>=strftime("%F")<CR>
+inoremap <C-r><C-d> <C-r>=strftime("%F")<CR>
 nmap <F6> <ESC>i<C-r><C-d><ESC>
 imap <F6> <C-r><C-d>
 
@@ -735,8 +730,8 @@ nnoremap <expr> <A-m> reg_recording() == 'm' ? 'q' : 'qm'
 
 " 選択範囲を置換する
 " http://qiita.com/itmammoth/items/312246b4b7688875d023
-nnoremap <Space># "zyiw:%s/\<<C-R>z\>/<C-R>z/gc<left><left>
-" xnoremap <Space># "zy:%s/\V<C-R>z/<C-R>z/g<left><left>
+nnoremap <Space># "zyiw:%s/\<<C-r>z\>/<C-r>z/gc<left><left>
+" xnoremap <Space># "zy:%s/\V<C-r>z/<C-r>z/g<left><left>
 xnoremap <Space># <Cmd>call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
 function s:set_vsearch()
   silent noautocmd normal! gv"zy
@@ -789,6 +784,9 @@ nnoremap <Space>gbc :!git switch -c<Space>
 " @ は現在ブランチの最新コミット
 nnoremap <Space>gp :!git push origin @
 
+" 直前のブランチに戻す。念のため Enterは自分で
+nnoremap <Space>gbw :!git switch -
+
 " コミット対象の hunk を選択する場合: gad -> gc
 " コミットメッセージに詳細を書く場合: gu -> gc
 nnoremap <Space>gad :!git add --patch<CR>
@@ -808,6 +806,7 @@ nnoremap <Space>gbm :!git branch -m temp
 call AddLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')->execute()
 " restore temp branch
 " nnoremap <Space>gr :!git restore --source=temp .
+
 " delete branch
 nnoremap <Space>gbd :!git branch -D temp
 
@@ -838,16 +837,10 @@ tnoremap <C-h> <BS>
 if has('gui_running')
   " font {{{
   " set guifont=BDF_M+:h9
-  " set guifont=Cica:h12
   " set guifont=Cica:h11
   " set guifont=MyricaM_M:h11
   " set guifont=UD_デジタル_教科書体_N-R:h11
-  " set guifont=HackGenNerd:h11
-  " set guifont=HackGen_Console_NFJ:h11
-  " set guifont=HackGen:h11
-  set guifont=HackGen:h14 " 27inch 2560x1440
-  " ノートPCモニタ用
-  " set guifont=HackGenNerd_Console:h14
+  set guifont=HackGen_Console_NF:h14
 
   " 行間隔の設定
   set linespace=1
@@ -873,13 +866,15 @@ if has('gui_running')
     if has('multi_byte_ime')
       highlight CursorIM guifg=NONE guibg=Green gui=NONE
     endif
+
+    highlight CursorLine gui=underline guifg=NONE guibg=NONE
   endfunction
   autocmd vimrc ColorScheme * :call DefineMyHighlights()
 
   syntax on
   let s:favColorscheme = 'spring-night'
-  if !empty(globpath(&rtp, 'colors/' .. s:favColorscheme .. '.vim'))
-    call execute('colorscheme ' .. s:favColorscheme)
+  if !empty(globpath(&rtp, $'colors/{s:favColorscheme}.vim'))
+    call execute($'colorscheme {s:favColorscheme}')
   endif
   " }}}
 

@@ -4,9 +4,8 @@ let g:layout_path = '~/_vim/.layout/now.json'
 call extend(g:vimrc_altercmd_dic, #{ss: 'call LayoutWrap()'})
 
 nnoremap <Space>fs <Cmd>CtrlPLayout<CR>
-command! -nargs=* CtrlPLayout call CtrlPGeneric(glob(fnamemodify(g:layout_path, ':p:h') .. '/*', v:true, v:true), 'LayoutCallback')
-" }}}
-" hook_source {{{
+command! -nargs=* CtrlPLayout call CtrlPGeneric(glob($'{fnamemodify(g:layout_path, ':p:h')}/*', v:true, v:true), 'LayoutCallback')
+
 function LayoutWrap() abort
   let str = input('Filename: ', 'now')
   if len(str) == 0

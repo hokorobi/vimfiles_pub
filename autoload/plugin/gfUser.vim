@@ -9,7 +9,7 @@ function plugin#gfUser#file() abort
     let line = matchstr(path, '\d\+:\?$')
     let path = matchstr(path, '.*\ze:\d\+:\?$')
   endif
-  let path = findfile(path, getcwd() .. ';')  " 追加
+  let path = findfile(path, $'{getcwd()};')  " 追加
   if !filereadable(path)
     return 0
   endif

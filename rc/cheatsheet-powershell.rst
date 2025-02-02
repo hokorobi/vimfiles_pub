@@ -7,3 +7,4 @@
 * `Get-HotFix`: インストールしたホットフィックスを表示
 * `cd HKLM:\`: レジストリへ
 * `ls HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\run`: 自動起動するプログラムの一覧
+* `Get-Command`: which として使える。where.exe も同じ。

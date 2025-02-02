@@ -33,6 +33,13 @@ depends = 'denops.vim'
 hooks_file = '~/vimfiles/rc/dein/gin.vim'
 
 [[plugins]]
+repo = 'Milly/hey.vim'
+rev = 'buffering'
+depends = 'denops.vim'
+on_cmd = 'Hey'
+hooks_file = '~/vimfiles/rc/dein/hey.vim'
+
+[[plugins]]
 repo = 'vim-denops/denops.vim'
 lazy = true
 hooks_file = '~/vimfiles/rc/dein/denops.vim'

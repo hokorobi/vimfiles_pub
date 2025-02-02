@@ -6,14 +6,14 @@ scriptencoding utf-8
 function vimrc#ToggleSubstituteSearch(type, line) abort
   if a:type ==# '/' || a:type ==# '?'
     let range = s:GetOnetime('s:range', '%')
-    return "\<End>\<C-U>\<BS>" .. substitute(a:line, '^\(.*\)', ':' .. range .. 's/\1', '')
+    return "\<End>\<C-u>\<BS>" .. substitute(a:line, '^\(.*\)', $':{range}s/\1', '')
   elseif a:type ==# ':'
     let g:line = a:line
     let [s:range, expr] = matchlist(a:line, '^\(.*\)s\%[ubstitute]\/\(.*\)$')[1:2]
     if s:range ==# '''<,''>'
       call setpos('.', getpos('''<'))
     endif
-    return printf('<End><C-U><BS>/%s', expr)
+    return printf('<End><C-u><BS>/%s', expr)
   endif
 endfunction
 function s:GetOnetime(varname, defaultValue) abort
@@ -114,11 +114,17 @@ function vimrc#format() abort
         \  css: [
         \    ['deno', 'fmt --ext css -'],
         \  ],
+        \  html: [
+        \    ['deno', 'fmt --ext html -'],
+        \  ],
         \  json: [
         \    ['deno', 'fmt --ext json -'],
         \    ['jj', '-p'],
         \    ['jq', '.'],
         \    ['python', '-m json.tool'],
+        \  ],
+        \  sql: [
+        \    ['deno', 'fmt --unstable-sql -'],
         \  ],
         \  markdown: [
         \    ['deno', 'fmt --ext markdown -'],
@@ -135,7 +141,7 @@ function vimrc#format() abort
         \}
 
   if !has_key(formatters, &ft)
-    echo 'No formatte'r
+    echo 'No formatter'
     return
   endif
   for formatter in formatters[&ft]
@@ -152,7 +158,7 @@ function vimrc#GrepWrap(path = '.') abort
   if len(str) == 0
     return 1
   endif
-  let path = stridx(&grepprg, 'findstr') == 0 ? a:path .. '/*' : a:path
+  let path = stridx(&grepprg, 'findstr') == 0 ? $'{a:path}/*' : a:path
   execute $'grep "{str}" {path}'
 endfunction
 
@@ -218,7 +224,7 @@ function! s:align_right(linenr) abort
   if m->empty()
     return
   endif
-  call setline(a:linenr, m[1] .. ' '->repeat(&l:textwidth - len(m[1]) - len(m[2])) .. m[2])
+  call setline(a:linenr, $'{m[1]} '->repeat(&l:textwidth - len(m[1]) - len(m[2])) .. m[2])
 endfunction
 function! s:align_rights(start, end) abort
   for linenr in range(a:start, a:end)
@@ -252,7 +258,9 @@ function vimrc#helpedittoggle() abort
   xnoremap <silent><buffer> mm :AlignRight<CR>
 endfunction
 
-
+" rbtnn@vim-jp slack
+" https://vim-jp.slack.com/archives/CLKR04BEF/p1642317296122600
+" '', "" を行き来する
 function vimrc#percent_expr() abort
   let curr_char = getline('.')[col('.') - 1]
   if curr_char == '"'
@@ -337,6 +345,33 @@ function vimrc#toupper_prev_word()
   let substring = getline('.')[0:col-1]
   let word = matchstr(substring, '\v<(\k(<)@!)*$')
   return toupper(word)
+endfunction
+
+function vimrc#openbrowser(url) abort
+  call job_start(['rundll32.exe', 'url.dll,FileProtocolHandler', a:url])
+endfunction
+
+function vimrc#openBrowserGitrepo() abort
+  let repo = vimrc#getRepositoryName()
+  if repo ==# '' || stridx(repo, '/') == -1
+    echo 'リポジトリ名は取得できませんでした。'
+    return
+  endif
+
+  call vimrc#openbrowser($'https://github.com/{repo}')
+endfunction
+
+function vimrc#openBrowserOpenUrlInBuffer() abort
+  if &filetype != 'capture' && confirm("Open URLs in buffer?", "&Yes\n&No\n&Cancel") != 1
+    return
+  endif
+
+  for line in getline(0, line("$"))
+    let head = matchstr(line, 'https:\/\/github.com.\+\.\.\..\+')
+    if len(head) >= 1
+      call vimrc#openbrowser(head)
+    endif
+  endfor
 endfunction
 
 " plugin {{{1

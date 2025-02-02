@@ -23,7 +23,7 @@ let g:searchx.markers = split('JFKLUIONMHYDVCRETGB', '.\zs')
 
 " Convert search pattern.
 function g:searchx.convert(input) abort
-  return a:input !~# '\k' ? ('\V' .. a:input) : (join(split(a:input, ' '), '.\{-}'))
+  return a:input !~# '\k' ? ($'\V {a:input}') : (join(split(a:input, ' '), '.\{-}'))
 endfunction
 
 " auto nohlsearch after cursor is moved.

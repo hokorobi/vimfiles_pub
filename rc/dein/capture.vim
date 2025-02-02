@@ -10,6 +10,8 @@ command! Imap  Capture imap
 command! Lmap  Capture lmap
 command! Cmap  Capture cmap
 
+nnoremap <expr> <M-c> $":Capture {getreg(':')}"
+
 call extend(g:vimrc_altercmd_dic, {
       \   'cap\%[ture]': 'Capture',
       \   'ml': 'Capture messages',

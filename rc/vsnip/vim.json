@@ -1,8 +1,8 @@
 {
-	"if": {
-		"prefix": "if",
-		"body": "if ${1:#:condition}\n  ${0:TARGET}\nendif",
-		"description": "if endif",
+	"def": {
+		"prefix": "def",
+		"body": "def ${1:#:def_name}(${2})\n  ${0:TARGET}\nenddef",
+		"description": "def enddef",
 		"scope": "vim"
 	},
 	"elseif": {
@@ -11,28 +11,28 @@
 		"description": "elseif",
 		"scope": "vim"
 	},
-	"ifelse": {
-		"prefix": "if else endif",
-		"body": "if ${1:#:condition}\n  ${2:TARGET}\nelse\n  ${3}\nendif",
-		"description": "if else endif",
-		"scope": "vim"
-	},
 	"for": {
 		"prefix": "for",
 		"body": "for ${1:#:var} in ${2:#:list}\n  ${0:TARGET}\nendfor",
 		"description": "for in endfor",
 		"scope": "vim"
 	},
-	"while": {
-		"prefix": "while",
-		"body": "while ${1:#:condition}\n  ${0:TARGET}\nendwhile",
-		"description": "while endwhile",
-		"scope": "vim"
-	},
 	"function": {
 		"prefix": "function",
 		"body": "function ${1:#:func_name}(${2}) abort\n  ${0:TARGET}\nendfunction",
 		"description": "func endfunc",
+		"scope": "vim"
+	},
+	"if": {
+		"prefix": "if",
+		"body": "if ${1:#:condition}\n  ${0:TARGET}\nendif",
+		"description": "if endif",
+		"scope": "vim"
+	},
+	"ifelse": {
+		"prefix": "if else endif",
+		"body": "if ${1:#:condition}\n  ${2:TARGET}\nelse\n  ${3}\nendif",
+		"description": "if else endif",
 		"scope": "vim"
 	},
 	"try": {
@@ -51,6 +51,12 @@
 		"prefix": "version",
 		"body": "has('patch-${1}')",
 		"description": "vim version check",
+		"scope": "vim"
+	},
+	"while": {
+		"prefix": "while",
+		"body": "while ${1:#:condition}\n  ${0:TARGET}\nendwhile",
+		"description": "while endwhile",
 		"scope": "vim"
 	}
 }

@@ -6,5 +6,12 @@ rev = 'a3515eb'
 [[multiple_plugins]]
 plugins = ['ddu.vim', 'dein.vim']
 hook_add = '''
-  nnoremap <silent> <Space>du <Cmd>call ddu#start(#{sources: [#{name: 'dein'}]})<CR>
+call ddu#custom#patch_global(#{
+    \   sourceOptions: #{
+    \     dein: #{
+    \       defaultAction: ['update'],
+    \     },
+    \   },
+    \ })
+nnoremap <silent> <Space>du <Cmd>call ddu#start(#{sources: [#{name: 'dein'}]})<CR>
 '''

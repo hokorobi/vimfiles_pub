@@ -1,9 +1,12 @@
 " hook_add {{{
 function s:lspSet() abort
-  let s:lspOpts = #{autoComplete: v:false}
-  call LspOptionsSet(s:lspOpts)
-  
-  let s:lspServers = [
+  let lspOpts = #{
+        \ autoComplete: v:false,
+        \ condensedCompletionMenu: v:true,
+        \}
+  call LspOptionsSet(lspOpts)
+
+  let lspServers = [
         \ #{name: 'deno',
         \   filetype: ['typescript'],
         \   path: 'deno',
@@ -15,13 +18,18 @@ function s:lspSet() abort
         \   args: ['serve'],
         \   syncInit: v:true,
         \ },
+        \ #{name: 'pylsp',
+        \   filetype: 'python',
+        \   path: 'pylsp',
+        \   syncInit: v:true,
+        \ },
         \ #{name: 'taplo',
         \   filetype: 'toml',
         \   path: 'taplo',
         \   args: ['lsp', 'stdio'],
         \ },
         \]
-  call LspAddServer(s:lspServers)
+  call LspAddServer(lspServers)
 endfunction
 autocmd vimrc User LspSetup call s:lspSet()
 

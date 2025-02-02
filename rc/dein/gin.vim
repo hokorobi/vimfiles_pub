@@ -4,12 +4,12 @@ call extend(g:vimrc_altercmd_dic, #{
       \ })
 
 nnoremap <Space>gaD <Cmd>GinPatch ++opener=tabnew %<CR>
-nnoremap <Space>gbr <Cmd>GinBranch --all<CR>
+" nnoremap <Space>gbr <Cmd>GinBranch --all<CR>
 nnoremap <Space>gD <Cmd>GinDiff ++opener=tabnew<CR>
 " FIXME E254 発生。色の割り当てがない？
 " nnoremap <Space>gD <Cmd>GinDiff ++opener=tabnew ++processor=delta\ --no-gitconfig\ --color-only<CR>
-nnoremap <Space>gl <Cmd>GinLog --all --graph --max-count=100 --oneline --decorate<CR>
-nnoremap <Space>gL <Cmd>GinLog --all --patch --graph --max-count=100<CR>
+nnoremap <Space>gL <Cmd>GinLog --all --graph --max-count=100 --oneline --decorate<CR>
+" nnoremap <Space>gL <Cmd>GinLog --all --patch --graph --max-count=100<CR>
 nnoremap <Space>gS <Cmd>GinStatus<CR>
 " 開いているファイル、選択行を Github で開く
 BulkMap nx <Space>oG <Cmd>GinBrowse<CR>

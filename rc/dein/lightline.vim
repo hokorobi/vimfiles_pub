@@ -62,7 +62,7 @@ function LightlineFenc() abort
   endif
 
   let fenc = &fileencoding == '' ? &encoding : &fileencoding
-  return fenc !=# 'utf-8' ? fenc : &bomb ? fenc .. ' (BOM)' : fenc
+  return fenc !=# 'utf-8' ? fenc : &bomb ? $'{fenc} (BOM)' : fenc
 endfunction
 
 function LightlineFiletype() abort

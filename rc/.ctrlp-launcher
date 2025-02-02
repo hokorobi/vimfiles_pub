@@ -6,7 +6,7 @@ cheatsheet	CtrlPLauncher cheat
 PPX.CFG	execute $'edit {g:ppx_dir}/PPX.CFG'
 gitconfig	edit ~/.gitconfig
 Gist	Gista list
-lexima.vim vimrc	edit ~/vimfiles/rc/lexima.vim
+lexima.vim vimrc	edit ~/vimfiles/rc/dein/lexima9.vim
 debug_print	call print_debug#print_debug()
 launcher filetype	execute $'CtrlPLauncher {&filetype}'
 snippet filetype	execute $'edit ~/vimfiles/rc/vsnip/{&filetype}.json'

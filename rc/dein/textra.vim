@@ -1,4 +1,7 @@
 " hook_add {{{
+BulkMap nx <Space>tt <Cmd>Textra<CR>
+" }}}
+" hook_source {{{
 call textra#setup({
     \ 'name': g:textraName,
     \ 'key': g:textraApiKey,
@@ -31,10 +34,14 @@ function s:wrap_translate() abort
 
   if mode() !~# '^[vV\x16]'
     " not in visual mode
-    noautocmd normal! 0"zy$
+    if !exists('g:autoloaded_textobj_sentence')
+      call textobj#sentence#init()
+    endif
+    " noautocmd normal! 0"zy$
+    normal "zyiS
   else
     " get selection through z register
-    noautocmd normal! "zygv
+    normal! "zygv
   endif
 
   call s:cmd_translate('en', 'ja', 'z')
@@ -44,6 +51,4 @@ function s:wrap_translate() abort
 endfunction
 
 command! Textra call s:wrap_translate()
-
-BulkMap nx <Space>tt <Cmd>Textra<CR>
 " }}}

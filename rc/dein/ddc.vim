@@ -27,9 +27,6 @@ let s:ddc_sourceParams['file'] = #{
 let s:ddc_sourceOptions['filetype-candidates'] = #{
     \   mark: 'D',
     \ }
-let s:ddc_sourceOptions['register'] = #{
-    \   mark: 'R',
-    \ }
 let s:ddc_sourceOptions['vim'] = #{
     \   mark: 'V',
     \   isVolatile: v:true,
@@ -65,33 +62,30 @@ call ddc#custom#patch_global(s:ddc_options)
 
 call ddc#custom#patch_filetype(
     \ ['autohotkey', 'plantuml'],
-    \ #{sources: ['vsnip', 'buffer', 'filetype-candidates', 'register', 'file']})
+    \ #{sources: ['vsnip', 'buffer', 'filetype-candidates', 'file']})
 call ddc#custom#patch_filetype(
     \ ['rst'],
-    \ #{sources: ['vsnip', 'buffer', 'register', 'file']})
+    \ #{sources: ['vsnip', 'buffer', 'file']})
 call ddc#custom#patch_filetype(
     \ ['go', 'python', 'toml', 'typescript'],
-    \ #{sources: ['vsnip', 'vim-lsp', 'register', 'file']})
+    \ #{sources: ['vsnip', 'vim-lsp', 'file']})
 call ddc#custom#patch_filetype(
     \ ['cfg', 'gitcommit', 'howm', 'javascript', 'markdown', 'snippet', 'vb', 'xsl'],
-    \ #{sources: ['buffer', 'register', 'file']})
+    \ #{sources: ['buffer', 'file']})
 call ddc#custom#patch_filetype(
     \ ['vim'],
-    \ #{sources: ['vsnip', 'vim', 'buffer', 'register', 'file']})
+    \ #{sources: ['vsnip', 'vim', 'buffer', 'file']})
 
 " <Tab> は
 " 1. ddc.vim を使用しない filetype では <Tab>
 " 2. popupが表示されている場合、次の候補へ
 " 3. vsnipのジャンプができる場合、次のジャンプ位置へ
-" 4. 行頭または空白直後の場合、<Tab>
-" 5. それ以外は補完
+" 4. それ以外は <Tab>
 imap <silent><expr> <Tab>
       \ !has_key(ddc#custom#get_filetype(), &filetype) ? '<Tab>' :
       \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
       \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
-      \ (col('.') <= 1 ? '<Tab>' :
-      \ getline('.')[col('.') - 2] =~# '\s') ? '<Tab>' :
-      \ ddc#map#manual_complete()
+      \ '<Tab>'
 smap <silent><expr> <Tab>
       \ vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' :
       \ '<Tab>'

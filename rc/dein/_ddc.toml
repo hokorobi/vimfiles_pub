@@ -52,10 +52,6 @@ repo = 'shun/ddc-source-vim-lsp'
 on_source = 'ddc.vim'
 
 [[plugins]]
-repo = 'Milly/ddc-source-register'
-on_source = 'ddc.vim'
-
-[[plugins]]
 repo = 'hrsh7th/vim-vsnip'
 on_ft = ['go', 'pyton', 'rst', 'typescript', 'vim']
 

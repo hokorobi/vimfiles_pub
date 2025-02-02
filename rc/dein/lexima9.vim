@@ -1,6 +1,12 @@
 vim9script
 scriptencoding utf-8
 
+g:lexima_ctrlh_as_backspace = 1
+# <Esc> へのマッピングを活かすため '' へ
+g:lexima_map_escape = ''
+# 継続行の改行時に \ を入力するため
+autocmd vimrc FileType vim nmap <buffer> o A<CR>
+
 # https://github.com/KentoOgata/dotfiles/blob/06f146495dbbe347f1d6439f7dd77516dc5c1e63/dot_config/nvim/plugins.d/lexima.vim#L2-L4
 def Add_rules(shared: dict<any>, rules: list<dict<any>>)
   for rule in rules
@@ -317,6 +323,11 @@ lexima#add_rule({
   at: ' == \%#',
   char: '=',
   input: '<BS><BS><BS>:=<Space>',
+  filetype: 'autohotkey',
+})
+
+lexima#add_rule({
+  char: '`',
   filetype: 'autohotkey',
 })
 

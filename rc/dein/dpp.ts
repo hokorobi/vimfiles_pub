@@ -74,11 +74,11 @@ export class Config extends BaseConfig {
         { path: baseDir + "_plugins.toml" },
         { path: baseDir + "_dpp.toml" },
         { path: baseDir + "_denops.toml" },
-        // { path: baseDir + "_ddc.toml" },
+        { path: baseDir + "_ddc.toml" },
         { path: baseDir + "_ddu.toml" },
         { path: baseDir + "_reference.toml" },
         // { path: baseDir + "_asyncomplete.toml" },
-        { path: baseDir + "_vimcomplete.toml" },
+        // { path: baseDir + "_vimcomplete.toml" },
       ].map((tomlFile) =>
         action.callback({
           denops: args.denops,

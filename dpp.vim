@@ -14,7 +14,6 @@ endfunction
 call InitPlugin('Shougo/dpp.vim')
 call InitPlugin('Shougo/dpp-ext-lazy')
 
-
 "---------------------------------------------------------------------------
 " dpp configurations.
 let g:dpp_basedir = expand('<script>')->fnamemodify(':h')
@@ -33,18 +32,27 @@ if dpp#min#load_state(s:dpp_base)
 
   echohl WarningMsg | echomsg 'dpp load_state() is failed' | echohl NONE
 
-  " DenopsReady を denops#server#wait_async() で書き換え？
-  " https://zenn.dev/vim_jp/articles/0006-migrate_plugin_manager_to_dpp
   autocmd vimrc User DenopsReady call dpp#make_state(s:dpp_base, expand($'{g:dpp_basedir}/rc/dein/dpp.ts'))
-else
-  autocmd vimrc BufWritePost *.toml,*.ts,*.vim call dpp#check_files()
 endif
 
 autocmd vimrc User Dpp:makeStatePost echohl WarningMsg | echomsg 'dpp make_state() is done' | echohl NONE
 
+
+function OpenUpdatePlugins() abort
+  for lines in dpp#sync_ext_action('installer', 'getUpdateLogs')
+    for line in split(lines, "\n")
+      if match(line, 'https:\/\/github.com.\+\.\.\..\+') >= 0
+        call vimrc#openbrowser(trim(line))
+      endif
+    endfor
+  endfor
+endfunction
+
+autocmd vimrc User Dpp:ext:installer:updateDone call OpenUpdatePlugins()
+
 call extend(g:vimrc_altercmd_dic, #{
       \   dc: "call dpp#async_ext_action('installer', 'checkNotUpdated')",
       \   di: "call dpp#async_ext_action('installer', 'install')",
-      \   du: AddLeft("call dpp#async_ext_action('installer', 'update', #{names: ['", "']})"),
+      \   du: "call dpp#async_ext_action('installer', 'update')",
       \   dr: $'call dpp#make_state("{substitute(s:dpp_base, "\\", "/", "g")}", "{substitute(expand(g:dpp_basedir .. "/rc/dein/dpp.ts"), "\\", "/", "g")}")',
       \ })

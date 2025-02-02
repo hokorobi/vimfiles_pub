@@ -15,8 +15,8 @@ export def Popup_cursor_info()
   const pos = getpos('.')
   # get encoding
   var fenc = &fileencoding == '' ? &encoding : &fileencoding
-  fenc = &bomb ? fenc .. ' (BOM)' : fenc
-  const line3 = GenLine([&fileformat, fenc, ftype, pos[1] .. ':' .. pos[2]])
+  fenc = &bomb ? $'{fenc} (BOM)' : fenc
+  const line3 = GenLine([&fileformat, fenc, ftype, $'{pos[1]}:{pos[2]}'])
 
   # get charcode informations
   # const charcode = getline('.')->strpart(col('.') - 1)->strcharpart(0, 1)->char2nr()->printf('charcode: %d')

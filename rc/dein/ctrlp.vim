@@ -4,6 +4,9 @@ let g:ctrlp_map = '<Nop>'
 " 候補の残りにあわせてリサイズしない
 let g:ctrlp_match_window = 'bottom,order:btt,min:2,max:20'
 
+" 履歴は使わない
+let g:ctrlp_max_history = 0
+
 " Guess vcs root dir
 let g:ctrlp_working_path_mode = 'ra'
 
@@ -12,7 +15,7 @@ let g:ctrlp_open_new_file = 'r'
 let g:ctrlp_open_multiple_files = 'r'
 
 " cache files directory
-let g:ctrlp_cache_dir = expand('~/_vim/.ctrlp')
+let g:ctrlp_cache_dir = '~/_vim/.ctrlp'
 
 let g:ctrlp_switch_buffer = 0
 
@@ -31,21 +34,24 @@ let g:ctrlp_custom_ignore = #{
 let g:ctrlp_open_single_match = ['buf']
 
 " mapping
+" デフォルトのキーマップを別の操作に使いたい場合は、デフォルトのキーマップも変更する
 let g:ctrlp_prompt_mappings = {
-      \ 'AcceptSelection("e")': ['<cr>', '<2-LeftMouse>', '<m-m>'],
-      \ 'PrtSelectMove("j")'  : ['<c-j>', '<down>', '<m-j>'],
-      \ 'PrtSelectMove("k")'  : ['<c-k>', '<up>', '<m-k>'],
-      \ 'PrtBS()'             : ['<bs>', '<c-]>', '<c-h>'],
-      \ 'PrtCurLeft()'        : ['<c-b>', '<left>', '<c-^>'],
-      \ 'ToggleType(-1)'      : ['<c-down>'],
-      \ 'PrtCurRight()'       : ['<c-f>', '<c-l>', '<right>'],
-      \ 'ToggleType(1)'       : ['<c-up>'],
-      \ 'PrtInsert("c")'      : ['<c-v>', '<MiddleMouse>', '<insert>'],
-      \ 'PrtDelete()'         : ['<c-d>', '<del>'],
-      \ 'PrtDeleteWord()'     : ['<c-q>'],
-      \ 'ToggleByFname()'     : ['<F8>'],
-      \ 'AcceptSelection("v")': ['<RightMouse>'],
-      \ 'PrtDeleteEnt()'      : ['<F7>', '<c-w>'],
+      \ 'AcceptSelection("e")' : ['<cr>', '<2-LeftMouse>', '<m-m>'],
+      \ 'PrtHistory(-1)'       : [],
+      \ 'PrtSelectMove("j")'   : ['<c-j>', '<down>', '<m-j>', '<c-n>'],
+      \ 'PrtHistory(1)'        : [],
+      \ 'PrtSelectMove("k")'   : ['<c-k>', '<up>', '<m-k>', '<c-p>'],
+      \ 'PrtBS()'              : ['<bs>', '<c-]>', '<c-h>'],
+      \ 'PrtCurLeft()'         : ['<c-b>', '<left>', '<c-^>'],
+      \ 'ToggleType(-1)'       : ['<c-down>'],
+      \ 'PrtCurRight()'        : ['<c-f>', '<c-l>', '<right>'],
+      \ 'ToggleType(1)'        : ['<c-up>'],
+      \ 'PrtInsert("c")'       : ['<c-v>', '<MiddleMouse>', '<insert>'],
+      \ 'PrtDelete()'          : ['<c-d>', '<del>'],
+      \ 'PrtDeleteWord()'      : ['<c-q>'],
+      \ 'ToggleByFname()'      : ['<F8>'],
+      \ 'AcceptSelection("v")' : ['<RightMouse>'],
+      \ 'PrtDeleteEnt()'       : ['<F7>', '<c-w>'],
       \ }
 
 " FIXME: <Space>fr で候補が出なくなる。
@@ -54,8 +60,8 @@ let g:ctrlp_prompt_mappings = {
 nnoremap <Space>b <Cmd>CtrlPBuffer<CR>
 " nnoremap <Space>f/ <Cmd>CtrlPLine<CR>
 nnoremap <Space>fo <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', '{{{ ')<CR>
-nnoremap <Space>*  <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', expand('<cword>') .. ' ')<CR>
-xnoremap <Space>*  <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', vimrc#get_current_selection() .. ' ')<CR>
+nnoremap <Space>*  <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', $'{expand("<cword>")} ')<CR>
+xnoremap <Space>*  <Cmd>call plugin#ctrlp#defaultInput('CtrlPLine', $'{vimrc#get_current_selection()} ')<CR>
 nnoremap <Space>u  <Cmd>CtrlPMRUFiles<CR>
 nnoremap <Space>ff <Cmd>CtrlP<CR>
 " nnoremap <Space>fq <Cmd>CtrlPQuickfix<CR>

@@ -6,7 +6,7 @@ Movement
 * `gt` `gT`    : 前の／次のタブを表示。feat. submode 連続して t, T 入力で次、前へ移動
 * `g;` `g,`    : 変更した位置への移動。feat. submode 連続して ;, , 入力で次、前へ移動
 * `:jumps`     : ジャンプの履歴表示
-* `C-I`        : ジャンプの履歴を進む
+* `C-i`        : ジャンプの履歴を進む
 * `o`          : (v) 範囲開始指定をやり直し
 * `<Space>;`   : 直前の f, F, t, F を繰り返す。 feat. easymotion
 * `<Space>,`   : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
@@ -56,12 +56,12 @@ Edit
 * `cxx`                     : (v) X で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
 * `#`                       : (n: カーソル下の単語|v: 選択文字列) を置換。 feat. vim-asterisk
 * `^M などの入力`           : vim --clean filename で起動。Insert mode で Ctrl+v Ctrl+m など
-* `<C-R>"`                  : (i) 直前の無名レジスタから Put
-* `<C-R>0`                  : (i) 直前の Yank のレジスタから Put。cw<C-R>" だと変更前の単語が Put されるので、こちらを使う。
+* `<C-r>"`                  : (i) 直前の無名レジスタから Put
+* `<C-r>0`                  : (i) 直前の Yank のレジスタから Put。cw<C-R>" だと変更前の単語が Put されるので、こちらを使う。
 * `sdt`                     : HTML のタグだけを削除。 feat. sandwich
 * `dNib`                    : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
 * `/foo\C`                  : 小文字の foo だけにマッチ。
-* `ciwhoge<C-R><C-P>"fuga`  : カーソル文字列をhogeとfugaで囲む。. で別の文字列でも同様に動作する。<C-P>がないと . では最初のカーソル文字が使われる。 https://twitter.com/mattn_jp/status/1088746858933940224
+* `ciwhoge<C-r><C-p>"fuga`  : カーソル文字列をhogeとfugaで囲む。. で別の文字列でも同様に動作する。<C-P>がないと . では最初のカーソル文字が使われる。 https://twitter.com/mattn_jp/status/1088746858933940224
                               sandwich.vim を使う場合は、 saiwihoge<CR>fuga<CR>
 * `<C-r><C-w>`              : (c) コマンドラインモードでカーソル位置の word を入力する。 <C-r><C-W> なら WORD
 * `/\V`                     : 入力したままを検索
@@ -278,12 +278,21 @@ help
 quickfix
 --------
 
-* `:cwindow`   : quickfix の表示
-* `:colder`    : 古い quickfix へ移動
-* `:cnewer`    : 新しい quickfix へ移動
-* `:chistory`  : quickfix の履歴を表示
-* `:4chistory` : 4番目の quickfix リストをカレントリストにする
-* `p`          : (quickfixi) quickfix のプレビューをトグル. feat. quickpeek.vim
+* `:cwindow`        : quickfix の表示
+* `:colder`         : 古い quickfix へ移動
+* `:cnewer`         : 新しい quickfix へ移動
+* `:chistory`       : quickfix の履歴を表示
+* `:4chistory`      : 4番目の quickfix リストをカレントリストにする
+* `p`               : (quickfixi) quickfix のプレビューをトグル. feat. quickpeek.vim
+* `:cfile filename` : quickfix をファイルから読み込み。ファイルには :w filename で保存。:cgetfile は最初のエラーに飛ばない。
+
+quickfix のフィルタリング
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. `:packadd cfilter`
+2. `Cfilter /{pattern}/`: ! を付けたら一致しないエントリが残る。
+
+via: https://speakerdeck.com/daisuzu/mastering-quickfix?slide=11
 
 
 Macro
@@ -476,6 +485,40 @@ Gina patch, GinPatch
 * `dor`: 中央のバッファで実行して右の内容を反映
 * `dol`: 中央のバッファで実行して左の内容を反映
 
+ddu
+---
+
+* `!hoge` : hoge のない候補を表示 @Shougo/ddu-filter-matcher_substring
+
+
+ddu で 現在ディレクトリが git repository だったら git を そうでないならば rg を実行
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+  function! s:ddu_grep() abort
+      if system('git rev-parse --is-inside-work-tree') == "true\n"
+          let l:cmd = 'git'
+          let l:args = ['--no-pager', 'grep', '--line-number', '--column', '--no-color']
+      else
+          let l:cmd = 'rg'
+          let l:args = ["--column", "--no-heading", "--color", "never"]
+      endif
+  
+      call ddu#start(#{
+                  \ sources: ['rg'],
+                  \ sourceParams: #{
+                  \   rg: #{
+                  \     cmd: l:cmd,
+                  \     args: l:args,
+                  \     input: input('Pattern: ')
+                  \   },
+                  \ },
+                  \ })
+  endfunction
+  nnoremap <silent> <Leader>fg <Cmd>call <SID>ddu_grep()<CR>
+
+
 Others
 ------
 
@@ -496,7 +539,7 @@ Others
 * `:set nomodeline`         : " vim:fen などのモードラインがファイルに記載されていても、これを反映しない。vim-lsp ポップアップ時に fen が反映されることがあったので
 * `@:`                      : 直前に実行した `:` コマンドを再実行。
 * `let &l:statusline='hoge'`: setlocal statusline の let 版。ほかのオプションも同様。
-
+* `g<`                      : 前のコマンドの出力の最後のページを表示。
 
 起動時の profile の取り方
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -612,33 +655,6 @@ gttt::
   nnoremap <Plug>(gt)t gt<Plug>(gt)
   nnoremap <Plug>(gt)T gT<Plug>(gt)
 
-
-ddu で 現在ディレクトリが git repository だったら git を そうでないならば rg を実行
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
-
-  function! s:ddu_grep() abort
-      if system('git rev-parse --is-inside-work-tree') == "true\n"
-          let l:cmd = 'git'
-          let l:args = ['--no-pager', 'grep', '--line-number', '--column', '--no-color']
-      else
-          let l:cmd = 'rg'
-          let l:args = ["--column", "--no-heading", "--color", "never"]
-      endif
-  
-      call ddu#start(#{
-                  \ sources: ['rg'],
-                  \ sourceParams: #{
-                  \   rg: #{
-                  \     cmd: l:cmd,
-                  \     args: l:args,
-                  \     input: input('Pattern: ')
-                  \   },
-                  \ },
-                  \ })
-  endfunction
-  nnoremap <silent> <Leader>fg <Cmd>call <SID>ddu_grep()<CR>
 
 一度検索して確認したのち、操作を実施。
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

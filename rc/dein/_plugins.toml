@@ -39,7 +39,7 @@ repo = 'kana/vim-textobj-user'
 [[plugins]]
 repo = 'mattn/vim-textobj-url'
 depends = 'vim-textobj-user'
-on_map = { ox = ['iu', 'au'] }
+hooks_file = '~/vimfiles/rc/dein/vim-textobj-url.vim'
 
 [[plugins]]
 repo = 'machakann/vim-sandwich'
@@ -83,6 +83,7 @@ hooks_file = '~/vimfiles/rc/dein/textobj-line.vim'
 # textra.vim と連携して使用
 [[plugins]]
 repo = 'preservim/vim-textobj-sentence'
+lazy = true
 hooks_file = '~/vimfiles/rc/dein/textobj-sentence.vim'
 
 # }}}1  Language, Format, Filetype {{{1
@@ -107,6 +108,10 @@ repo = 'hynek/vim-python-pep8-indent'
 
 [[plugins]]
 repo = 'mattn/vim-godoc'
+
+[[plugins]]
+repo = 'mattn/vim-goimports'
+on_ft = 'go'
 
 [[plugins]]
 repo = 'mattn/vim-gorun'
@@ -192,7 +197,6 @@ repo = 'pangloss/vim-javascript'
 
 [[plugins]]
 repo = 'weirongxu/plantuml-previewer.vim'
-depends = 'open-browser.vim'
 on_cmd = 'PlantumlOpen'
 hooks_file = '~/vimfiles/rc/dein/plantuml-previewer.vim'
 
@@ -218,6 +222,10 @@ on_cmd = 'RainbowDelim'
 [[plugins]]
 repo = 'hokorobi/vim-howm-syntax-mini'
 extAttrs = { installerFrozen = true }
+
+[[plugins]]
+repo = 'machakann/vim-vimhelplint'
+on_cmd = 'VimhelpLint'
 
 #}}}2
 
@@ -270,10 +278,6 @@ repo = 'lambdalisue/vim-readablefold'
 repo = 'BourgeoisBear/clrzr'
 on_cmd = 'ClrzrOn'
 hooks_file = '~/vimfiles/rc/dein/clrzr.vim'
-
-[[plugins]]
-repo = 'machakann/vim-highlightedyank'
-hooks_file = '~/vimfiles/rc/dein/highlightedyank.vim'
 
 [[plugins]]
 repo = 'rbtnn/vim-ambiwidth'
@@ -520,15 +524,46 @@ hooks_file = '~/vimfiles/rc/dein/ctrlp-filetype.vim'
 repo = 'christoomey/ctrlp-generic'
 on_func = 'CtrlPGeneric'
 hooks_file = '~/vimfiles/rc/dein/ctrlp-generic.vim'
+[[multiple_hooks]]
+plugins = ['ctrlp-generic', 'dpp-ext-installer']
+hook_add = '''
+nnoremap <silent> <Space>du <Cmd>call dpp#get()->keys()->CtrlPGeneric('plugin#ctrlpGeneric#dppUpdate')<CR>
+
+" リポジトリのディレクトリへ移動
+nnoremap <Space>fc <Cmd>call dpp#get()
+      \ ->map({_, v -> v.path})
+      \ ->values()
+      \ ->extend(dpp#check_clean())
+      \ ->CtrlPGeneric('plugin#ctrlpGeneric#cd')<CR>
+
+" リポジトリのディレクトリを選択して、その中のファイルを選択
+nnoremap <Space>fr <Cmd>call dpp#get()
+      \ ->map({_, v -> v.path})
+      \ ->values()
+      \ ->extend(dpp#check_clean())
+      \ ->CtrlPGeneric('plugin#ctrlpGeneric#ctrlp')<CR>
+'''
+[[multiple_plugins]]
+plugins = ['ctrlp-generic', 'dein.vim']
+hook_add = '''
+" リポジトリのディレクトリへ移動
+nnoremap <Space>fc <Cmd>call dein#get()
+      \ ->map({_, v -> v.path})
+      \ ->values()
+      \ ->extend(dein#check_clean())
+      \ ->CtrlPGeneric('plugin#ctrlpGeneric#cd')<CR>
+
+" リポジトリのディレクトリを選択して、その中のファイルを選択
+nnoremap <Space>fr <Cmd>call dein#get()
+      \ ->map({_, v -> v.path})
+      \ ->values()
+      \ ->extend(dein#check_clean())
+      \ ->CtrlPGeneric('plugin#ctrlpGeneric#ctrlp')<CR>
+'''
 
 [[plugins]]
 repo = 'suy/vim-ctrlp-commandline'
 hooks_file = '~/vimfiles/rc/dein/ctrlp-commandline.vim'
-
-[[plugins]]
-repo = 'hokorobi/ctrlp-grep'
-on_cmd = 'CtrlPGrep'
-hooks_file = '~/vimfiles/rc/dein/ctrlp-grep.vim'
 
 [[plugins]]
 repo = 'mattn/ctrlp-matchfuzzy'
@@ -555,16 +590,13 @@ repo = 'lambdalisue/vim-gista'
 on_cmd = 'Gista'
 on_path = '^gista://'
 on_map = '<Plug>'
-depends = 'open-browser.vim'
 hooks_file = '~/vimfiles/rc/dein/gista.vim'
 
 # }}}2
 # }}}1 Utility {{{1
 [[plugins]]
 repo = 'tyru/open-browser.vim'
-on_map = '<Plug>(openbrowser-'
-on_func = 'openbrowser#open'
-hooks_file = '~/vimfiles/rc/dein/open-browser.vim'
+lazy = true
 
 [[plugins]]
 repo = 'thinca/vim-prettyprint'
@@ -596,15 +628,18 @@ repo = 'tweekmonster/helpful.vim'
 on_cmd = 'HelpfulVersion'
 hooks_file = '~/vimfiles/rc/dein/helpful.vim'
 
+# FIXME: more lazy
 [[plugins]]
 repo = 'rbtnn/vim-layout'
 depends = 'ctrlp-generic'
-on_func = ['layout#', 'LayoutWrap', 'LayoutCallback']
+on_func = ['layout#']
 on_cmd = ['LayoutLoad', 'LayoutSave']
 hooks_file = '~/vimfiles/rc/dein/layout.vim'
 
 [[plugins]]
 repo = 'kawarimidoll/textra.vim'
+on_cmd = ['Textra']
+depends = ['vim-textobj-sentence', 'vim-operator-stay-cursor']
 hooks_file = '~/vimfiles/rc/dein/textra.vim'
 
 [[plugins]]
