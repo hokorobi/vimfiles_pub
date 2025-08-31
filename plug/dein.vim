@@ -12,8 +12,8 @@ let g:dein#enable_hook_function_cache = v:true
 let s:tomls = [
       \   '~/vimfiles/plug/conf/_dein.toml',
       \   '~/vimfiles/plug/conf/_plugins.toml',
-      \   '~/vimfiles/plug/conf/_denops.toml',
-      \   '~/vimfiles/plug/conf/_ddu.toml',
+      "\   '~/vimfiles/plug/conf/_denops.toml',
+      "\   '~/vimfiles/plug/conf/_ddu.toml',
       "\   '~/vimfiles/plug/conf/_ddc.toml',
       \   '~/vimfiles/plug/conf/_reference.toml',
       "\   '~/vimfiles/plug/conf/_asyncomplete.toml',

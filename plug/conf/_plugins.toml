@@ -9,7 +9,6 @@ hooks_file = '~/vimfiles/plug/conf/ft.vim'
 [[plugins]]
 repo = 'hokorobi/vim-templug'
 extAttrs = { installerFrozen = true }
-fronzen = true
 on_cmd = 'Templug'
 hook_add = 'set packpath+=~/_vim'
 
@@ -142,7 +141,6 @@ hooks_file = '~/vimfiles/plug/conf/markdown.vim'
 [[plugins]]
 repo = 'hokorobi/vim-rst-util'
 extAttrs = { installerFrozen = true }
-fronzen = true
 on_ft = 'rst'
 hooks_file = '~/vimfiles/plug/conf/rst-util.vim'
 
@@ -207,13 +205,11 @@ repo = 'hokorobi/plantuml-syntax'
 merge_ftdetect = true
 on_ft = 'plantuml'
 extAttrs = { installerFrozen = true }
-fronzen = true
 merged = false
 
 [[plugins]]
 repo = 'hokorobi/plantuml-previewer.vim'
 extAttrs = { installerFrozen = true }
-fronzen = true
 on_cmd = 'PlantumlOpen'
 depends = 'open-browser.vim'
 hooks_file = '~/vimfiles/plug/conf/plantuml-previewer.vim'
@@ -221,7 +217,6 @@ hooks_file = '~/vimfiles/plug/conf/plantuml-previewer.vim'
 [[plugins]]
 repo = 'hokorobi/autohotkey2.vim'
 extAttrs = { installerFrozen = true }
-fronzen = true
 
 [[plugins]]
 repo = 'mechatroner/rainbow_csv'
@@ -230,7 +225,6 @@ on_cmd = 'RainbowDelim'
 [[plugins]]
 repo = 'hokorobi/vim-howm-syntax-mini'
 extAttrs = { installerFrozen = true }
-fronzen = true
 
 [[plugins]]
 repo = 'machakann/vim-vimhelplint'
@@ -299,7 +293,6 @@ hooks_file = '~/vimfiles/plug/conf/context.vim'
 [[plugins]]
 repo = 'hokorobi/vim-cheatsheet-echo'
 extAttrs = { installerFrozen = true }
-fronzen = true
 hooks_file = '~/vimfiles/plug/conf/cheatsheet-echo.vim'
 merged = false
 
@@ -347,7 +340,6 @@ hooks_file = '~/vimfiles/plug/conf/jplus.vim'
 [[plugins]]
 repo = 'hokorobi/ctrlp-yankround'
 extAttrs = { installerFrozen = true }
-fronzen = true
 on_event = ['TextYankPost']
 on_cmd = 'CtrlPYankRound'
 hooks_file = '~/vimfiles/plug/conf/yankround.vim'
@@ -449,7 +441,6 @@ hooks_file = '~/vimfiles/plug/conf/milfeulle.vim'
 [[plugins]]
 repo = 'hokorobi/vim-smarthome'
 extAttrs = { installerFrozen = true }
-fronzen = true
 hooks_file = '~/vimfiles/plug/conf/smarthome.vim'
 
 # replace matchparen
@@ -462,7 +453,6 @@ repo = 'hokorobi/vim-bookmarks'
 #rev = 'hokorobi'
 on_event = 'BufReadPre'
 extAttrs = { installerFrozen = true }
-fronzen = true
 hooks_file = '~/vimfiles/plug/conf/bookmarks.vim'
 
 [[plugins]]
@@ -476,7 +466,6 @@ hooks_file = '~/vimfiles/plug/conf/jumpout.vim'
 repo = 'hokorobi/vim-sayonara'
 on_func = 'sayonara#'
 extAttrs = { installerFrozen = true }
-fronzen = true
 hooks_file = '~/vimfiles/plug/conf/sayonara.vim'
 
 [[plugins]]
@@ -488,7 +477,6 @@ hooks_file = '~/vimfiles/plug/conf/closesubwin.vim'
 repo = 'hokorobi/capture.vim'
 rev = 'patch-1'
 extAttrs = { installerFrozen = true }
-fronzen = true
 on_cmd = 'Capture'
 hooks_file = '~/vimfiles/plug/conf/capture.vim'
 
@@ -589,7 +577,6 @@ hooks_file = '~/vimfiles/plug/conf/gina.vim'
 [[plugins]]
 repo = 'hokorobi/agit.vim'
 extAttrs = { installerFrozen = true }
-fronzen = true
 # rev = 'develop'
 on_cmd = ['Agit', 'AgitFile']
 hooks_file = '~/vimfiles/plug/conf/agit.vim'

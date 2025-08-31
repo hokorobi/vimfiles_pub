@@ -435,8 +435,8 @@ let g:changelog_dateformat = '%Y-%m-%d (%a)'
 let g:changelog_new_date_format = "%d\n\n%c\n"
 
 " }}}2  dein/dpp {{{2
-" execute $'source {expand('<script>:h')}/plug/dein.vim'
-execute $'source {expand('<script>:h')}/plug/dpp.vim'
+execute $'source {expand('<script>:h')}/plug/dein.vim'
+" execute $'source {expand('<script>:h')}/plug/dpp.vim'
 " }}}2
 
 filetype plugin indent on
