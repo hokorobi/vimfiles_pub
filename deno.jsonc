@@ -7,5 +7,12 @@
     "fmt": "deno fmt **/*.ts & taplo format **/*.toml",
     "test": "deno test -A --doc --parallel --shuffle **/*.ts",
     "upgrade": "deno run -A jsr:@molt/cli **/*.ts --write"
+  },
+  "imports": {
+    "@denops/std": "jsr:@denops/std@^7.6.0",
+    "@shougo/dpp-ext-lazy": "jsr:@shougo/dpp-ext-lazy@^1.5.0",
+    "@shougo/dpp-ext-toml": "jsr:@shougo/dpp-ext-toml@^1.3.0",
+    "@shougo/dpp-vim": "jsr:@shougo/dpp-vim@^4.7.0",
+    "@std/fs": "jsr:@std/fs@^1.0.19"
   }
 }

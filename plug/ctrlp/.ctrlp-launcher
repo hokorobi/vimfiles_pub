@@ -1,0 +1,32 @@
+fenrir path	execute $'edit {g:fenrir_dir}/data/path'
+_vimrc.local	execute $'edit {g:vimrc_local}'
+webschedule	execute $'edit {g:webschedule_path}'
+changelog	execute $'edit {g:howm_dir}/changelogmemo'
+cheatsheet	CtrlPLauncher cheat
+PPX.CFG	execute $'edit {g:ppx_dir}/PPX.CFG'
+gitconfig	edit ~/.gitconfig
+Gist	Gista list
+lexima.vim vimrc	edit ~/vimfiles/plug/conf/lexima9.vim
+debug_print	call print_debug#print_debug()
+launcher filetype	execute $'CtrlPLauncher {&filetype}'
+snippet filetype	execute $'edit ~/vimfiles/plug/vsnip/{&filetype}.json'
+ftplugin	execute $'edit ~/vimfiles/after/ftplugin/{&filetype}.vim'
+autoload vimrc	edit ~/vimfiles/autoload/lazy.vim
+autohotkey ahk	execute $'edit {g:ahk_path}'
+zenn-preview	!start cmd /c \%USERPROFILE\%\Documents\zenn\zenn-preview.bat
+zenn-new	cd \%USERPROFILE\%\Documents\zenn | !deno run -A npm:zenn-cli@latest new:article
+sphinx-autobuild	FloatermNew! sphinx-autobuild.exe %:p:h %:p:h\autobuild --open-browser --ignore .git/* --ignore _build/* --ignore bakgit/* --ignore _image/* --ignore _static/*
+jupyter-terminal	!start cmd /k "cd \%USERPROFILE\%\Documents\jupyter & \%USERPROFILE\%\Documents\jupyter\_venv\Scripts\activate.bat & jupyter notebook"
+Vimmatic	execute $'edit ~/AppData/Roaming/vimmatic-options/vimmatic-options.json'
+Vimium	execute $'Gista open {g:gist_vimium}'
+help function-list	help function-list
+help builtin-function-list	help builtin-function-list
+fenrir instant.ini	execute $'edit {g:fenrir_dir}/data/instant.ini'
+vimplugins.rst	edit ~/Documents/Sphinx/github.io/vimplugins.rst
+dein.log	edit ~/_vim/dein/dein.log
+dpp.log	edit ~/_vim/dpp/installer-log.txt
+ppc jump	!C:/OLS/File/ppx/PPCW.EXE -single -k \%J"%:p"
+tweetee.log	edit ~/src/github.com/hokorobi/tweetee/cmd/tweetee/tweetee.log
+alarm	edit ~/Documents/Program/AHK-alarm/alarm.lst
+ReadingVimrcLoad	ReadingVimrcLoad
+ReadingVimrcCopy	ReadingVimrcCopy

@@ -24,12 +24,11 @@ augroup END
 " https://github.com/DeaR/dotfiles/blob/7c021c276903d93e413bf0b4c7b134b1e0c8f946/.vimrc#L1421-L1436
 " Use lexima
 let g:vimrc_altercmd_dic = {
-      \   'tagsg\%[en]': '!ctags -R',
      "\   ウィンドウに表示しているバッファで diffthis
       \   'dt': 'windo diffthis',
-      \   'fmt': 'call vimrc#format()',
-      \   'jj': 'call vimrc#format()',
-      \   'jq': 'call vimrc#format()',
+      \   'fmt': 'call lazy#Format()',
+      \   'jj': 'call lazy#Format()',
+      \   'jq': 'call lazy#Format()',
       \   'vn\%[map]': 'verbose nmap',
       \   'vc\%[map]': 'verbose cmap',
       \   'vi\%[map]': 'verbose imap',
@@ -37,6 +36,8 @@ let g:vimrc_altercmd_dic = {
       \   'vv\%[map]': 'verbose vmap',
       \   'vx\%[map]': 'verbose xmap',
       \   'v\%[function]': 'verbose function',
+     "\   https://zenn.dev/utubo/articles/20250820-run-vim9script-current-line
+      \   'r9': 'vim9cmd source',
       \}
 
 " vim-sayonara
@@ -46,38 +47,26 @@ let g:sayonara_filetypes = {}
 " Cached executable
 " https://github.com/DeaR/dotfiles/blob/7c021c276903d93e413bf0b4c7b134b1e0c8f946/.vimrc#L119-L126
 let g:vimrc_executable = {}
-def! Vimrc_executable(cmd: string): number
-  if !has_key(g:vimrc_executable, cmd)
-    g:vimrc_executable[cmd] = executable(cmd)
-  endif
-  return g:vimrc_executable[cmd]
-enddef
 
 " Command {{{1
 
 " 文字コードを指定して開き直す
-command! OpenUtf8 :e ++enc=utf-8
-command! OpenSjis :e ++enc=cp932
+command! OpenUtf8 edit ++enc=utf-8
+command! OpenSjis edit ++enc=cp932
 
 " 文字コードを変換
-command! ToUtf8 :set fileencoding=utf-8
-command! ToUtf8bom :set fileencoding=utf-8 bomb
-command! ToSjis :set fileencoding=cp932
+command! ToUtf8 setlocal fileencoding=utf-8
+command! ToUtf8bom setlocal fileencoding=utf-8 bomb
+command! ToSjis setlocal fileencoding=cp932
 
 " 改行コード変換
-command! ToDos :set fileformat=dos
-command! ToCRLF :set fileformat=dos
-command! ToUnix :set fileformat=unix
-command! ToLF :set fileformat=unix
-
-" / と :s///g をトグル
-" hrsh7th/vim-searchx を使っていると動かない
-" cnoremap <expr> <C-t> vimrc#ToggleSubstituteSearch(getcmdtype(), getcmdline())
-" / を :s///g へ
-cmap <C-t> <Esc>;s/<C-r>//
+command! ToDos setlocal fileformat=dos
+command! ToCRLF setlocal fileformat=dos
+command! ToUnix setlocal fileformat=unix
+command! ToLF setlocal fileformat=unix
 
 " https://zenn.dev/kawarimidoll/articles/513d603681ece9
-def! s:bulkmap(modes: string, ...args: list<string>)
+def s:bulkmap(modes: string, ...args: list<string>)
   const arg = join(args, ' ')
   for mode in split(modes, '.\zs')
     if index(split('nvsxoilct', '.\zs'), mode) < 0
@@ -89,34 +78,32 @@ def! s:bulkmap(modes: string, ...args: list<string>)
 enddef
 command! -nargs=+ BulkMap call s:bulkmap(<f-args>)
 
-" My retab
-command! -nargs=? Retab call vimrc#Retab(empty(<q-args>) ? &l:tabstop : <q-args>)
-
 " インデントを簡単に設定
-command! -complete=customlist,vimrc#ISettingCompl -nargs=? -bang ISetting call vimrc#ISetting(<f-args>)
+command! -complete=customlist,lazy#ISettingCompl -nargs=? -bang ISetting call lazy#ISetting(<f-args>)
 
 " 今開いているファイルを削除
 " https://github.com/cohama/.vim/blob/master/.vimrc
-command! -bang -nargs=0 DeleteMe call vimrc#DeleteMe(<bang>0)
+command! -bang -nargs=0 DeleteMe call lazy#DeleteMe(<bang>0)
 
 " 開いているファイルのディレクトリへ移動
 " http://vim-jp.org/vim-users-jp/2009/09/08/Hack-69.html
-command! -nargs=? -complete=dir -bang CD call vimrc#ChangeCurrentDir('<args>', '<bang>')
+command! -nargs=? -complete=dir -bang CD call lazy#ChangeCurrentDir('<args>', '<bang>')
 nnoremap cd <Cmd>CD<CR>
 
 " diff xdoc2txt
 " xdoc2txt でフィルタリングした結果を diff
-command! -nargs=0 DiffXdoc2txt call vimrc#DiffXdoc2txt()
+command! -nargs=0 DiffXdoc2txt call lazy#DiffXdoc2txt()
 
 " カーソル下の単語を vimgrep
 " command! -nargs=1 VimGrepCurrent vimgrep <args> %
 " nnoremap <expr> <Space>* '<Cmd>VimGrepCurrent ' .. expand('<cword>') .. '<CR>'
 
 " ファイラからの起動時に検索文字列を指定するのは使いにくいので、コマンド実行後に検索文字列を入力できるようにする
-command! -nargs=? GrepWrap call vimrc#GrepWrap(<f-args>)
+command! -nargs=? GrepWrap call lazy#GrepWrap(<f-args>)
 call extend(g:vimrc_altercmd_dic, {
       \ 'gw': 'GrepWrap',
-      \ 'grepw\%[rap]': 'GrepWrap'})
+      \ 'grepw\%[rap]': 'GrepWrap',
+      \ })
 
 " https://github.com/ukiuki-engineer/nvim/blob/f718eb30515f1f4afce172cc9cf9dd25a9648442/lua/config/lazy/commands.lua#L13-L14
 " バッファのフルパスをヤンクする
@@ -126,12 +113,12 @@ command! YankBufFileName :let @0 = expand('%:t') | :let @+ = expand('%:t')
 
 " コマンドラインモードのカーソル位置を左に移動
 function AddLeft(lhs, rhs, add = 0)
-  return printf('%s%s%s', a:lhs, a:rhs, repeat('<Left>', len(a:rhs)+a:add))
+  return printf('%s%s%s', a:lhs, a:rhs, repeat('<Left>', len(a:rhs) + a:add))
 endfunction
 
 " }}}1 Option {{{1
 
-" Move {{{2
+" move {{{2
 " カーソル移動を行頭、行末で止めない
 set whichwrap=b,s,h,l,<,>,[,]
 
@@ -141,7 +128,7 @@ set nostartofline
 " % で移動できるペアを追加
 set matchpairs+=<:>,（:）,「:」,『:』,【:】
 
-" }}}2 File {{{2
+" }}}2 file {{{2
 
 " viminfo のパスを指定
 " n: viminfo ファイルのパスを指定。
@@ -151,7 +138,8 @@ set viminfo='100,<50,s10,h,rA:,rB:,n~/_vim/viminfo
 " 末尾 // でパスを考慮した一意なファイル名で書き込み。
 set directory=$temp//
 " swapファイルがあったらreadonlyで開く
-autocmd vimrc SwapExists * let v:swapchoice = 'o'
+" Recover.vim
+" autocmd vimrc SwapExists * let v:swapchoice = 'o'
 
 " nobackup でも writebackup なので一時的にバックアップファイルは作成される
 " 末尾 // でパスを考慮した一意なファイル名で書き込み。
@@ -170,8 +158,7 @@ if !isdirectory(&undodir)
 endif
 set undofile
 
-
-" }}}2 Function {{{2
+" }}}2 function {{{2
 
 " セッションにオプションとマッピングは保存しない
 set sessionoptions-=options
@@ -191,7 +178,7 @@ set virtualedit=block
 " コマンドの履歴保持数などを拡張
 set history=1000
 
-" }}}2 Look {{{2
+" }}}2 look {{{2
 
 " 現在行と相対行番号表示
 set number relativenumber
@@ -216,7 +203,7 @@ set showmatch
 set noshowmode
 
 " 常にタブラインを非表示
-set showtabline=1
+set showtabline=0
 
 " コマンド行の高さ
 set cmdheight=2
@@ -284,7 +271,17 @@ autocmd vimrc Syntax * syntax sync minlines=500 maxlines=1000
 " https://vim-jp.slack.com/archives/C03C4RC9F/p1652842090652059
 " https://vim-jp.slack.com/archives/C03C4RC9F/p1652842245469699
 " BufReadPost だと <C-s> で保存できなくなるので BufEnter へ
-autocmd vimrc BufEnter * if getfsize(@%) > 1024 * 1024 * 2 | setlocal syntax=OFF | call interrupt() | endif
+autocmd vimrc BufEnter * if getfsize(@%) > 1024 * 1024 * 2 | setlocal syntax=OFF | setlocal eventignorewin=all | call interrupt() | endif
+
+" tabpanel setting {{{3
+" https://zenn.dev/utubo/articles/20250526-show-hiddens-in-tabpanel
+set showtabpanel=2
+set tabpanel=%!vimrc#TabPanel()
+augroup showbuffers_in_tabpanel
+  autocmd!
+  autocmd BufDelete * autocmd SafeState * ++once redrawtabp
+augroup END
+" }}}3
 
 " }}}2 edit {{{2
 
@@ -294,11 +291,13 @@ set backspace=indent,eol,start
 " ファイル末尾に改行を追加しない
 set nofixendofline
 
-" insert mode で IME をオンにした状態のまま normal mode に戻って r や R では IME をオフ
+" insert mode で IME をオンにした状態のまま normal mode に戻って R では IME をオフ
 " 再度 insert mode に戻ったら IME オン
+"   InsertLeave でなく ModeChanged なら C-c でインサートモードを抜けた時にも動作が有効になる
 let s:lastiminsert = 0
-autocmd vimrc InsertLeave * if v:insertmode !=# 'r' | let s:lastiminsert = &iminsert | set iminsert=0 | endif
-autocmd vimrc InsertEnter * if v:insertmode ==# 'i' | let &iminsert = s:lastiminsert | endif
+autocmd vimrc ModeChanged i*:* let s:lastiminsert = &iminsert | setlocal iminsert=0
+autocmd vimrc ModeChanged R*:* setlocal iminsert=0
+autocmd vimrc ModeChanged *:i* let &l:iminsert = s:lastiminsert
 
 " }}}2 complete {{{2
 
@@ -307,12 +306,15 @@ set pumheight=10
 " 候補の付加情報をプレビューウィンドウに表示しない -preview
 " 候補がひとつのときもメニュー表示 +menuone
 set completeopt-=preview completeopt+=menuone
-" コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
-set wildmenu
 " TODO: 配列で書いて join する？ 参考: https://github.com/DeaR/dotfiles/blob/master/.vimrc
 set wildignore=.git,.hg,.bzr,.svn,*.264,*.7z,*.aac,*.ac3,*.ape,*.arj,*.asf,*.asx,*.avi,*.avif,*.bmp,*.bz2,*.cab,*.chm,*.com,*.dll,*.doc,*.docx,*.emf,*.exe,*.flac,*.flv,*.fon,*.gca,*.gif,*.gz,*.hlp,*.ish,*.jar,*.jpe,*.jpeg,*.jpg,*.lnk,*.lzh,*.m1v,*.m4a,*.m4b,*.mid,*.mkv,*.mov,*.mp3,*.mp4,*.mpeg,*.mpg,*.msi,*.msu,*.ods,*.odt,*.ogg,*.ogm,*.opus,*.pdf,*.png,*.ppt,*.pptx,*.pyc,*.pyd,*.pyo,*.ram,*.rar,*.rm,*.rmvb,*.svg,*.swf,*.tak,*.tbz,*.tgz,*.tif,*.torrent,*.tta,*.wav,*.webm,*.webp,*.wma,*.wmv,*.wsf,*.wv,*.wvc,*.xls,*.xlsm,*.xlsx,*.xltm,*.xltx,*.xz,*.zip,*.zoo,*.o,*.obj,*.lib,*.so,*.swp,tags
 
-set wildoptions=fuzzy,pum,tagfile
+" コマンドライン補完
+" コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
+set wildmenu
+set wildoptions=fuzzy,pum
+autocmd CmdlineChanged [:\/\?] call wildtrigger()
+set wildmode=noselect:lastused,full
 
 " }}}2 indent {{{2
 
@@ -344,10 +346,10 @@ set wrapscan
 
 " タグファイル内検索は大文字小文字を区別する
 set tagcase=match
-" バッファファイルのあるディレクトリから親を辿って tags を探す
-" http://thinca.hatenablog.com/entry/20090723/1248286959
-set tags=./tags;
-
+" x バッファファイルのあるディレクトリから親を辿って tags を探す
+" x http://thinca.hatenablog.com/entry/20090723/1248286959
+" ネットワークファイルを開いたときに遅くなっている気がするので無効にする。
+" set tags=./tags;
 
 " }}}2 grep {{{2
 
@@ -375,7 +377,7 @@ set printoptions=left:2pc,right:3pc,top:3pc,bottom:2pc,syntax:n,number:y
 setglobal swapfile
 
 " Improve diff
-set diffopt& diffopt+=algorithm:histogram,closeoff,followwrap,indent-heuristic,linematch:60,vertical
+set diffopt& diffopt+=algorithm:histogram,closeoff,filler,followwrap,indent-heuristic,linematch:60,vertical
 
 " ja の後に en を探しに行く
 set helplang=ja,en
@@ -393,6 +395,7 @@ if filereadable(expand(g:vimrc_local))
   execute $'source {g:vimrc_local}'
 endif
 
+packadd hlyank
 
 " デフォルトプラグインの停止 {{{2
 " http://lambdalisue.hatenablog.com/entry/2015/12/25/000046
@@ -427,17 +430,14 @@ let g:loaded_netrwFileHandlers = 1
 
 " }}}2  changelog {{{2
 
-let g:changelog_username=''
-let g:changelog_dateformat='%Y-%m-%d (%a)'
-let g:changelog_new_date_format="%d\n\n%c\n"
+let g:changelog_username = ''
+let g:changelog_dateformat = '%Y-%m-%d (%a)'
+let g:changelog_new_date_format = "%d\n\n%c\n"
 
 " }}}2  dein/dpp {{{2
-const s:base_path = fnamemodify(expand('<sfile>'), ':h')
-" execute $'source {s:base_path}/dein.vim'
-execute $'source {s:base_path}/dpp.vim'
+" execute $'source {expand('<script>:h')}/plug/dein.vim'
+execute $'source {expand('<script>:h')}/plug/dpp.vim'
 " }}}2
-
-autocmd vimrc TextYankPost * call highlightedyank#HighlightedYank()
 
 filetype plugin indent on
 
@@ -477,7 +477,7 @@ nnoremap <Space> <Nop>
 nnoremap [toggle] <Nop>
 nmap <Space>t [toggle]
 
-nnoremap [toggle]w <Cmd>call vimrc#toggle_option('wrap')<CR>
+nnoremap [toggle]w <Cmd>call lazy#ToggleOption('wrap')<CR>
 
 " ; と : の入れ替え
 noremap ; :
@@ -499,7 +499,10 @@ xnoremap v <C-v>
 
 " Show cursor info / buffer info in popup
 " https://github.com/kyoh86/dotfiles/blob/03ab2a71e691b4a9eee4f03f4693fd515e33afc9/vim/vimrc#L866-L896
-nnoremap <C-CR> <ScriptCmd>call vimrc9#Popup_cursor_info()<CR>
+nnoremap <C-CR> <ScriptCmd>call lazy#Popup_cursor_info()<CR>
+" カーソル下のハイライトの情報表示
+" https://zenn.dev/vim_jp/articles/show-hlgroup-under-cursor
+nnoremap <M-CR> <ScriptCmd>call lazy#ShowHighlightGroup()<CR>
 
 " https://vim-jp.slack.com/archives/CLKR04BEF/p1667463907309639
 " a = "foo" で ( "foo") でなく ("foo") を選択する
@@ -507,9 +510,11 @@ BulkMap ox a' 2i'
 BulkMap ox a" 2i"
 BulkMap ox a` 2i`
 
+BulkMap nx <Space>og <Cmd>call lazy#OpenBrowserGitrepo()<CR>
+" nnoremap <Space>ob <Cmd>call lazy#OpenBrowserUrlInBuffer()<CR>
 
-BulkMap nx <Space>og <Cmd>call vimrc#openBrowserGitrepo()<CR>
-" nnoremap <Space>ob <Cmd>call vimrc#openBrowserOpenUrlInBuffer()<CR>
+" / を :s///g へ
+cmap <C-t> <Esc>;s/<C-r>//
 
 " Buffer {{{2
 
@@ -526,7 +531,7 @@ noremap <C-n> <Cmd>enew<CR>
 
 " open vimrc
 noremap <F4> <Cmd>edit $MYVIMRC<CR>
-noremap <S-F4> <Cmd>edit ~/vimfiles/rc/dein/_plugins.toml<CR>
+noremap <S-F4> <Cmd>edit ~/vimfiles/plug/conf/_plugins.toml<CR>
 
 nnoremap qt <Cmd>tabclose<CR>
 
@@ -554,10 +559,10 @@ noremap <C-q> <Cmd>close<CR>
 " 元ネタ http://daisuzu.hatenablog.com/entry/2012/08/19/235923
 nnoremap _ <Cmd>SplitAndGo split<CR>
 nnoremap <bar> <Cmd>SplitAndGo vsplit<CR>
-command! -count=1 -nargs=1 SplitAndGo call vimrc#SplitAndGo(<q-args>)
+command! -count=1 -nargs=1 SplitAndGo call lazy#SplitAndGo(<q-args>)
 
 " http://vim.g.hatena.ne.jp/ka-nacht/20090119/1232347709
-nnoremap [toggle]q <Cmd>call vimrc#toggle_quickfix_window()<CR>
+nnoremap [toggle]q <Cmd>call lazy#ToggleQuickfixWindow()<CR>
 
 " コマンドラインウィンドウを開く
 " cedit に <M-i> が設定できない
@@ -575,19 +580,24 @@ autocmd vimrc WinClosed * wincmd p
 " https://github.com/darookee/dotfiles/blob/2c11a0d322c04c549d13d9cacb282d1e44a5a3c7/vimrc#L195
 noremap <expr> j v:count == 0 ? 'gj' : 'j'
 " inoremap <C-n> <Cmd>normal! gj<CR>
-cnoremap <C-n> <Down>
+" cnoremap <C-n> <Down>
+cnoremap <expr> <C-n> pumvisible() ? '<Down>' : getcmdline() == '' ? "\<S-Down>" : "\<Down>"
 " noremap  <C-n> <Down>
 
 noremap <expr> k v:count == 0 ? 'gk' : 'k'
 " inoremap <C-p> <Cmd>normal! gk<CR>
 cnoremap <C-p> <Up>
+" cnoremap <expr> <C-p> pumvisible() ? '<Up>' : getcmdline() == '' ? "\<S-Up>" : "\<Up>"
 
+" plug/conf/lexima9.vim
+" inoremap <C-b> <C-g>U<left>
 cnoremap <C-f> <Right>
 noremap  <C-f> l
 
-noremap! <C-b> <Left>
+" undo が分割されない左移動
+inoremap <C-b> <C-g>U<left>
+cnoremap <C-b> <Left>
 noremap  <C-b> h
-
 
 " スクロールしていくと最後一行になってしまうのを直す設定
 " http://itchyny.hatenablog.com/entry/2016/02/02/210000
@@ -620,19 +630,13 @@ enddef
 nnoremap <CR> <Cmd>call AlterG()<CR>
 autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 
-" insert mode から戻るときにカーソルを移動させない
-" https://raw.githubusercontent.com/todashuta/.dotfiles/aa1f494c4f223113e619f2551161af2176df1deb/.vimrc#L693
-" その際 jumplist も更新しない
-" FIXME: IME の状態を復元する設定が動かなくなるようになったのでコメントアウト
-" inoremap <silent> <Esc> <Esc>:keepjumps normal! `^<CR>
-
 " popup 表示中は C-k, C-j で上下候補選択
-" ddc.vim
+" ddc.vim, vimcomplete
 " inoremap <expr> <C-k> pumvisible() ? '<C-p>' : '<C-k>'
 " inoremap <expr> <C-j> pumvisible() ? '<C-n>' : '<C-j>'
 
 " matchup.vim
-" nnoremap <expr> %  vimrc#percent_expr()
+" nnoremap <expr> %  lazy#PercentExpr()
 
 " }}}2 Yank, Paste {{{2
 
@@ -641,12 +645,22 @@ autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 xnoremap <Space>d "+d
 
 " 貼り付け
-noremap! <C-v> <C-r><C-o>*
+noremap! <C-v> <C-r>+
 nnoremap <C-v> "+gP
-tnoremap <C-v> <C-w>"*
+" kyo86@vim-jp slack 2025-08-05
+xnoremap <Space>p "+P
+xnoremap <C-v> "+P
+tnoremap <C-v> <C-w>"+
 
 " コピー
-" BulkMap nx <Space>y "+y
+" yank でカーソル位置をそのままにする
+" atusy@vim-jp slack 2025-08-08
+" https://blog.atusy.net/2025/06/03/vim-contextful-mark/
+xnoremap y myy`y
+xnoremap <Space>y my"+y`y
+nnoremap Y y$
+nnoremap <Space>y "+y
+nnoremap <Space>Y "+y$
 
 " バッファのフルパス
 nnoremap <expr> <Space>y% '<Cmd>let @+ = "' .. substitute(expand("%:p"), "\\", "\\\\\\", "g") .. '"<CR>'
@@ -672,7 +686,7 @@ nnoremap gp `[v`]
 xnoremap p P
 
 " }}}2 Edit {{{2
-" lexima や neocomplete で C-h と BS を同じ挙動にする
+" lexima で C-h と BS を同じ挙動にする
 map! <C-h> <BS>
 
 " Del
@@ -684,15 +698,16 @@ inoremap <C-BS> <C-u>
 nnoremap <C-BS> d0
 
 " 行末まで削除
-" rc/plugins.toml vim-searchx
+" plug/conf/searchx.vim
 " cnoremap <expr><C-k> repeat('<Del>', strchars(getcmdline()[getcmdpos() - 1:]))
-" rc/ddc.toml
+"
+" plug/conf/ddc.vim FIXME? ddc を使う場合に vsnip の設定とかち合うかも
+" plug/conf/vsnip.vim
 " inoremap <C-k>  <C-o>D
 
-
 " カーソル移動せずに改行挿入
-nnoremap <expr> <M-o> vimrc#blank_below()
-nnoremap <expr> <M-O> vimrc#blank_above()
+nnoremap <expr> <M-o> lazy#BlankBelow()
+nnoremap <expr> <M-O> lazy#BlankAbove()
 
 " 日付入力
 inoremap <C-r><C-d> <C-r>=strftime("%F")<CR>
@@ -728,15 +743,23 @@ let @r = ';%s/[^\\]\+\.\([^\\]\+$\)/00001.\1/gg2nvveGg'
 " A-m だけで m にマクロ登録
 nnoremap <expr> <A-m> reg_recording() == 'm' ? 'q' : 'qm'
 
-" 選択範囲を置換する
+" 選択範囲を置換する {{{
 " http://qiita.com/itmammoth/items/312246b4b7688875d023
-nnoremap <Space># "zyiw:%s/\<<C-r>z\>/<C-r>z/gc<left><left>
+nnoremap <Space># "zyiw:%s/\<<C-r>z\>/<C-r>z/gc<left><left><left>
+
 " xnoremap <Space># "zy:%s/\V<C-r>z/<C-r>z/g<left><left>
-xnoremap <Space># <Cmd>call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
-function s:set_vsearch()
+" xnoremap <Space># <Cmd>call <SID>set_vsearch()<CR>:s/<C-r>///gc<Left><Left><Left>
+" " FIXME getregion() を使うと z をつぶさなくて済むと思ったけど、行全体が yank のハイライトされる
+" " getregion(getpos('.'), getpos('v'))[0]->escape('/\')->substitute('\n', '\\n', 'g')
+" function s:set_vsearch()
+"   noautocmd let @/ = '\V' .. getregion(getpos('.'), getpos('v'))[0]->escape('/\')->substitute('\n', '\\n', 'g')
+" endfunction
+xnoremap <Space># :<C-u>call <SID>set_vsearch()<CR>:%s/<C-r>//<C-r>z/gc<Left><Left><Left>
+ function s:set_vsearch()
   silent noautocmd normal! gv"zy
-  let @/ = '\V' .. substitute(escape(@z, '/\'), '\n', '\\n', 'g')
+  let @/ = '\V' .. escape(@z, '/\')->substitute('\n', '\\n', 'g')
 endfunction
+" }}}
 
 " vim-jp.slack
 " du で _ の前まで削除など
@@ -750,7 +773,7 @@ function s:numSearchLine(ptn, num, opt)
 endfunction
 
 " 直前に入力した単語を大文字へ
-inoremap <expr> <C-u> $'<C-w>{vimrc#toupper_prev_word()}'
+inoremap <expr> <C-u> $'<C-w>{lazy#ToupperPrevWord()}'
 
 " }}}2 Search {{{2
 
@@ -771,57 +794,62 @@ call extend(g:vimrc_altercmd_dic, {'git': '!git'})
 
 " Suppress git add -p message
 let $LANG = 'ja_JP.UTF-8'
-
 " nnoremap <Space>gl <Cmd>!git gl -100<CR>
 nnoremap <Space>gd <Cmd>!git diff HEAD<CR>
+nnoremap <Space>gD <Cmd>!git diff HEAD %<CR>
+
 " 変更量が多いと表示が溢れてよくわからない。
 " git status でも pager を使えるように設定が必要。
 " git config --global pager.branch "cure"
 nnoremap <Space>gs <Cmd>!git status -v<CR>
-" nnoremap <silent> <Space>gbb :!git branch<CR>
-nnoremap <Space>gbb <Cmd>call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
-nnoremap <Space>gbc :!git switch -c<Space>
-" @ は現在ブランチの最新コミット
-nnoremap <Space>gp :!git push origin @
 
-" 直前のブランチに戻す。念のため Enterは自分で
-nnoremap <Space>gbw :!git switch -
+nnoremap <Space>gh :!git cherry-pick<Space>
 
+" add {{{2
 " コミット対象の hunk を選択する場合: gad -> gc
 " コミットメッセージに詳細を書く場合: gu -> gc
 nnoremap <Space>gad :!git add --patch<CR>
 nnoremap <Space>gai <Cmd>!git add --interactive<CR>
 nnoremap <Space>gu <Cmd>silent !git add --update<CR>
+"}}}2 commit {{{2
 nnoremap <Space>gc <Cmd>!git commit -v<CR>
 nnoremap <Space>gam <Cmd>!git commit --amend<CR>
 " 単純なコミットメッセージの場合: gn
 nnoremap <Space>gn :!git commit --all -v -m ""<Left>
 nnoremap <Space>gN <Cmd>!git commit --all -v<CR>
-nnoremap <Space>gh :!git cherry-pick<Space>
+"}}}2 branch {{{2
+" nnoremap <silent> <Space>gbb :!git branch<CR>
+" ctrlp-generic
+" nnoremap <Space>gbb <Cmd>call popup_atcursor(systemlist('git branch'), #{ moved: "any", border: [], minwidth: &columns/3, minheight: &lines/4 })<CR>
+nnoremap <Space>gbc :!git switch -c<Space>
+" @ は現在ブランチの最新コミット
+nnoremap <Space>gp :!git push origin @
+" 直前のブランチに戻す。念のため Enterは自分で
+nnoremap <Space>gbw :!git switch -
 
 " 直前のコミットを master にする場合: gbr -> g-
 " rename current branch
 nnoremap <Space>gbm :!git branch -m temp
+nnoremap <Space>gbr :!git branch -m temp
 " switch new branch (default: master) from last commit (default: master)
 call AddLeft('nnoremap <Space>g- :!git switch -c master', ' HEAD~')->execute()
 " restore temp branch
+" ctrlp-launcher
 " nnoremap <Space>gr :!git restore --source=temp .
-
 " delete branch
 nnoremap <Space>gbd :!git branch -D temp
+" }}}2
 
+" }}}1 others {{{1
+" 無名レジスタが更新された場合に、使用中のオペレータの種類（c/d/y）の名前を冠するレジスタに内容をコピー
+" https://blog.atusy.net/2023/12/17/vim-easy-to-remember-regnames/
+" 参考にさせてもらって変更
+" c / d / y で更新した直前の無名レジスタの内容を c / d / y に入れる
+" 0 に yank、- に c, d で削除した内容が入っているけどとっさに判断できないので
+" c で無名レジスタを消しちゃったという場合は C-r c で直前の無名レジスタの内容を入力できる
+autocmd vimrc TextYankPost * call vimrc#UseEasyRegname()
 
 " }}}1 Terminal {{{1
-" すでに :terminal が存在していればその :terminal を使用する
-" http://secret-garden.hatenablog.com/entry/2017/11/14/113127
-" FIXME: ウィンドウが開いていれば、そこにフォーカスしたい
-" floaterm でいらなくなるかな？
-command! -nargs=* Terminal call vimrc#terminal_open(<q-args>)
-call extend(g:vimrc_altercmd_dic, {'ter\%[minal]': 'Terminal'})
-
-" 端末ウィンドウを複製する
-" https://vim-jp.org/slacklog/CJMV3MSLR/2021/05/#ts-1621213606.468200
-command! -nargs=0 TermView :call vimrc#term_view()<CR>
 
 tnoremap <C-p> <Up>
 tnoremap <C-n> <Down>
@@ -835,12 +863,12 @@ tnoremap <C-h> <BS>
 
 " }}}1 GUI {{{1
 if has('gui_running')
-  " font {{{
+  " font {{{2
   " set guifont=BDF_M+:h9
   " set guifont=Cica:h11
   " set guifont=MyricaM_M:h11
   " set guifont=UD_デジタル_教科書体_N-R:h11
-  set guifont=HackGen_Console_NF:h14
+  set guifont=HackGen:h14
 
   " 行間隔の設定
   set linespace=1
@@ -850,7 +878,7 @@ if has('gui_running')
 
   " Use colored emoji
   set renderoptions=type:directx,renmode:5,scrlines:1
-  " }}}
+  " }}}2 window {{{2
 
   " 最大化で起動
   autocmd vimrc GUIEnter * simalt ~x
@@ -859,7 +887,7 @@ if has('gui_running')
   " https://github.com/tyru/config/blob/3e16b655e3dea14d55c4fbc6f41ec314e3480c5c/home/volt/rc/default/vimrc.vim#L581
   nnoremap <M-Space> <Cmd>simalt ~<CR>
 
-  " colorscheme {{{
+  " }}}2 colorscheme {{{2
   " https://github.com/vim-jp/reading-vimrc/wiki/vimrcアンチパターン
   function DefineMyHighlights()
     " IME の有効無効でカーソルの色を変更する。
@@ -867,7 +895,12 @@ if has('gui_running')
       highlight CursorIM guifg=NONE guibg=Green gui=NONE
     endif
 
+    " cursorline は特に目立たせないときに有効にするので、そのときに見やすい値へ
     highlight CursorLine gui=underline guifg=NONE guibg=NONE
+
+    " Tabpanel の非アクティブタブページから underline を削除
+    " spring-night のデフォルトだと TabLine とリンクしているようなので、その値から cterm, gui の underline を NONE へ
+    highlight TabPanel cterm=NONE ctermfg=103 ctermbg=238 gui=NONE guifg=#8d9eb2 guibg=#536273
   endfunction
   autocmd vimrc ColorScheme * :call DefineMyHighlights()
 
@@ -880,7 +913,7 @@ if has('gui_running')
 
 endif
 
-" }}}
+" }}}1
 
 " debug
 " def で定義している関数を変更、追加した場合は一時的にコメントを外す。

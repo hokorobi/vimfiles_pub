@@ -1,0 +1,25 @@
+{
+  "link template": {
+    "prefix": "link",
+    "body": [
+      "[$1]($2)"
+    ]
+  },
+  "img": {
+    "prefix": [
+      "!",
+      "img"
+    ],
+    "body": [
+      "![${1:alt}](${2:src})"
+    ],
+    "description": "markdown image snippet"
+  },
+  "today": {
+    "prefix": "today",
+    "body": [
+      "$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE"
+    ],
+    "description": "today"
+  }
+}

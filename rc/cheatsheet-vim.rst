@@ -7,7 +7,7 @@ Movement
 * `g;` `g,`    : 変更した位置への移動。feat. submode 連続して ;, , 入力で次、前へ移動
 * `:jumps`     : ジャンプの履歴表示
 * `C-i`        : ジャンプの履歴を進む
-* `o`          : (v) 範囲開始指定をやり直し
+* `(v) o`      : 範囲開始指定をやり直し
 * `<Space>;`   : 直前の f, F, t, F を繰り返す。 feat. easymotion
 * `<Space>,`   : 直前の f, F, t, F を逆方向に繰り返す。 feat. easymotion
 * `<C-w><C-]>` : ウィンドウを分割してタグにジャンプ
@@ -24,74 +24,75 @@ Select
 Edit
 ----
 
-* `F6`                      : (ni) 日付の入力
-* `~`                       : 大文字小文字入れ替え
-* `:ISetting[!] [st][0-9]`  : インデントの変更。s2 なら space で幅2 に変更。! 付きなら Retab も実行
-* `:ExpandSerialNumber`     : hoge [100-120] fuga などと入力して実行すると、hoge 100 fuga, hoge 101 fuga が各行に展開される。 feat. ExpandSerialNumber
-                            : [0xa-0xf] 入力後に実行すると a-f を各行に展開 feat. ExpandSerialNumber
-* `:SortLine`               : 行全体で , 区切りの文字列をソートする
-* `<Space>a` / `<Space>x`   : (v) 選択範囲をインクリメント / デクリメント
-* `:vim // %`               : 直前の検索条件を含む行のみを Quickfix へ出力
-* `:s/hoge.*/& @fuga`       : hoge.* の後ろに @fuga を追加。& の説明は :h sub-replace-special 参照。
-* `:s//bar/`                : 直前の / 検索の合致内容を bar に置換する。
-* `:g/hoge/cmd`             : hoge を含む行に対して :cmd を実行。例: `:g/^function/normal A abort` functionを含む行の末尾に abort を追加。
-* `:g/hoge/d`               : hoge を含む行を削除
-* `/\v\<\/?\w+>`            : タグを含む行を検索
-* `:g//d`                     その行を削除
-* `:g/hoge/normal 1dj`      : hoge を含む行+1行を削除
-* `:g/Second/s/bar/foo/g`   : Second を含む行に存在する bar をすべて foo に置換する。
-* `<Space>Qa<Space>Q`       : レジスタ a を初期化
-  `:g/TODO/yank A`            レジスタ a にTODOを含む行を追記
-* `:Capture g/hoge/p`       : hoge を含む行のみを Capture バッファへ出力。 feat. Capture
-* `:v/hoge/d` `:g!/hoge/d`  : hoge を含む行のみを残して削除。v は invert の v。
-* `:v/\(^.*$\)\n\1$/delete` : ソート済みの重複行を一行のみ残して削除。重複行が3行以上ある場合は、その1行だけ削除。
-* `gs`                      : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対称移動、s, S: ソート昇順、降順、r: 反転、g, G: グループ化、解除) に入る。. で繰り返し可能 feat. swap
-* `g>`                      : 要素を右に移動 feat. swap
-* `g<`                      : 要素を左に移動 feat. swap
-* `gss<ESC>`                : (v) 選択範囲をソート。ノーマルモードなら一行全体。 feat. swap
-* `g<C-a>`                  : (v) 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
-* `cxiw`                    : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
-* `cxc`                     : 入れ替え候補のキャンセル feat. vim-exchange
-* `X`                       : (v) 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
-* `cxx`                     : (v) X で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
-* `#`                       : (n: カーソル下の単語|v: 選択文字列) を置換。 feat. vim-asterisk
-* `^M などの入力`           : vim --clean filename で起動。Insert mode で Ctrl+v Ctrl+m など
-* `<C-r>"`                  : (i) 直前の無名レジスタから Put
-* `<C-r>0`                  : (i) 直前の Yank のレジスタから Put。cw<C-R>" だと変更前の単語が Put されるので、こちらを使う。
-* `sdt`                     : HTML のタグだけを削除。 feat. sandwich
-* `dNib`                    : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
-* `/foo\C`                  : 小文字の foo だけにマッチ。
-* `ciwhoge<C-r><C-p>"fuga`  : カーソル文字列をhogeとfugaで囲む。. で別の文字列でも同様に動作する。<C-P>がないと . では最初のカーソル文字が使われる。 https://twitter.com/mattn_jp/status/1088746858933940224
-                              sandwich.vim を使う場合は、 saiwihoge<CR>fuga<CR>
-* `<C-r><C-w>`              : (c) コマンドラインモードでカーソル位置の word を入力する。 <C-r><C-W> なら WORD
-* `/\V`                     : 入力したままを検索
-* `/<the>`                  : 単語の境界を指定して検索。the にマッチして then にマッチしない。
-* `/lang/e`                 : /e でマッチの末尾にカーソル移動。auage で language にできる。その後、 n. で繰り返せる。searchx を使っているので <Space>n. か。実践Vim TIP83
-* `gUgn`                    : 直前のマッチのテキストオブジェクト gn を使って、マッチした範囲を大文字へ。実践Vim TIP84
-* `%s/<C-r>//"\1"/g`        : <C-r>/ 直前のマッチを挿入。実践Vim TIP90
-* `%s//<C-r>0/g`            : <C-r>0 ヤンクした内容で置換。値渡し。実践Vim TIP91
-* `%s//\=@0/g`              : <C-r>0 ヤンクした内容で置換。参照渡し。あんまり有用じゃないかも。実践Vim TIP91
-* `%s//~/&`                 : 直前の置換を繰り返し。%を忘れた場合にこれを追加するなど。実践Vim TIP92
-* `g&`                      : ファイル全体に直前の置換を繰り返し。実践Vim TIP92
+* `(ni) F6`                   : 日付の入力
+* `~`                         : 大文字小文字入れ替え
+* `:ISetting[!] [st][0-9]`    : インデントの変更。s2 なら space で幅2 に変更。! 付きなら Retab も実行
+* `:ExpandSerialNumber`       : hoge [100-120] fuga などと入力して実行すると、hoge 100 fuga, hoge 101 fuga が各行に展開される。 feat. ExpandSerialNumber
+                              : [0xa-0xf] 入力後に実行すると a-f を各行に展開 feat. ExpandSerialNumber
+* `:SortLine`                 : 行全体で , 区切りの文字列をソートする
+* `(v) <Space>a` / `<Space>x` : 選択範囲をインクリメント / デクリメント
+* `:vim // %`                 : 直前の検索条件を含む行のみを Quickfix へ出力
+* `:s/hoge.*/& @fuga`         : hoge.* の後ろに @fuga を追加。& の説明は :h sub-replace-special 参照。
+* `:s//bar/`                  : 直前の / 検索の合致内容を bar に置換する。
+* `:g/hoge/cmd`               : hoge を含む行に対して :cmd を実行。例: `:g/^function/normal A abort` functionを含む行の末尾に abort を追加。
+* `:g/hoge/d`                 : hoge を含む行を削除
+* `/\v\<\/?\w+>`              : タグを含む行を検索
+  `:g//d`                       その行を削除
+* `:g/hoge/normal 1dj`        : hoge を含む行+1行を削除
+* `:g/Second/s/bar/foo/g`     : Second を含む行に存在する bar をすべて foo に置換する。
+* `<Space>Qa<Space>Q`         : レジスタ a を初期化
+  `:g/TODO/yank A`              レジスタ a にTODOを含む行を追記
+* `:Capture g/hoge/p`         : hoge を含む行のみを Capture バッファへ出力。 feat. Capture
+* `:v/hoge/d` `:g!/hoge/d`    : hoge を含む行のみを残して削除。v は invert の v。
+* `:v/\(^.*$\)\n\1$/delete`   : ソート済みの重複行を一行のみ残して削除。重複行が3行以上ある場合は、その1行だけ削除。
+* `gs`                        : 要素の移動を可能にする swap mode (j, k: 対象選択、h, l: 対象移動、s, S: ソート昇順、降順、r: 反転、g, G: グループ化、解除) に入る。. で繰り返し可能 feat. swap
+* `g>`                        : 要素を右に移動 feat. swap
+* `g<`                        : 要素を左に移動 feat. swap
+* `(v) gss<ESC>`              : 選択範囲をソート。ノーマルモードなら一行全体。 feat. swap
+* `(v) g<C-a>`                : 選択範囲の数値を漸増的に N ずつ増やす。最初の行の数値から増加する。
+* `cxiw`                      : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
+* `cxc`                       : 入れ替え候補のキャンセル feat. vim-exchange
+* `(v) X`                     : 入れ替えたい単語で実行することで入れ替えができる。 feat. vim-exchange
+* `(v) cxx`                   : X で選択した行と、これを実行した行を入れ替え。 feat. vim-exchange
+* `#`                         : (n: カーソル下の単語|v: 選択文字列) を置換。 feat. vim-asterisk
+* `^M などの入力`             : vim --clean filename で起動。Insert mode で Ctrl+v Ctrl+m など
+* `(i) <C-r>"`                : (i) 直前の無名レジスタから Put
+* `(i) <C-r>0`                : (i) 直前の Yank のレジスタから Put。cw<C-R>" だと変更前の単語が Put されるので、こちらを使う。
+* `sdt`                       : HTML のタグだけを削除。 feat. sandwich
+* `dNib`                      : ("(fo|o)") | にカーソルがある時に N=2 なら (foo) が、N=3なら "(foo)" が削除できる。 feat.sandwich
+* `/foo\C`                    : 小文字の foo だけにマッチ。
+* `ciwhoge<C-r><C-p>"fuga`    : カーソル文字列をhogeとfugaで囲む。. で別の文字列でも同様に動作する。<C-P>がないと . では最初のカーソル文字が使われる。 https://twitter.com/mattn_jp/status/1088746858933940224
+                                sandwich.vim を使う場合は、 saiwihoge<CR>fuga<CR>
+* `(c) <C-r><C-w>`            : (c) コマンドラインモードでカーソル位置の word を入力する。 <C-r><C-W> なら WORD
+* `/\V`                       : 入力したままを検索
+* `/<the>`                    : 単語の境界を指定して検索。the にマッチして then にマッチしない。
+* `/lang/e`                   : /e でマッチの末尾にカーソル移動。auage で language にできる。その後、 n. で繰り返せる。searchx を使っているので <Space>n. か。実践Vim TIP83
+* `gUgn`                      : 直前のマッチのテキストオブジェクト gn を使って、マッチした範囲を大文字へ。実践Vim TIP84
+* `%s/<C-r>//"\1"/g`          : <C-r>/ 直前のマッチを挿入。実践Vim TIP90
+* `%s//<C-r>0/g`              : <C-r>0 ヤンクした内容で置換。値渡し。実践Vim TIP91
+* `%s//\=@0/g`                : <C-r>0 ヤンクした内容で置換。参照渡し。あんまり有用じゃないかも。実践Vim TIP91
+* `%s//~/&`                   : 直前の置換を繰り返し。%を忘れた場合にこれを追加するなど。実践Vim TIP92
+* `g&`                        : ファイル全体に直前の置換を繰り返し。実践Vim TIP92
 * `/\v^([^,]*),([^,]*),([^,]*)$`
-  `:%s//\3,\2,\1`           : hoge, fuga, homu を homu, fuga, hoge へ置換。実践Vim TIP93
-* `/\v\<\/?h\zs\d`          : <h2>hoge</h2>\n<h3>fuga</h3> を <h1>hoge</h1>\n<h2>fuga</h2> に置換
-  `:%s//\=submatch(0)-1/g`    \zs\d で h2 の 2 などにマッチ。\=submatch(0)-1 でマッチした 2 から -1
-                              実践Vim TIP94
+  `:%s//\3,\2,\1`             : hoge, fuga, homu を homu, fuga, hoge へ置換。実践Vim TIP93
+* `/\v\<\/?h\zs\d`            : <h2>hoge</h2>\n<h3>fuga</h3> を <h1>hoge</h1>\n<h2>fuga</h2> に置換
+  `:%s//\=submatch(0)-1/g`      \zs\d で h2 の 2 などにマッチ。\=submatch(0)-1 でマッチした 2 から -1
+                                実践Vim TIP94
 * `/\v(<man>|<dog>)`
   `:%s//\={"dog":"man", "man":"dog"}[submatch(1)]/g`
-                            : dog と man を入れ替え。実践Vim TIP95
-* `/Pragmatic/ze Vim`       : 実践Vim TIP96
-  `:vimgrep /<C-r>// **/*.txt`
-  `:Qargs`                    quickfix を args へ代入。 nelstorm/vim-qargs を使用
-  `:argdo %s//Practical/g`    Pragmatic Vim を Practical Vim へ置換。
-  `:argdo update`             保存
-* `vi{`                     : {} の範囲を選択
-  `:'<,'>sort`                {} の範囲の行をソート。実践Vim TIP100
-* `:g/{/ .+1,/}/-1 sort`    : 複数ある {} の範囲すべての行をソート
-                              { にマッチした次の行から (/{/ .+1) } にマッチした前の行までを sort。実践Vim TIP100
-* `:g/{/ .+1,/}/-1 >`       : 複数ある {} の範囲すべての行をインデント
-* ``
+                              : dog と man を入れ替え。実践Vim TIP95
+* `/Pragmatic/ze Vim`         : カレントディレクトリ配下の .txt の Pragmatic Vim を Practical Vim へ置換。実践Vim TIP96
+  `:vimgrep /<C-r>// **/*.txt`  カレントディレクトリ配下の .txt から Pragmatic Vim を検索して quickfix へ
+  `:Qargs`                      quickfix を args へ代入。 nelstorm/vim-qargs を使用
+  `:argdo %s//Practical/g`      Pragmatic Vim を Practical Vim へ置換。
+  `:argdo update`               保存
+* `vi{`                       : {} の範囲を選択
+  `:'<,'>sort`                  {} の範囲の行をソート。実践Vim TIP100
+* `:g/{/ .+1,/}/-1 sort`      : 複数ある {} の範囲すべての行をソート
+                                { にマッチした次の行から (/{/ .+1) } にマッチした前の行までを sort。実践Vim TIP100
+* `:g/{/ .+1,/}/-1 >`         : 複数ある {} の範囲すべての行をインデント
+* `<C-r>y`                    : (i) c / d のオペレータでyankで入れた無名レジスタの文字列を挿入。feat: UseEasyRegname()
+
 
 複数ファイルに対する処理
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,36 +126,18 @@ Edit
 3. . で次の合致文字列を同様に置換
 
 
-Easy Align
-~~~~~~~~~~
-
-* `<Space>`    : Around 1st whitespaces
-* `2<Space>`   : Around 2nd whitespaces
-* `-<Space>`   : Around the last whitespaces
-* `-1<Space>`  : Around the 2nd to last whitespaces
-* `:`          : Around 1st colon (key: value)
-* `<Right>:`   : Around 1st colon (key : value)
-* `=`          : Around 1st operators with =
-* `3=`         : Around 3rd operators with =
-* `*=`         : Around all operators with =
-* `**=`        : Left-right alternating around =
-* `<Enter>=`   : Right alignment around 1st =
-* `<Enter>**=` : Right-left alternating around =
-* `*<C-x>[:=]` : すべての : と = を対象とする (<C-x> で正規表現使用)
-
-
 Surround (feat. sandwich)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * `sa{Text Object}"`: Text Object を " で括る
-* `sa"`             : (v) 選択範囲を " で括る
+* `(v) sa"`         : 選択範囲を " で括る
 * `sai"f`           : "" 括りを、このあと入力する function と () で括る
 * `sai"i`           : "" 括りを、このあと入力する head と tail で括る
 * `dss`             : 一番内側の括りを外す
 * `2sdd`            : 二番目に内側の括りを外す
 * `sr"(`            : "" の括りを () に置き換える
 * `sc"(`            : "" の括りを () に置き換える
-* `sr(`             : (v) 選択した括りを () に置き換える
+* `(v) sr(`         : 選択した括りを () に置き換える
 * `srr(`            : 一番内側の括りを () に置き換える
 * `2srr(`           : 二番目に内側の括りを () に置き換える
 * `rss(`            : 一番内側の括りを () に置き換える
@@ -435,30 +418,25 @@ Git
 keymap
 ~~~~~~
 
-* `<Space>gl`  : graph log
-* `<Space>gL`  : graph log 100 line in Gina. feat. gina.vim
-* `<Space>gd`  : diff
-* `<Space>gs`  : status
-* `<Space>gS`  : status in Gina. feat. gina.vim
-* `<Space>gg`  : log -p -G"|"
-* `<Space>ga`  : add -p in popup window
+* `<Space>gL`  : log 100 line. feat. gin.vim
+* `<Space>gS`  : status. feat. gina.vim
+* `<Space>gg`  : 変更履歴から検索
 * `<Space>gu`  : add all tracking files
-* `<Space>gc`  : commit -v
-* `<Space>gm`  : Show the history of commits under the cursor. feat. git-messenger.vim
-* `<Space>gn`  : commit -a -m "|"
-* `<Space>gbb` : Show branches
-* `<Space>gbr` : Rename current branch
+* `<Space>gn`  : メッセージを記入してコミット
+* `<Space>gbb` : ブランチを CtrlP で表示。選択したら switch
+* `<Space>gbB` : ブランチを ddu で表示。switch 以外もいろいろできる
+* `<Space>gbm` : Rename current branch
 * `<Space>gbl` : blame in Gina. feat. gina.vim
-* `<Space>g-`  : Switch last commit and new branch name
+* `<Space>g-`  : 一つ前のコミットでブランチを切る
 
 Vim で commit のやりなおし
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* `<Space>gbr (git branch -m temp)`: 現在のブランチ名を temp へ変更。
-* `<Space>g- (git switch -c master HEAD~)`: 一つ前のコミットのブランチ名を master にする。
-* `<Space>gr (git restore -s temp .)`: すべてのファイルを temp ブランチの内容に変更。ステージングはされていない状態。
-* コミットやり直し。
-* `<Space>gbd (git branch -D temp)`: temp ブランチ削除
+1. `<Space>gbm`: 現在のブランチ名を temp へ変更。(git branch -m temp)
+2. `<Space>g-` : 一つ前のコミットのブランチ名を master にする。(git switch -c master HEAD~)
+3. `<Space>gr` : すべてのファイルを temp ブランチの内容に変更。ステージングはされていない状態。(git restore -s temp .)
+4. コミットやり直し。
+5. `<Space>gbd`: temp ブランチ削除。(git branch -D temp)
 
 gina.vim
 ~~~~~~~~
@@ -470,9 +448,9 @@ gina.vim
 :Gina blame の使い方
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-#. :Gina blame を起動して、Enter と BS で対象のコミットを表示
-#. :Gina show でコミットの説明を参照。これをすぐに忘れるので書いておく。
-#. :Gina blame で表示されるタブは :tabclose を実行したり C-q を2回押したりして閉じる。
+1. :Gina blame を起動して、Enter と BS で対象のコミットを表示
+2. :Gina show でコミットの説明を参照。これをすぐに忘れるので書いておく。
+3. :Gina blame で表示されるタブは :tabclose を実行したり C-q を2回押したりして閉じる。
 
 Gina patch, GinPatch
 ~~~~~~~~~~~~~~~~~~~~
@@ -531,8 +509,8 @@ Others
 * `:Jq .obj`                : JSON の obj を抽出。引数なしなら整形のみ
 * `/[\u3041-\u3096]`        : ひらがな検索 https://so-zou.jp/software/tech/programming/tech/regular-expression/meta-character/variable-width-encoding.htm
 * `vim --clean -u vimrcfile`: Clean な Vim で vimrcfile を vimrc の代わりに読み込む
-* `nnoremap [hoge] <Nop>`
-  `nmap C-t [hoge]`         : [hoge] をマッピングのプレフィクス（？）にする。C-t は例。
+* `nnoremap [hoge] <Nop>`   : [hoge] をマッピングのプレフィクス（？）にする。C-t は例。
+  `nmap C-t [hoge]`
 * `<Space>rw`               : window resize mode(?) feat. submode
 * `/[^\x01-\x7E]`           : 全角文字検索
 * `<Space>y%`               : バッファのファイル名をクリップボードへコピー
@@ -620,7 +598,7 @@ set verbose=3 するとsourceしてるものが出る
 現在の選択範囲を取得
 ~~~~~~~~~~~~~~~~~~~~
 
-現在の選択範囲を取得::
+現在の選択範囲を取得（<Cmd><CR>でくくらないとうまく動かなかったはず。）::
 
   function s:get_current_selection() abort
     if mode() !~# '^[vV\x16]'
@@ -628,17 +606,7 @@ set verbose=3 するとsourceしてるものが出る
       return ''
     endif
 
-    " save current z register
-    let save_reg = getreginfo('z')
-
-    " get selection through z register
-    noautocmd normal! "zygv
-    let result = @z
-
-    " restore z register
-    call setreg('z', save_reg)
-
-    return result
+    return getregion(getpos('.'), getpos('v'))[0]
   endfunction
 
 

@@ -1,0 +1,13 @@
+append >	call AppendQuote('>')
+substitute \ to /	call Substitute('\', '/')
+substitute - to _	call Substitute('-', '_')
+substitute _ to -	call Substitute('_', '-')
+substitute X to Y	call SubstituteInput()
+copy Today	call TodayCopy()
+hosts	call ReadfileCopy('C:\WINDOWS\System32\drivers\etc\hosts')
+mail tada gmail	Copy tada.shinichirou@gmail.com
+mail hotmail	Copy syuheisakuya@hotmail.com
+mail tada canon	Copy tada.shinichirou@mail.canon
+mail hokorobi gmail	Copy hokorobi.hokorobi@gmail.com
+github gh repo create	Copy gh repo create --private 
+github gh repo delete	Copy gh repo delete 

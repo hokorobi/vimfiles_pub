@@ -1,0 +1,4 @@
+ステージングを取り消す	!git restore -staged .
+ステージングを取り消してワークツリーをHEADに戻す	!git restore -staged - worktree .
+ワークツリーをHEADに戻す	!git restore .
+tempブランチの内容をワークツリーに反映する	!git restore --source=temp .

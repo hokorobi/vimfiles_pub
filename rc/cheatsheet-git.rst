@@ -1,15 +1,10 @@
 command
 -------
 
-* `git branch -m newbranchname`: change current branchname
-* `git switch -c newbranchname`: newbranchname を作って切り替える
+* `git branch -m newbranchname`: 現在のブランチ名を branchname に変更
+* `git switch -c newbranchname`: newbranchname を作ってブランチを切り替える
 * `git switch -`: 一つ前のブランチに戻る
-* `git restore -s ${HASH} .`: すべてのファイルを ${HASH} の内容に戻す。ステージングはされていない状態。
-* `git restore filename`: ステージングされていないファイルを直前のコミットの状態に戻す。
-* `git reset filename`: add した filename を取り消す。内容は変えない。filename が . ならすべてが対象。
-* `git restore --staged filename`: add した filename を取り消す。内容は変えない。filename が . ならすべてが対象。
-* `git add -i`: revert で add したものを元に戻せる。Vimからだとうまく動かないことが多い。
-* `git pull https://github.com/{upstream/project} refs/pull/{id}/head`: フォーク元のマージされていないプルリクをマージする。
+* `git pull https://github.com/{upstream/project} refs/pull/{id}/head`: フォーク元のマージされていないプルリク PR をマージする。
   via https://stackoverflow.com/questions/55108304/how-to-merge-a-pull-request-or-commit-from-a-different-repository-using-git
 * `git fetch origin pull/ID/head:BRANCHNAME`: マージされていないプルリク #ID を試す。
 * `git log -G"hoge" -p`: 履歴の差分から hoge を検索する。 --pickaxe-all も指定すると、検索されたコミットで変更のあったファイルすべてを表示する。
@@ -20,6 +15,16 @@ command
 * `git fetch --all --prune`: リモートでMergeされて削除されたブランチをローカルに反映させて消す。origin/* とかが消えて、ローカルブランチが消えるわけではない。
 * `git cherry-pick AコミットID^..EコミットID`: AコミットID から EコミットID を cherry-pick。 https://dev.classmethod.jp/articles/git-cherry-pick-pitfall/
 * `git checkout 'master@{1979-02-26 18:30:00}'`: 指定した日時の時点をチェックアウト。
+
+
+戻す
+----
+
+* `git restore -s ${HASH} .`: すべてのファイルを ${HASH} の内容に戻す。ステージングはされていない状態。
+* `git restore filename`: ステージングされていないファイルを直前のコミットの状態に戻す。
+* `git reset filename`: add した filename を取り消す。内容は変えない。filename が . ならすべてが対象。
+* `git restore --staged filename`: add した filename を取り消す。内容は変えない。filename が . ならすべてが対象。
+* `git add -i`: revert で add したものを元に戻せる。Vimからだとうまく動かないことが多い。
 * `git reset --hard ORIG_HEAD`: マージコミット後に元に戻す。
 
 
@@ -64,23 +69,22 @@ git stash
 * `git stash drop stash@{N}`: delete N's stash
 
 
-PR をマージ
------------
-
-#. git fetch https://github.com/prabirshrestha/asyncomplete.vim refs/pull/135/head:pr135
-#. git merge pr135
-
-* `https://github.com/prabirshrestha/asyncomplete.vim refs/pull/135` は任意の PR
-* `head` で PR の最新コミットまでを対象にする
-* `pr135` はブランチ名
-
-
 別のリポジトリのブランチを登録する
 ----------------------------------
 
 https://github.com/username/reponame の master ブランチを username ブランチとして登録する。
 
 git fetch https://github.com/username/reponame master:username
+
+
+別のリポジトリから cherry-pick
+------------------------------
+
+1. git remote add newremotename https://path/to/repogitory
+2. git fetch newremotename
+3. git cherry-pick newremotenameHash
+
+via http://blog.atwata.com/tool/2017/02/22/git-cross-repo-cherry-pick.html
 
 
 GitHub の GraphQL

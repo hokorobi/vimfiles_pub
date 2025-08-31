@@ -1,0 +1,80 @@
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete.vim'
+on_ft = [
+  'autohotkey',
+  'cfg',
+  'gitcommit',
+  'go',
+  'javascript',
+  'plantuml',
+  'python',
+  'rst',
+  'snippet',
+  'toml',
+  'vim',
+  'vb',
+  'xsl',
+]
+hooks_file = '~/vimfiles/plug/conf/asyncomplete.vim'
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_event = 'InsertEnter'
+hooks_file = '~/vimfiles/plug/conf/vsnip.vim'
+[[multiple_hooks]]
+plugins = ['asyncomplete.vim', 'vim-vsnip']
+hooks_file = '~/vimfiles/plug/conf/asyncomplete_vsnip.vim'
+[[multiple_plugins]]
+plugins = ['asyncomplete.vim', 'vim-vsnip']
+hook_source = '''
+imap <silent><expr> <C-l>
+      \ pumvisible() ?
+      \   vsnip#expandable() ? '<Plug>(vsnip-expand)' :
+      \   asyncomplete#close_popup() :
+      \   '' :
+      \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
+      \ ''
+'''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+on_source = 'vim-vsnip'
+
+[[plugins]]
+repo = 'hokorobi/asyncomplete-buffer.vim'
+# rev = 'suppress-suggest-behind-japanese'
+on_source = 'asyncomplete.vim'
+extAttrs = { installerFrozen = true }
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-necosyntax.vim'
+on_ft = ['autohotkey', 'javascript', 'plantuml', 'vb', 'vim']
+depends = ['asyncomplete.vim', 'neco-syntax']
+
+[[plugins]]
+repo = 'Shougo/neco-syntax'
+lazy = 1
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-necovim.vim'
+on_ft = 'vim'
+depends = ['asyncomplete.vim', 'neco-vim']
+
+[[plugins]]
+repo = 'Shougo/neco-vim'
+lazy = true
+
+# 遅延読込を実現しようとすると色々と大変。
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+hooks_file = '~/vimfiles/plug/conf/vim-lsp.vim'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+depends = 'vim-lsp'
+hooks_file = '~/vimfiles/plug/conf/lsp-settings.vim'
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+on_ft = ['python', 'go', 'toml', 'typescript']
+depends = ['asyncomplete.vim', 'vim-lsp']

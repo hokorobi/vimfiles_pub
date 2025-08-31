@@ -1,0 +1,37 @@
+[[plugins]]
+repo = 'hokorobi/vimcomplete'
+hooks_file = '~/vimfiles/plug/conf/vimcomplete.vim'
+merged = false
+extAttrs = { installerFrozen = true }
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+on_event = 'InsertEnter'
+hooks_file = '~/vimfiles/plug/conf/vsnip.vim'
+[[multiple_hooks]]
+plugins = ['vimcomplete', 'vim-vsnip']
+hooks_file = '~/vimfiles/plug/conf/vimcomplete_vsnip.vim'
+[[multiple_plugins]]
+plugins = ['vimcomplete', 'vim-vsnip']
+hook_source = '''
+imap <silent><expr> <C-l>
+      \ pumvisible() ?
+      \   vsnip#expandable() ? '<Plug>(vsnip-expand)' :
+      \   '' :
+      \ vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' :
+      \ ''
+'''
+
+[[plugins]]
+repo = 'rafamadriz/friendly-snippets'
+merged = false
+rtp = ''
+
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip-integ'
+on_source = 'vim-vsnip'
+
+# 案の定、単純に on_event = 'InsertEnter' だと動かないことは確認。
+[[plugins]]
+repo = 'yegappan/lsp'
+hooks_file = '~/vimfiles/plug/conf/lsp.vim'

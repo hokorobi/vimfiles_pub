@@ -1,0 +1,675 @@
+# memo
+# on_source = このプラグインがリストのプラグインより先に読み込まれる
+# depends = リストのプラグインがこのプラグインより先に読み込まれる
+# on_cmd = 自分で定義したコマンドは登録しない。一度実行したら消えるみたい。
+
+hooks_file = '~/vimfiles/plug/conf/ft.vim'
+
+# Plugin Manager {{{1
+[[plugins]]
+repo = 'hokorobi/vim-templug'
+extAttrs = { installerFrozen = true }
+fronzen = true
+on_cmd = 'Templug'
+hook_add = 'set packpath+=~/_vim'
+
+# }}}1  REPL {{{1
+
+# Quickrun {{{2
+
+[[plugins]]
+repo = 'thinca/vim-quickrun'
+on_cmd = 'QuickRun'
+depends = 'shabadou.vim'
+hooks_file = '~/vimfiles/plug/conf/quickrun.vim'
+
+[[plugins]]
+repo = 'osyo-manga/shabadou.vim'
+
+[[plugins]]
+repo = 'mityu/vim-quickrun-hook-auto_run_in_vim9'
+hooks_file = '~/vimfiles/plug/conf/quickrun-hook-auto_run_in_vim9.vim'
+
+# }}}2
+
+[[plugins]]
+repo = 'rhysd/reply.vim'
+on_cmd = ['Repl', 'ReplAuto']
+
+# }}}1  Text Object {{{1
+
+[[plugins]]
+repo = 'kana/vim-textobj-user'
+
+[[plugins]]
+repo = 'mattn/vim-textobj-url'
+depends = 'vim-textobj-user'
+hooks_file = '~/vimfiles/plug/conf/vim-textobj-url.vim'
+
+[[plugins]]
+repo = 'machakann/vim-sandwich'
+on_event = 'ModeChanged'
+hooks_file = '~/vimfiles/plug/conf/sandwich.vim'
+
+[[plugins]]
+repo = 'tommcdo/vim-exchange'
+on_map = { n = 'cx', x = 'X' }
+
+[[plugins]]
+repo = 'kana/vim-textobj-indent'
+depends = 'vim-textobj-user'
+on_map = { ox = ['ii', 'ai', 'iI'] }
+
+[[plugins]]
+repo = 'glts/vim-textobj-comment'
+on_map = { ox = ['ac', 'aC', 'ic'] }
+depends = 'vim-textobj-user'
+
+[[plugins]]
+repo = 'romgrk/equal.operator'
+on_map = { ox = ['<Plug>(operator-', '<Plug>(visual-'] }
+hooks_file = '~/vimfiles/plug/conf/equal.operator.vim'
+
+[[plugins]]
+repo = 'machakann/vim-textobj-functioncall'
+on_map = { ox = ['<Plug>'] }
+on_source = 'vim-sandwich'
+hooks_file = '~/vimfiles/plug/conf/textobj-functioncall.vim'
+
+[[plugins]]
+repo = 'machakann/vim-textobj-delimited'
+on_map = { ox = ['ad', 'aD', 'id', 'iD'] }
+
+[[plugins]]
+repo = 'kana/vim-textobj-line'
+on_map = { ox = ['al', 'il'] }
+hooks_file = '~/vimfiles/plug/conf/textobj-line.vim'
+
+# textra.vim と連携して使用
+[[plugins]]
+repo = 'preservim/vim-textobj-sentence'
+lazy = true
+hooks_file = '~/vimfiles/plug/conf/textobj-sentence.vim'
+
+# }}}1  Language, Format, Filetype {{{1
+
+# diff {{{2
+
+[[plugins]]
+repo = 'AndrewRadev/linediff.vim'
+on_cmd = 'Linediff'
+hooks_file = '~/vimfiles/plug/conf/linediff.vim'
+
+# }}}2 Python {{{2
+
+[[plugins]]
+repo = 'hdima/python-syntax'
+hooks_file = '~/vimfiles/plug/conf/python-syntax.vim'
+
+[[plugins]]
+repo = 'hynek/vim-python-pep8-indent'
+
+# }}}2 Golang {{{2
+
+[[plugins]]
+repo = 'mattn/vim-godoc'
+
+[[plugins]]
+repo = 'mattn/vim-goimports'
+on_ft = 'go'
+
+[[plugins]]
+repo = 'mattn/vim-gorun'
+
+[[plugins]]
+repo = 'mattn/vim-goaddtags'
+
+# }}}2 Markdown {{{2
+
+[[plugins]]
+repo = 'previm/previm'
+on_cmd = 'PrevimOpen'
+depends = 'open-browser.vim'
+
+[[plugins]]
+repo = 'preservim/vim-markdown'
+merge_ftdetect = true
+on_ft = 'markdown'
+hooks_file = '~/vimfiles/plug/conf/markdown.vim'
+
+# }}}2 rst {{{2
+
+[[plugins]]
+repo = 'hokorobi/vim-rst-util'
+extAttrs = { installerFrozen = true }
+fronzen = true
+on_ft = 'rst'
+hooks_file = '~/vimfiles/plug/conf/rst-util.vim'
+
+[[plugins]]
+repo = 'habamax/vim-rst'
+on_ft = 'rst'
+
+# }}}2 quickfix {{{2
+
+[[plugins]]
+repo = 'lambdalisue/vim-qfloc'
+on_ft = 'qf'
+hooks_file = '~/vimfiles/plug/conf/qfloc.vim'
+
+[[plugins]]
+repo = 'thinca/vim-qfreplace'
+on_cmd = 'Qfreplace'
+
+# preview Quickfix at popup
+[[plugins]]
+repo = 'AndrewRadev/quickpeek.vim'
+on_ft = 'qf'
+hooks_file = '~/vimfiles/plug/conf/quickpeek.vim'
+
+# QuickFixでジャンプするときに直前のWindowを使う
+[[plugins]]
+repo = 'yssl/QFEnter'
+on_ft = 'qf'
+
+[[plugins]]
+repo = 'mattn/vim-qfnavigate'
+on_map = '<Plug>'
+hooks_file = '~/vimfiles/plug/conf/qfnavigate.vim'
+
+[[plugins]]
+repo = 'bfrg/vim-qf-history'
+on_cmd = ['Chistory', 'Lhistory']
+
+# }}}2 Vim {{{2
+
+# Vim script の最後に発生したエラーの箇所を開く
+[[plugins]]
+repo = 'rbtnn/vim-vimscript_lasterror'
+on_cmd = 'VimscriptLastError'
+
+[[plugins]]
+repo = 'rbtnn/vim-vimscript_tagfunc'
+on_ft = 'vim'
+
+[[plugins]]
+repo = 'rbtnn/vim-vimscript_indentexpr'
+on_ft = 'vim'
+
+# }}}2 Others {{{2
+
+[[plugins]]
+repo = 'pangloss/vim-javascript'
+
+[[plugins]]
+repo = 'hokorobi/plantuml-syntax'
+# rev = 'dev'
+merge_ftdetect = true
+on_ft = 'plantuml'
+extAttrs = { installerFrozen = true }
+fronzen = true
+merged = false
+
+[[plugins]]
+repo = 'hokorobi/plantuml-previewer.vim'
+extAttrs = { installerFrozen = true }
+fronzen = true
+on_cmd = 'PlantumlOpen'
+depends = 'open-browser.vim'
+hooks_file = '~/vimfiles/plug/conf/plantuml-previewer.vim'
+
+[[plugins]]
+repo = 'hokorobi/autohotkey2.vim'
+extAttrs = { installerFrozen = true }
+fronzen = true
+
+[[plugins]]
+repo = 'mechatroner/rainbow_csv'
+on_cmd = 'RainbowDelim'
+
+[[plugins]]
+repo = 'hokorobi/vim-howm-syntax-mini'
+extAttrs = { installerFrozen = true }
+fronzen = true
+
+[[plugins]]
+repo = 'machakann/vim-vimhelplint'
+on_cmd = 'VimhelpLint'
+
+#}}}2
+
+# }}}1  Look {{{1
+
+[[plugins]]
+repo = 'rhysd/vim-color-spring-night'
+hooks_file = '~/vimfiles/plug/conf/color-spring-night.vim'
+
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+depends = 'vim-color-spring-night'
+hooks_file = '~/vimfiles/plug/conf/lightline.vim'
+
+# インクリメンタルサーチの件数をポップアップ表示
+[[plugins]]
+repo = 'obcat/vim-hitspop'
+on_event = 'CmdlineEnter'
+hooks_file = '~/vimfiles/plug/conf/hitspop.vim'
+
+[[plugins]]
+repo = 'itchyny/vim-cursorword'
+
+[[plugins]]
+repo = 't9md/vim-quickhl'
+on_map = '<Plug>'
+hooks_file = '~/vimfiles/plug/conf/quickhl.vim'
+
+# :substitute などで変更対象のハイライト、変更後のプレビュー
+[[plugins]]
+repo = 'markonm/traces.vim'
+on_event = 'CmdlineEnter'
+hooks_file = '~/vimfiles/plug/conf/traces.vim'
+
+[[plugins]]
+repo = 'liuchengxu/vista.vim'
+on_cmd = 'Vista'
+hooks_file = '~/vimfiles/plug/conf/vista.vim'
+
+[[plugins]]
+repo = 'lambdalisue/vim-readablefold'
+
+# #rrggbb や #rgb の色を視覚化
+[[plugins]]
+repo = 'BourgeoisBear/clrzr'
+on_cmd = 'ClrzrOn'
+hooks_file = '~/vimfiles/plug/conf/clrzr.vim'
+
+[[plugins]]
+repo = 'rbtnn/vim-ambiwidth'
+hooks_file = '~/vimfiles/plug/conf/ambiwidth.vim'
+
+[[plugins]]
+repo = 'itchyny/vim-highlighturl'
+on_event = ['BufEnter']
+
+[[plugins]]
+repo = 'wellle/context.vim'
+on_cmd = 'ContextActivate'
+hooks_file = '~/vimfiles/plug/conf/context.vim'
+
+[[plugins]]
+repo = 'hokorobi/vim-cheatsheet-echo'
+extAttrs = { installerFrozen = true }
+fronzen = true
+hooks_file = '~/vimfiles/plug/conf/cheatsheet-echo.vim'
+merged = false
+
+# }}}1  Input & Edit {{{1
+
+[[plugins]]
+repo = 'cohama/lexima.vim'
+on_event = ['InsertEnter', 'CmdlineEnter']
+hooks_file = '~/vimfiles/plug/conf/lexima.vim'
+
+# https://scrapbox.io/vim-jp/lexima.vim%E3%81%A7Better_vim-altercmd%E3%82%92%E5%86%8D%E7%8F%BE%E3%81%99%E3%82%8B
+[[plugins]]
+repo = 'yuki-yano/lexima-alter-command.vim'
+on_event = ['CmdlineEnter']
+depends = 'lexima.vim'
+hooks_file = '~/vimfiles/plug/conf/lexima-alter-command.vim'
+
+[[plugins]]
+repo = 'thinca/vim-ambicmd'
+on_event = ['CmdlineEnter']
+depends = 'lexima.vim'
+hooks_file = '~/vimfiles/plug/conf/ambicmd.vim'
+
+[[plugins]]
+repo = 'uplus/vim-clurin'
+on_map = '<Plug>'
+hooks_file = '~/vimfiles/plug/conf/clurin.vim'
+
+[[plugins]]
+repo = 'kg8m/vim-simple-align'
+on_cmd = 'SimpleAlign'
+rev = 'vim9'
+hooks_file = '~/vimfiles/plug/conf/simple-align.vim'
+
+[[plugins]]
+repo = 'mbbill/undotree'
+on_cmd = 'UndotreeToggle'
+hooks_file = '~/vimfiles/plug/conf/undotree.vim'
+
+[[plugins]]
+repo = 'osyo-manga/vim-jplus'
+on_map = '<Plug>'
+hooks_file = '~/vimfiles/plug/conf/jplus.vim'
+
+[[plugins]]
+repo = 'hokorobi/ctrlp-yankround'
+extAttrs = { installerFrozen = true }
+fronzen = true
+on_event = ['TextYankPost']
+on_cmd = 'CtrlPYankRound'
+hooks_file = '~/vimfiles/plug/conf/yankround.vim'
+
+# g<C-a> などは同行での連番はできないようなので、まだ有用
+[[plugins]]
+repo = 'deris/vim-rengbang'
+on_cmd = ['RengBang', 'RengBangUsePrev', 'RengBangConfirm']
+hooks_file = '~/vimfiles/plug/conf/rengbang.vim'
+
+[[plugins]]
+repo = 'ntpeters/vim-better-whitespace'
+on_cmd = ['StripWhitespace', 'ToggleStripWhitespaceOnSave']
+hooks_file = '~/vimfiles/plug/conf/better-whitespace.vim'
+
+[[plugins]]
+repo = 'mattn/vim-sonictemplate'
+on_cmd = 'Template'
+on_map = { ni = '<C-y>' }
+merge_ftdetect = true
+on_ft = 'stpl'
+hooks_file = '~/vimfiles/plug/conf/sonictemplate.vim'
+
+[[plugins]]
+repo = 'deris/vim-pasta'
+on_map = { n = ['<Space>p', '<Space>P'] }
+hooks_file = '~/vimfiles/plug/conf/pasta.vim'
+
+[[plugins]]
+repo = 'nocd5/ExpandSerialNumber.vim'
+on_cmd = 'ExpandSerialNumber'
+
+[[plugins]]
+repo = 'lambdalisue/vim-findent'
+on_cmd = ['Findent', 'FindentRestore']
+hooks_file = '~/vimfiles/plug/conf/findent.vim'
+
+[[plugins]]
+repo = 'machakann/vim-swap'
+on_map = { ox = ['<Plug>'], n = ['gs', 'g<', 'g>'] }
+hooks_file = '~/vimfiles/plug/conf/swap.vim'
+
+# 選択した行すべてに対して I, A を反映させる。
+[[plugins]]
+repo = 'kana/vim-niceblock'
+on_map = { x = ['I', 'gI', 'A'] }
+
+[[plugins]]
+repo = 'tyru/caw.vim'
+depends = 'vim-repeat'
+on_map = '<Plug>(caw:prefix)'
+hooks_file = '~/vimfiles/plug/conf/caw.vim'
+
+[[plugins]]
+repo = 'kana/vim-repeat'
+lazy = true
+
+[[plugins]]
+repo = 'matze/vim-move'
+on_map = '<Plug>Move'
+hooks_file = '~/vimfiles/plug/conf/move.vim'
+
+[[plugins]]
+repo = 'sentriz/vim-print-debug'
+on_func = 'print_debug#print_debug'
+hooks_file = '~/vimfiles/plug/conf/print-debug.vim'
+
+[[plugins]]
+repo = 'tani/dmacro.vim'
+hooks_file = '~/vimfiles/plug/conf/dmacro.vim'
+
+# }}}1  Motion {{{1
+
+[[plugins]]
+repo = 'easymotion/vim-easymotion'
+on_map = { nxo = '<Plug>' }
+hooks_file = '~/vimfiles/plug/conf/easymotion.vim'
+
+[[plugins]]
+repo = 'haya14busa/vim-edgemotion'
+on_map = '<Plug>'
+hooks_file = '~/vimfiles/plug/conf/edgemotion.vim'
+
+[[plugins]]
+repo = 'haya14busa/vim-asterisk'
+on_map = '<Plug>'
+hooks_file = '~/vimfiles/plug/conf/asterisk.vim'
+
+[[plugins]]
+repo = 'hrsh7th/vim-searchx'
+on_func = 'searchx#run'
+hooks_file = '~/vimfiles/plug/conf/searchx.vim'
+
+# カーソル移動位置を遡る
+[[plugins]]
+repo = 'osyo-manga/vim-milfeulle'
+hooks_file = '~/vimfiles/plug/conf/milfeulle.vim'
+
+[[plugins]]
+repo = 'hokorobi/vim-smarthome'
+extAttrs = { installerFrozen = true }
+fronzen = true
+hooks_file = '~/vimfiles/plug/conf/smarthome.vim'
+
+# replace matchparen
+[[plugins]]
+repo = 'andymass/vim-matchup'
+hooks_file = '~/vimfiles/plug/conf/matchup.vim'
+
+[[plugins]]
+repo = 'hokorobi/vim-bookmarks'
+#rev = 'hokorobi'
+on_event = 'BufReadPre'
+extAttrs = { installerFrozen = true }
+fronzen = true
+hooks_file = '~/vimfiles/plug/conf/bookmarks.vim'
+
+[[plugins]]
+repo = 'Allianaab2m/jumpout.vim'
+on_func = 'jumpout#'
+hooks_file = '~/vimfiles/plug/conf/jumpout.vim'
+
+# }}}1  Buffer {{{1
+
+[[plugins]]
+repo = 'hokorobi/vim-sayonara'
+on_func = 'sayonara#'
+extAttrs = { installerFrozen = true }
+fronzen = true
+hooks_file = '~/vimfiles/plug/conf/sayonara.vim'
+
+[[plugins]]
+repo = 'tyru/closesubwin.vim'
+on_func = 'closesubwin#'
+hooks_file = '~/vimfiles/plug/conf/closesubwin.vim'
+
+[[plugins]]
+repo = 'hokorobi/capture.vim'
+rev = 'patch-1'
+extAttrs = { installerFrozen = true }
+fronzen = true
+on_cmd = 'Capture'
+hooks_file = '~/vimfiles/plug/conf/capture.vim'
+
+# }}}1  File {{{1
+
+[[plugins]]
+repo = 'kana/vim-gf-user'
+on_map = { n = 'gf' }
+hooks_file = '~/vimfiles/plug/conf/gf-user.vim'
+
+# diff でも gf を可能にする
+# [[plugins]]
+# repo = 'kana/vim-gf-diff'
+# on_ft = 'diff'
+# depends = 'vim-gf-user'
+
+# FIXME: 遅延読込設定をしている場合、起動後の初回実行時にファイルの内容が二重に表示される
+#        ファイル末尾にファイルの先頭からの内容が表示される。本当に先頭からではなく2行目からの様子
+#        sample: :e https://raw.githubusercontent.com/Mathiasb17/mathias/f3ad028eafcc56ddd4d72019cb6a1818e456d099/.config/nvim/init.vim
+[[plugins]]
+repo = 'lambdalisue/vim-protocol'
+
+[[plugins]]
+repo = 'mattn/vim-findroot'
+on_event = 'BufRead'
+hooks_file = '~/vimfiles/plug/conf/findroot.vim'
+
+[[plugins]]
+repo = 'chrisbra/Recover.vim'
+
+# }}}1  Terminal {{{1
+# terminal 上で、未入力時に ESC, : が効くようにする
+[[plugins]]
+repo = 'tyru/empty-prompt.vim'
+on_event = 'TerminalOpen'
+hooks_file = '~/vimfiles/plug/conf/empty-prompt.vim'
+
+[[plugins]]
+repo = 'voldikss/vim-floaterm'
+on_cmd = 'FloatermNew'
+on_func = 'floaterm#'
+hooks_file = '~/vimfiles/plug/conf/floaterm.vim'
+
+# }}}1  CtrlP {{{1
+[[plugins]]
+repo = 'ctrlpvim/ctrlp.vim'
+hooks_file = '~/vimfiles/plug/conf/ctrlp.vim'
+
+[[plugins]]
+repo = 'mattn/ctrlp-launcher'
+on_cmd = 'CtrlPLauncher'
+hooks_file = '~/vimfiles/plug/conf/ctrlp-launcher.vim'
+
+[[plugins]]
+repo = 'printesoi/ctrlp-filetype.vim'
+on_cmd = 'CtrlPFiletype'
+hooks_file = '~/vimfiles/plug/conf/ctrlp-filetype.vim'
+
+[[plugins]]
+repo = 'christoomey/ctrlp-generic'
+on_func = 'CtrlPGeneric'
+hooks_file = '~/vimfiles/plug/conf/ctrlp-generic.vim'
+[[multiple_hooks]]
+plugins = ['ctrlp-generic', 'dpp-ext-installer']
+hooks_file = '~/vimfiles/plug/conf/ctrlp-generic_dpp-ext-installer.vim'
+[[multiple_plugins]]
+plugins = ['ctrlp-generic', 'dein.vim']
+hook_add = '''
+" リポジトリのディレクトリへ移動
+nnoremap <Space>fc <Cmd>call dein#get()
+      \ ->map({_, v -> v.path})
+      \ ->values()
+      \ ->extend(dein#check_clean())
+      \ ->CtrlPGeneric('CtrlPGenericCd')<CR>
+
+" リポジトリのディレクトリを選択して、その中のファイルを選択
+nnoremap <Space>fr <Cmd>call dein#get()
+      \ ->map({_, v -> v.path})
+      \ ->values()
+      \ ->extend(dein#check_clean())
+      \ ->CtrlPGeneric('CtrlPGenericCtrlp')<CR>
+'''
+
+[[plugins]]
+repo = 'suy/vim-ctrlp-commandline'
+hooks_file = '~/vimfiles/plug/conf/ctrlp-commandline.vim'
+
+[[plugins]]
+repo = 'mattn/ctrlp-matchfuzzy'
+hooks_file = '~/vimfiles/plug/conf/ctrlp-matchfuzzy.vim'
+
+# }}}1  Git {{{1
+[[plugins]]
+repo = 'lambdalisue/vim-gina'
+on_cmd = 'Gina'
+hooks_file = '~/vimfiles/plug/conf/gina.vim'
+
+[[plugins]]
+repo = 'hokorobi/agit.vim'
+extAttrs = { installerFrozen = true }
+fronzen = true
+# rev = 'develop'
+on_cmd = ['Agit', 'AgitFile']
+hooks_file = '~/vimfiles/plug/conf/agit.vim'
+
+[[plugins]]
+repo = 'hotwatermorning/auto-git-diff'
+on_ft = 'gitrebase'
+
+# GitHub {{{2
+[[plugins]]
+repo = 'lambdalisue/vim-gista'
+on_cmd = 'Gista'
+on_path = '^gista://'
+on_map = '<Plug>'
+hooks_file = '~/vimfiles/plug/conf/gista.vim'
+
+# }}}2
+# }}}1 Utility {{{1
+[[plugins]]
+repo = 'tyru/open-browser.vim'
+lazy = true
+
+[[plugins]]
+repo = 'thinca/vim-prettyprint'
+on_cmd = 'PP'
+hooks_file = '~/vimfiles/plug/conf/prettyprint.vim'
+
+[[plugins]]
+repo = 'kana/vim-operator-user'
+
+[[plugins]]
+repo = 'skanehira/code2img.vim'
+on_cmd = 'Code2img'
+
+[[plugins]]
+repo = 'fedorenchik/calculator.vim'
+on_cmd = 'Calculator'
+hooks_file = '~/vimfiles/plug/conf/calculator.vim'
+
+# Using lsp, vim-easymotion
+[[plugins]]
+repo = 'kana/vim-submode'
+hooks_file = '~/vimfiles/plug/conf/submode.vim'
+
+[[plugins]]
+repo = 'vim-jp/vimdoc-ja'
+
+[[plugins]]
+repo = 'tweekmonster/helpful.vim'
+on_cmd = 'HelpfulVersion'
+hooks_file = '~/vimfiles/plug/conf/helpful.vim'
+
+# FIXME: more lazy
+[[plugins]]
+repo = 'rbtnn/vim-layout'
+depends = 'ctrlp-generic'
+on_func = ['layout#']
+on_cmd = ['LayoutLoad', 'LayoutSave']
+hooks_file = '~/vimfiles/plug/conf/layout.vim'
+
+[[plugins]]
+repo = 'kawarimidoll/textra.vim'
+on_cmd = ['Textra']
+depends = ['vim-textobj-sentence']
+hooks_file = '~/vimfiles/plug/conf/textra.vim'
+
+[[plugins]]
+repo = 'y0za/vim-reading-vimrc'
+on_cmd = ['ReadingVimrcNext', 'ReadingVimrcLoad']
+hooks_file = '~/vimfiles/plug/conf/reading-vimrc.vim'
+
+[[plugins]]
+repo = 'vim-jp/vital.vim'
+on_cmd = 'Vitalize'
+
+[[plugins]]
+repo = 'lambdalisue/vital-Whisky'
+
+[[plugins]]
+repo = 'itchyny/calendar.vim'
+hooks_file = '~/vimfiles/plug/conf/calendar.vim'
+on_cmd = 'Calendar'
+# }}}1

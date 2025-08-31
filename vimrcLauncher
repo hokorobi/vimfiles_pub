@@ -14,10 +14,14 @@ let s:reposDirs = [
      \ 'rhysd\vim-color-spring-night',
      \]
 " このファイルのあるディレクトリに .ctrlp-launcher-copy を作成しておく。
-let g:ctrlp_launcher_file = '~/_vim/.ctrlp-launcher'
+let g:ctrlp_launcher_file = '~/vimfiles/.ctrlp-launcher'
 " 普段 CtrlP を使っているなら別のディレクトリを指定
 let g:ctrlp_cache_dir = '~/_vim/.ctrlpLauncher'
-
+" 表示行
+let s:lines = 5
+" ウィンドウ位置
+let s:winposX = 700
+let s:winposY = 200
 
 " 不要なプラグイン、設定を読み込まない
 " plugin
@@ -77,7 +81,7 @@ endfor
 
 " CtrlP
 let g:ctrlp_max_history = 0
-let g:ctrlp_match_window = 'bottom,order:btt,min:21,max:21,results:0'
+let g:ctrlp_match_window = $'bottom,order:btt,min:{s:lines},max:{s:lines},results:0'
 let g:ctrlp_regexp = 0
 " デフォルトのキーマップを別の操作に使いたい場合は、デフォルトのキーマップも変更する
 let g:ctrlp_prompt_mappings = {
@@ -114,6 +118,9 @@ colorscheme spring-night
 
 set guifont=ＭＳ_ゴシック:h18
 
+execute($'set lines={s:lines+3}')
+execute($'winpos {s:winposX} {s:winposY}')
+
 function! Copy(s) abort
   call setreg("*", a:s)
   quit
@@ -127,12 +134,39 @@ function AppendQuote(quote) abort
   quit
 endfunction
 
+function Substitute(from, to) abort
+  call getreg("*", 1, v:true)
+        \ ->map({_, v -> substitute(v, a:from, a:to, "g")})
+        \ ->setreg("*")
+  quit
+endfunction
+
+function SubstituteInput() abort
+  const from = input('From: ')
+  if empty(from)
+    quit
+  endif
+
+  const to = input('To: ')
+  if empty(to)
+    quit
+  endif
+
+  call getreg("*", 1, v:true)
+        \ ->map({_, v -> substitute(v, from, to, "g")})
+        \ ->setreg("*")
+  quit
+endfunction
+
 function ReadfileCopy(file) abort
   call readfile(a:file)->setreg("*")
   quit
 endfunction
 
-winpos 700 200
+function TodayCopy() abort
+  call strftime('%Y%m%d')->setreg("*")
+  quit
+endfunction
 
 " <ESC> でVimを終了
 set updatetime=100
