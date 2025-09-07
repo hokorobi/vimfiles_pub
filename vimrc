@@ -356,11 +356,20 @@ set tagcase=match
 " grep プログラムの指定
 
 " rg は通常 SJIS の検索をしないのでやはり不便
-" let &grepprg = 'rg --vimgrep --no-heading --sort path --no-ignore-vcs'
+" let &grepprg = 'rg --vimgrep --smart-case --no-ignore-vcs'
+" let &grepprg = 'rg --vimgrep --smart-case --no-ignore-vcs -E Shift_JIS'
 " set grepformat=%f:%l:%c:%m,%f:%l:%m
 
+" findstr
+" let &grepprg = 'findstr /S /I'
+" set grepformat=%f:%m
+
+" pt
 " /U: .gitignore を無視
-let &grepprg = 'pt /nogroup /nocolor /column /hidden /home-ptignore /S /U'
+" let &grepprg = 'pt /nogroup /nocolor /column /hidden /home-ptignore /S /U'
+" set grepformat^=%f:%l:%c:%m
+
+let &grepprg = 'rg --vimgrep --smart-case --no-ignore-vcs'
 " /column で桁を表示しているので %c も使うパターンを追加
 set grepformat^=%f:%l:%c:%m
 
@@ -578,13 +587,13 @@ autocmd vimrc WinClosed * wincmd p
 
 " 表示上の行移動変更
 " https://github.com/darookee/dotfiles/blob/2c11a0d322c04c549d13d9cacb282d1e44a5a3c7/vimrc#L195
-noremap <expr> j v:count == 0 ? 'gj' : 'j'
+noremap <expr> <silent> j v:count == 0 ? 'gj' : 'j'
 " inoremap <C-n> <Cmd>normal! gj<CR>
 " cnoremap <C-n> <Down>
 cnoremap <expr> <C-n> pumvisible() ? '<Down>' : getcmdline() == '' ? "\<S-Down>" : "\<Down>"
 " noremap  <C-n> <Down>
 
-noremap <expr> k v:count == 0 ? 'gk' : 'k'
+noremap <expr> <silent> k v:count == 0 ? 'gk' : 'k'
 " inoremap <C-p> <Cmd>normal! gk<CR>
 cnoremap <C-p> <Up>
 " cnoremap <expr> <C-p> pumvisible() ? '<Up>' : getcmdline() == '' ? "\<S-Up>" : "\<Up>"
@@ -631,7 +640,7 @@ nnoremap <CR> <Cmd>call AlterG()<CR>
 autocmd vimrc CmdWinEnter * nnoremap <buffer> <CR> <CR>
 
 " popup 表示中は C-k, C-j で上下候補選択
-" ddc.vim, vimcomplete
+" searchx
 " inoremap <expr> <C-k> pumvisible() ? '<C-p>' : '<C-k>'
 " inoremap <expr> <C-j> pumvisible() ? '<C-n>' : '<C-j>'
 

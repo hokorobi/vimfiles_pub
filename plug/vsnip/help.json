@@ -1,22 +1,22 @@
 {
-    "help-hr": {
-        "prefix": "helphr",
-        "body": "=============================================================================="
-    },
-    "help-hr2": {
-        "prefix": "helphr2",
-        "body": "------------------------------------------------------------------------------"
-    },
-    "help-header": {
-        "prefix": "helpheader",
-        "body": "$1 ~"
-    },
-    "help-tag": {
-        "prefix": "helptag",
-        "body": " *$1* "
-    },
-    "help-link": {
-        "prefix": "helplink",
-        "body": " |$1| "
-    }
+  "help-hr": {
+    "prefix": "helphr",
+    "body": "=============================================================================="
+  },
+  "help-hr2": {
+    "prefix": "helphr2",
+    "body": "------------------------------------------------------------------------------"
+  },
+  "help-header": {
+    "prefix": "helpheader",
+    "body": "$1 ~"
+  },
+  "help-tag": {
+    "prefix": "helptag",
+    "body": " *$1* "
+  },
+  "help-link": {
+    "prefix": "helplink",
+    "body": " |$1| "
+  }
 }

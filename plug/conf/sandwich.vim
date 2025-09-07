@@ -24,13 +24,13 @@ nnoremap saa <Plug>(operator-sandwich-add)<Plug>(operator-sandwich-release-count
 BulkMap nxo sa <Plug>(operator-sandwich-add)
 " https://github.com/machakann/vimrc/blob/3dc16ac1ae31197e35bebdf3f0fbf275117478bd/.vimrc#L1127-L1152
 nnoremap s( <Plug>(operator-sandwich-add-query1st)(
-nnoremap s8 <Plug>(operator-sandwich-add-query1st)(
+nnoremap s9 <Plug>(operator-sandwich-add-query1st)(
 nnoremap s) <Plug>(operator-sandwich-add-query1st))
-nnoremap s9 <Plug>(operator-sandwich-add-query1st))
+nnoremap s0 <Plug>(operator-sandwich-add-query1st))
 xnoremap s( <Plug>(operator-sandwich-add)(
-xnoremap s8 <Plug>(operator-sandwich-add)(
+xnoremap s9 <Plug>(operator-sandwich-add)(
 xnoremap s) <Plug>(operator-sandwich-add))
-xnoremap s9 <Plug>(operator-sandwich-add))
+xnoremap s0 <Plug>(operator-sandwich-add))
 nnoremap s[ <Plug>(operator-sandwich-add-query1st)[
 nnoremap s] <Plug>(operator-sandwich-add-query1st)]
 xnoremap s[ <Plug>(operator-sandwich-add)[
@@ -40,13 +40,9 @@ nnoremap s} <Plug>(operator-sandwich-add-query1st)}
 xnoremap s{ <Plug>(operator-sandwich-add){
 xnoremap s} <Plug>(operator-sandwich-add)}
 nnoremap s" <Plug>(operator-sandwich-add-query1st)"
-nnoremap s2 <Plug>(operator-sandwich-add-query1st)"
 xnoremap s" <Plug>(operator-sandwich-add)"
-xnoremap s2 <Plug>(operator-sandwich-add)"
 nnoremap s' <Plug>(operator-sandwich-add-query1st)'
-nnoremap s7 <Plug>(operator-sandwich-add-query1st)'
 xnoremap s' <Plug>(operator-sandwich-add)'
-xnoremap s7 <Plug>(operator-sandwich-add)'
 nnoremap sf <Plug>(operator-sandwich-add-query1st)f
 xnoremap sf <Plug>(operator-sandwich-add)f
 " }}}

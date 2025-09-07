@@ -76,14 +76,6 @@ nnoremap <buffer>         sq <Cmd>call lazy#SortQuickfix()<CR>
 " TODO: Set keymap
 nnoremap <buffer><silent> <S-j> :<C-u>call <SID>older()<CR>
 nnoremap <buffer><silent> <S-k> :<C-u>call <SID>newer()<CR>
-let s:tips = [
-      \ '<S-j> older',
-      \ '<S-k> newer',
-      \ 'p     preview',
-      \ 'sq    sort',
-      \]
-call cheatsheetecho#CheatSheetEchoAdd(s:tips, 'qf')
-nnoremap <buffer><silent> ? <Cmd>call cheatsheetecho#CheatSheetEcho(v:true)<CR>
 
 " https://github.com/lambdalisue/dotfiles/blob/e1b1e1017c3764684da3a92d77f9745bb3aa8474/.config/nvim/after/ftplugin/qf.vim
 function! s:is_quickfix()  abort
