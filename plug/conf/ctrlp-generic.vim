@@ -18,6 +18,9 @@ command! -nargs=* CtrlPCmdPaste call systemlist(<q-args>)->CtrlPGeneric('CtrlPGe
 " cheatsheet-echo
 let s:tips = [
       \   '<Space>gbo	git log からコミット、ファイルを選択して表示',
+      \]
+call cheatsheetecho#CheatSheetEchoAdd(s:tips, '_', 'ctrlp-generic', 'Git')
+let s:tips = [
       \   '<Space>fn	カレントディレクトリ配下のファイル名を選択して貼り付け',
       \]
 call cheatsheetecho#CheatSheetEchoAdd(s:tips, '_', 'ctrlp-generic')

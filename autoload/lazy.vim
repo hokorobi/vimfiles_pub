@@ -329,6 +329,14 @@ export def GrepWrap(path: string = '.')
   if len(str) == 0
     return
   endif
+  if stridx(&grepprg, 'rg') == 0 && !Vimrc_executable('rg')
+    if Vimrc_executable('pt')
+      &grepprg = 'pt /nogroup /nocolor /column /hidden /home-ptignore /S /U'
+    else
+      &grepprg = 'findstr /S /I'
+      set grepformat=%f:%m
+    endif
+  endif
 
   # findstr を使うときはパス配下を検索できるように加工
   const search_path = stridx(&grepprg, 'findstr') == 0 ? $'{path}/*' : path
